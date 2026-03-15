@@ -17,9 +17,3 @@ This project is a collaborative effort by the following members:
 - **Frontend:** Next.js (App Router), Tailwind CSS, Axios
 - **Database:** MySQL
 - **Tools:** IntelliJ IDEA, VS Code, GitHub Projects (Kanban)
-
-## 📋 Kanban Workflow
-We use a GitHub Project board to manage our development cycle:
-* **Backlog:** Future feature enhancements and payment integration.
-* **In Progress:** Development of core API endpoints and UI components.
-* **Done:** Initial schema design and team environment setup.
