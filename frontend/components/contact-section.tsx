@@ -1,34 +1,20 @@
 "use client";
-
-import * as React from "react";
 import { useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { toast } from "sonner";
-import * as z from "zod";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { contactSchema } from "@/lib/validations/contact";
 
-// The Shadcn Field components
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
-
-const contactSchema = z.object({
-  fullName: z.string().min(2, "Name is too short"),
-  email: z.string().email("Invalid email address"),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z
-    .string()
-    .min(10, "Message is too short")
-    .max(500, "Message too long"),
-});
 
 export default function ContactSection() {
   const form = useForm({
@@ -38,7 +24,9 @@ export default function ContactSection() {
       subject: "",
       message: "",
     },
-    validatorAdapter: zodValidator(),
+    validators: {
+      onSubmit: contactSchema,
+    },
     onSubmit: async ({ value }) => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       toast.success("Success", {

@@ -28,7 +28,6 @@ export default function Footer() {
     validators: {
       onSubmit: newsletterSchema,
     },
-
     onSubmit: async ({ value }) => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success("Welcome aboard!", {
