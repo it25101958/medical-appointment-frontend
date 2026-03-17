@@ -44,7 +44,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="xs:hidden lg:block lg:col-span-7 relative xs:h-[300px] sm:h-[400px] md:h-[600px] w-auto order-1 lg:order-2">
+      <div className="xs:hidden lg:block lg:col-span-6 lg:col-start-7 relative xs:h-[300px] sm:h-[400px] md:h-[600px]  order-1 lg:order-2">
         <HeroVisual />
       </div>
     </section>
