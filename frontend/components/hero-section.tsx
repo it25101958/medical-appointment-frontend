@@ -6,16 +6,16 @@ import HeroVisual from "./hero-visual";
 
 export default function Hero() {
   return (
-    <section className="col-span-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-      <div className="lg:col-span-5 z-10">
+    <section className="col-span-12 grid grid-cols-1 lg:grid-cols-12 pb-10 lg:pb-20 items-center py-3">
+      <div className="lg:col-span-5 z-10 order-2 lg:order-1">
         <div className="space-y-2">
           <Badge variant="secondary" className="font-medium">
             ISO 9001:2015 Certified
           </Badge>
-          <h1 className="main-title">
+          <h2 className="main-title mb-3">
             Your Health, <br />
             <span className="">Scheduled with Ease.</span>
-          </h1>
+          </h2>
         </div>
 
         <p className="body-text ">
@@ -34,17 +34,17 @@ export default function Hero() {
 
         <div className="flex items-center gap-6 text-sm text-muted-foreground pt-8">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="size-5 text-green-500" />
-            <span className="font-medium">80+ Specialists</span>
+            <CheckCircle2 className="size-5 text-green-500 " />
+            <span className="font-medium xs:text-xs">80+ Specialists</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="size-5 text-green-500" />
-            <span className="font-medium">24/7 Availability</span>
+            <CheckCircle2 className="size-5 text-green-500 " />
+            <span className="font-medium xs:text-xs">24/7 Availability</span>
           </div>
         </div>
       </div>
 
-      <div className="lg:col-span-7 relative h-[200px] md:h-[600px] w-full">
+      <div className="xs:hidden lg:block lg:col-span-7 relative xs:h-[300px] sm:h-[400px] md:h-[600px] w-auto order-1 lg:order-2">
         <HeroVisual />
       </div>
     </section>
