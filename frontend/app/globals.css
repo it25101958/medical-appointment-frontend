@@ -135,7 +135,7 @@
   }
 
   .main-title {
-    @apply text-3xl md:text-4xl font-semibold tracking-tight mt-2;
+    @apply text-3xl md:text-4xl font-semibold tracking-tight mt-2 mb-3;
   }
 
   .span-title {
