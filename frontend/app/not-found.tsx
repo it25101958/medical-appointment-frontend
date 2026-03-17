@@ -25,15 +25,11 @@ export default function NotFound() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-        <Button
-          asChild
-          variant="default"
-          className="rounded-lg px-8 h-12 font-medium"
-        >
+        <Button asChild variant="default" className="">
           <Link href="/">Go to Home</Link>
         </Button>
 
-        <Button asChild variant="ghost" className="rounded-lg px-8 h-12">
+        <Button asChild variant="ghost" className="">
           <Link href="/support">Contact Support</Link>
         </Button>
       </div>
