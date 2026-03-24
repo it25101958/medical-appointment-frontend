@@ -10,7 +10,7 @@ export default function Hero() {
       <div className="lg:col-span-5 z-10 order-2 lg:order-1">
         <div className="space-y-2">
           <Badge variant="secondary" className="font-medium">
-            ISO 9001:2015 Certified
+            welcome to healthcare
           </Badge>
           <h2 className="main-title mb-3">
             Your Health, <br />
