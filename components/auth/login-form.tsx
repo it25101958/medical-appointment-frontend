@@ -1,6 +1,7 @@
 "use client";
 
 import { useForm } from "@tanstack/react-form";
+import { useRouter } from "next/router";
 import { loginSchema } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/input-group";
 
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm({
     defaultValues: { email: "", password: "" },
     validators: {
@@ -21,7 +23,7 @@ export function LoginForm() {
     },
     onSubmit: async ({ value }) => {
       try {
-        const response = await fetch("/api/proxy/login", {
+        const response = await fetch("/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(value),
@@ -29,6 +31,7 @@ export function LoginForm() {
 
         if (!response.ok) throw new Error("Invalid credentials");
         toast.success("Login successful!");
+        router.push("/dashboard");
       } catch (error) {
         toast.error("Authentication Failed", {
           description: "Please check your credentials.",
