@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarClock, ClipboardPlus, FileText, Pill, Plus, Trash2 } from "lucide-react";
+import {
+  CalendarClock,
+  ClipboardPlus,
+  FileText,
+  Pill,
+  Plus,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { apiRequest } from "@/lib/api-client";
@@ -467,13 +474,13 @@ export function TodayAppointmentsList({ appointments }: Props) {
 
                   <TableCell className="px-4 py-2">
                     <span className="text-sm">
-                      Patient {appointment.patient.FullName}
+                      {appointment.patient.fullName}
                     </span>
                   </TableCell>
 
                   <TableCell className="px-4 py-2">
                     <span className="text-sm">
-                      Room {appointment.room.roomNumber}
+                      {appointment.room.roomNumber}
                     </span>
                   </TableCell>
 
