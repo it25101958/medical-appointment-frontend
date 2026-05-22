@@ -89,7 +89,7 @@ export function VerifyForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl ">
       <div className="space-y-2">
         <FieldLabel className="text-sm font-medium">
           Verification Code
