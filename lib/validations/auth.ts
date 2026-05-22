@@ -1,10 +1,16 @@
 import * as z from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Please enter a valid medical ID or email."),
-  password: z.string().min(8, "Password must be at least 8 characters."),
-});
+  email: z
+    .string({ error: "Invalid credentials" })
+    .trim()
+    .toLowerCase()
+    .email({ error: "Invalid credentials" }),
 
+  password: z
+    .string({ error: "Invalid credentials" })
+    .min(1, { error: "Invalid credentials" }),
+});
 export const patientRegisterFormSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(8, "Password must be at least 8 characters."),
