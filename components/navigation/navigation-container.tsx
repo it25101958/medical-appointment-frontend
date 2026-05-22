@@ -110,15 +110,6 @@ const NavigationContainer = () => {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={cn(navigationMenuTriggerStyle(), "bg-transparent")}
-              >
-                <Link href="/doctors">Find a Doctor</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-
-            <NavigationMenuItem>
               <NavigationMenuTrigger className="bg-transparent">
                 Services
               </NavigationMenuTrigger>
@@ -201,13 +192,7 @@ const NavigationContainer = () => {
                   href="/patient/login"
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
                 >
-                  Patient Login
-                </Link>
-                <Link
-                  href="/doctors"
-                  className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
-                >
-                  Find a Doctor
+                  Login
                 </Link>
                 <Link
                   href="/admin/laboratory"
