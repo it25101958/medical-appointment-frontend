@@ -10,6 +10,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <WhyChooseUs />
       <ServicesBento />
       <ReviewSection />
       <ContactSection />
