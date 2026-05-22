@@ -1,38 +1,58 @@
 "use client";
 
+import * as React from "react";
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
-import { Lock, Mail, User, Phone, IdCard, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
 import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "@/components/ui/input-group";
-import { formatValidationErrors } from "@/lib/utils";
+  Field,
+  FieldError,
+  FieldLabel,
+  FieldGroup,
+  FieldDescription,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { InputGroupAddon, InputGroupText } from "@/components/ui/input-group";
+
 import { patientRegisterFormSchema } from "@/lib/validations/auth";
 import { registerAction } from "@/lib/actions/register-action";
+import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
+import {
+  SelectContent,
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui";
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { formatDate } from "date-fns";
 
 export function RegisterForm() {
   const router = useRouter();
+  const [calendarValue, setCalendarValue] = React.useState<Date | undefined>(
+    undefined,
+  );
 
   const form = useForm({
     defaultValues: {
-      email: "",
-      password: "",
       firstName: "",
       lastName: "",
+      email: "",
+      password: "",
       phone: "",
       nic: "",
       dateOfBirth: "",
       gender: "MALE",
       address: "",
-      emergencyContact: "",
-      bloodGroup: "O_POSITIVE",
-      allergies: "",
     },
     validators: {
       onSubmit: patientRegisterFormSchema,
@@ -40,22 +60,16 @@ export function RegisterForm() {
     onSubmit: async ({ value }) => {
       try {
         const result = await registerAction(value);
-
         if (result.success) {
-          toast.success("Registration successful!", {
-            description: "Check your email for the verification code.",
-          });
-
-          setTimeout(() => {
-            router.push(
-              `/auth/verify?email=${encodeURIComponent(value.email)}`,
-            );
-          }, 1000);
-        } else {
-          toast.error("Registration failed", {
-            description: result.error || "Please try again",
-          });
+          toast.success(
+            "Registration successful! Check your email for verification code.",
+          );
+          router.push(`/auth/verify?email=${encodeURIComponent(value.email)}`);
+          return;
         }
+        toast.error("Registration failed", {
+          description: result.error || "Please try again",
+        });
       } catch {
         toast.error("An error occurred", {
           description: "Please try again later",
@@ -66,366 +80,294 @@ export function RegisterForm() {
 
   return (
     <form
-      onSubmit={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
+      id="register-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
         form.handleSubmit();
       }}
       className="space-y-4 w-full max-w-2xl mx-auto"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
-        {/* First Name */}
-        <form.Field
-          name="firstName"
-          validators={{ onChange: patientRegisterFormSchema.shape.firstName }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                First Name
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <User className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+      <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <form.Field name="firstName">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                <Input
                   id={field.name}
-                  type="text"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
                   placeholder="John"
-                  className="h-9 text-sm"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Last Name */}
-        <form.Field
-          name="lastName"
-          validators={{ onChange: patientRegisterFormSchema.shape.lastName }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Last Name
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <User className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+        <form.Field name="lastName">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
+                <Input
                   id={field.name}
-                  type="text"
-                  placeholder="Doe"
-                  className="h-9 text-sm"
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="Doe"
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Email Address */}
-        <form.Field
-          name="email"
-          validators={{ onChange: patientRegisterFormSchema.shape.email }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Email Address
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <Mail className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+        <form.Field name="email">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                <Input
                   id={field.name}
                   type="email"
-                  placeholder="john@example.com"
-                  className="h-9 text-sm"
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="john@example.com"
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Password */}
-        <form.Field
-          name="password"
-          validators={{ onChange: patientRegisterFormSchema.shape.password }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Password
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <Lock className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+        <form.Field name="password">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Password</FieldLabel>
+                <Input
                   id={field.name}
                   type="password"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
                   placeholder="••••••••"
-                  className="h-9 text-sm"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Phone */}
-        <form.Field
-          name="phone"
-          validators={{ onChange: patientRegisterFormSchema.shape.phone }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Phone
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <Phone className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+        <form.Field name="phone">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Phone</FieldLabel>
+                <Input
                   id={field.name}
-                  type="tel"
-                  placeholder="+1234567890"
-                  className="h-9 text-sm"
                   value={field.state.value}
                   onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                  placeholder="+94771234567"
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* NIC */}
-        <form.Field
-          name="nic"
-          validators={{ onChange: patientRegisterFormSchema.shape.nic }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                NIC
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupAddon align="inline-start">
-                  <IdCard className="size-3.5 text-muted-foreground/60" />
-                </InputGroupAddon>
-                <InputGroupInput
+        <form.Field name="nic">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>NIC</FieldLabel>
+                <Input
                   id={field.name}
-                  type="text"
+                  value={field.state.value.toUpperCase()}
+                  onBlur={field.handleBlur}
+                  onChange={(e) =>
+                    field.handleChange(e.target.value.toUpperCase())
+                  }
                   placeholder="123456789V"
-                  className="h-9 text-sm"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
                 />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Date of Birth */}
-        <form.Field
-          name="dateOfBirth"
-          validators={{ onChange: patientRegisterFormSchema.shape.dateOfBirth }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Date of Birth
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupInput
-                  id={field.name}
-                  type="date"
-                  className="h-9 text-sm"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+        <form.Field name="dateOfBirth">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+
+            const handleSelect = (date: Date | undefined) => {
+              setCalendarValue(date);
+              if (date) {
+                const isoString = date.toISOString().split("T")[0];
+                field.handleChange(isoString);
+              } else {
+                field.handleChange("");
+              }
+            };
+
+            return (
+              <Field data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Date of Birth</FieldLabel>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="py-2 h-10">
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {calendarValue
+                        ? new Intl.DateTimeFormat("en-US", {
+                            month: "short",
+                            day: "2-digit",
+                            year: "numeric",
+                          }).format(calendarValue)
+                        : "Pick a date"}
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent>
+                    <Calendar
+                      mode="single"
+                      selected={calendarValue}
+                      onSelect={handleSelect}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
 
-        {/* Gender */}
         <form.Field name="gender">
           {(field) => (
             <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Gender
-              </FieldLabel>
-              <select
-                id={field.name}
+              <FieldLabel htmlFor={field.name}>Gender</FieldLabel>
+              <Select
+                name={field.name}
                 value={field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
-                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring"
+                onValueChange={field.handleChange}
               >
-                <option value="MALE">Male</option>
-                <option value="FEMALE">Female</option>
-                <option value="OTHER">Other</option>
-              </select>
+                <SelectTrigger id={field.name} className="min-w-[120px]">
+                  <SelectValue placeholder="Select Gender" />
+                </SelectTrigger>
+                <SelectContent position="item-aligned">
+                  <SelectItem value="MALE">Male</SelectItem>
+                  <SelectItem value="FEMALE">Female</SelectItem>
+                </SelectContent>
+              </Select>
             </Field>
           )}
         </form.Field>
 
-        {/* Address */}
-        <form.Field
-          name="address"
-          validators={{ onChange: patientRegisterFormSchema.shape.address }}
-        >
-          {(field) => (
-            <Field>
-              <FieldLabel htmlFor={field.name} className="text-xs font-medium">
-                Address
-              </FieldLabel>
-              <InputGroup>
-                <InputGroupInput
-                  id={field.name}
-                  type="text"
-                  placeholder="123 Main St, City"
-                  className="h-9 text-sm"
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(event) => field.handleChange(event.target.value)}
-                />
-              </InputGroup>
-              <div className="min-h-4 mt-0.5">
-                {field.state.meta.errors && (
-                  <p className="form-error text-[11px] text-destructive">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
-            </Field>
-          )}
+        <form.Field name="address">
+          {(field) => {
+            const isInvalid =
+              field.state.meta.isTouched && !field.state.meta.isValid;
+            return (
+              <Field className="md:col-span-2" data-invalid={isInvalid}>
+                <FieldLabel htmlFor={field.name}>Address</FieldLabel>
+                <InputGroup>
+                  <InputGroupTextarea
+                    id={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="I'm having an issue with the login button on mobile."
+                    rows={6}
+                    className="min-h-24 resize-none"
+                    aria-invalid={isInvalid}
+                  />
+                  <InputGroupAddon align="block-end">
+                    <InputGroupText className="tabular-nums">
+                      {field.state.value.length}/100 characters
+                    </InputGroupText>
+                  </InputGroupAddon>
+                </InputGroup>
+                <FieldDescription>
+                  Include steps to reproduce, expected behavior, and what
+                  actually happened.
+                </FieldDescription>
+                {isInvalid && <FieldError errors={field.state.meta.errors} />}
+              </Field>
+            );
+          }}
         </form.Field>
-      </div>
+      </FieldGroup>
 
       <form.Subscribe
         selector={(state) => [
-          state.values.email,
-          state.values.password,
-          state.values.firstName,
-          state.values.lastName,
-          state.values.phone,
-          state.values.nic,
-          state.values.dateOfBirth,
-          state.values.gender,
           state.values.address,
+          state.values.dateOfBirth,
+          state.values.email,
+          state.values.firstName,
+          state.values.gender,
+          state.values.lastName,
+          state.values.nic,
+          state.values.password,
+          state.values.phone,
           state.canSubmit,
           state.isSubmitting,
         ]}
       >
         {([
-          email,
-          password,
-          firstName,
-          lastName,
-          phone,
-          nic,
-          dateOfBirth,
-          gender,
           address,
+          dateOfBirth,
+          email,
+          firstName,
+          gender,
+          lastName,
+          nic,
+          password,
+          phone,
           canSubmit,
           isSubmitting,
         ]) => {
           const hasRequiredFields = [
-            email,
-            password,
-            firstName,
-            lastName,
-            phone,
-            nic,
-            dateOfBirth,
-            gender,
             address,
-          ].every((value) => String(value).trim().length > 0);
+            dateOfBirth,
+            email,
+            firstName,
+            gender,
+            lastName,
+            nic,
+            password,
+            phone,
+          ].every((val) => String(val).trim().length > 0);
 
           const isDisabled = !hasRequiredFields || !canSubmit || isSubmitting;
 
           return (
-            <Button
-              type="submit"
-              className="w-full h-10 mt-2"
-              disabled={Boolean(isDisabled)}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Account...
-                </>
-              ) : (
-                "Create Account"
-              )}
-            </Button>
+            <div className="mt-4 flex gap-2">
+              <Button type="reset" onClick={() => form.reset()}>
+                Reset
+              </Button>
+              <Button type="submit" disabled={isDisabled}>
+                {isSubmitting ? "Creating Account..." : "Create Account"}
+              </Button>
+            </div>
           );
         }}
       </form.Subscribe>
