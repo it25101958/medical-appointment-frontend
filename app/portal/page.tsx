@@ -1,34 +1,18 @@
 import Link from "next/link";
 import { LoginForm } from "@/features/auth/components/login-form";
 import Image from "next/image";
+import AuthLayout from "@/components/layout/auth-layout";
 
 export default function LoginPage() {
   return (
-    <>
-      <div className="col-span-full lg:col-start-3 lg:col-span-8 flex flex-col lg:flex-row items-stretch justify-center gap-4 min-h-[30vh]">
-        <div className="hidden lg:flex flex-1 relative rounded-3xl bg-primary/5 border border-border/60 overflow-hidden">
-          <div className="relative w-full h-full">
-            <Image
-              src="/login.png"
-              alt="Healthcare portal"
-              fill
-              className="object-cover"
-              priority
-            />
-          </div>
-          <div className="absolute inset-0 bg-primary/5 pointer-events-none" />
-        </div>
-
-        <div className="flex-1 w-full flex flex-col justify-center p-8 md:p-10 rounded-3xl border border-border/60 bg-card/50 shadow-sm">
-          <div className="flex flex-col space-y-2 text-center lg:text-left mb-6">
-            <h1 className="text-3xl font-bold tracking-tight">Portal Login</h1>
-            <p className="text-sm text-muted-foreground">
-              Staff, doctors, and admins can sign in here.
-            </p>
-          </div>
-          <LoginForm audience="portal" />
-        </div>
-      </div>
-    </>
+    <AuthLayout
+      title="Login"
+      description="Staff, doctors, and admins can sign in here."
+      imageSrc="/login.png"
+      imageAlt="Admin login"
+      infoText="If any error occure, please contact admin"
+    >
+      <LoginForm />
+    </AuthLayout>
   );
 }
