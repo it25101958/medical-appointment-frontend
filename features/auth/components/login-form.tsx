@@ -3,7 +3,11 @@
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { zodValidator } from "@/lib/validations/zod-validator";
-import { loginSchema } from "@/lib/validations/auth";
+import {
+  loginEmailSchema,
+  loginPasswordSchema,
+  loginSchema,
+} from "@/lib/validations/auth";
 import { loginAction } from "@/lib/actions/auth-actions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -27,6 +31,19 @@ const roleRedirects: Record<number, string> = {
   3: "/doctor/dashboard",
   4: "/patient/dashboard",
 };
+
+function getFieldErrorMessage(error: unknown) {
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    return typeof message === "string" ? message : "Invalid input";
+  }
+
+  return "Invalid input";
+}
 
 export function LoginForm({ audience = "portal" }: LoginFormProps) {
   const router = useRouter();
@@ -63,8 +80,8 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
       <form.Field
         name="email"
         validators={{
-          onChange: zodValidator(loginSchema.shape.email),
-          onBlur: zodValidator(loginSchema.shape.email),
+          onChange: zodValidator(loginEmailSchema),
+          onBlur: zodValidator(loginEmailSchema),
         }}
       >
         {(field) => (
@@ -83,20 +100,19 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
                 onChange={(e) => field.handleChange(e.target.value)}
               />
             </InputGroup>
-            {field.state.meta.isTouched &&
-              field.state.meta.errors?.length > 0 && (
-                <FieldError className="form-error">
-                  {field.state.meta.errors[0]}
-                </FieldError>
-              )}
+            {field.state.meta.isTouched && !field.state.meta.isValid && (
+              <FieldError className="form-error">
+                {getFieldErrorMessage(field.state.meta.errors[0])}
+              </FieldError>
+            )}
           </Field>
         )}
       </form.Field>
       <form.Field
         name="password"
         validators={{
-          onChange: zodValidator(loginSchema.shape.password),
-          onBlur: zodValidator(loginSchema.shape.password),
+          onChange: zodValidator(loginPasswordSchema),
+          onBlur: zodValidator(loginPasswordSchema),
         }}
       >
         {(field) => (
@@ -115,26 +131,30 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
                 onChange={(e) => field.handleChange(e.target.value)}
               />
             </InputGroup>
-            {field.state.meta.isTouched &&
-              field.state.meta.errors?.length > 0 && (
-                <FieldError className="form-error">
-                  {field.state.meta.errors[0]}
-                </FieldError>
-              )}
+            {field.state.meta.isTouched && !field.state.meta.isValid && (
+              <FieldError className="form-error">
+                {getFieldErrorMessage(field.state.meta.errors[0])}
+              </FieldError>
+            )}
           </Field>
         )}
       </form.Field>
       <form.Subscribe
-        selector={(state) => [
-          state.values.email,
-          state.values.password,
-          state.canSubmit,
-          state.isSubmitting,
-        ]}
+        selector={(state) => ({
+          email: state.values.email,
+          password: state.values.password,
+          canSubmit: state.canSubmit,
+          isSubmitting: state.isSubmitting,
+        })}
       >
-        {([email, password, canSubmit, isSubmitting]) => {
+        {({ email, password, canSubmit, isSubmitting }) => {
+          const emailValue = typeof email === "string" ? email : "";
+          const passwordValue = typeof password === "string" ? password : "";
           const isDisabled =
-            !email?.trim() || !password?.trim() || !canSubmit || isSubmitting;
+            !emailValue.trim() ||
+            !passwordValue.trim() ||
+            !canSubmit ||
+            isSubmitting;
 
           return (
             <Button
