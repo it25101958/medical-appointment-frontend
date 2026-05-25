@@ -2,19 +2,18 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
-import { z } from "zod";
+import { zodValidator } from "@/lib/validations/zod-validator";
 import { loginSchema } from "@/lib/validations/auth";
 import { loginAction } from "@/lib/actions/auth-actions";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader2, Lock, Mail } from "lucide-react";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { formatValidationErrors } from "@/lib/utils";
 
 type LoginAudience = "patient" | "portal";
 
@@ -27,15 +26,6 @@ const roleRedirects: Record<number, string> = {
   2: "/staff/dashboard",
   3: "/doctor/dashboard",
   4: "/patient/dashboard",
-};
-
-const zodValidator = (schema: z.ZodTypeAny) => (value: unknown) => {
-  const fieldValue =
-    typeof value === "object" && value !== null ? (value as any).value : value;
-
-  const result = schema.safeParse(fieldValue);
-  if (!result.success) return result.error.errors[0]?.message;
-  return undefined;
 };
 
 export function LoginForm({ audience = "portal" }: LoginFormProps) {
@@ -56,7 +46,6 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
           });
         }
       } catch (err) {
-        console.error(err);
         toast.error("Something went wrong. Try again later.");
       }
     },
@@ -73,7 +62,10 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
     >
       <form.Field
         name="email"
-        validators={{ onChange: zodValidator(loginSchema.shape.email) }}
+        validators={{
+          onChange: zodValidator(loginSchema.shape.email),
+          onBlur: zodValidator(loginSchema.shape.email),
+        }}
       >
         {(field) => (
           <Field>
@@ -91,17 +83,21 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
                 onChange={(e) => field.handleChange(e.target.value)}
               />
             </InputGroup>
-            {field.state.meta.errors && (
-              <p className="form-error">
-                {formatValidationErrors(field.state.meta.errors)}
-              </p>
-            )}
+            {field.state.meta.isTouched &&
+              field.state.meta.errors?.length > 0 && (
+                <FieldError className="form-error">
+                  {field.state.meta.errors[0]}
+                </FieldError>
+              )}
           </Field>
         )}
       </form.Field>
       <form.Field
         name="password"
-        validators={{ onChange: zodValidator(loginSchema.shape.password) }}
+        validators={{
+          onChange: zodValidator(loginSchema.shape.password),
+          onBlur: zodValidator(loginSchema.shape.password),
+        }}
       >
         {(field) => (
           <Field>
@@ -119,11 +115,12 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
                 onChange={(e) => field.handleChange(e.target.value)}
               />
             </InputGroup>
-            {field.state.meta.errors && (
-              <p className="form-error">
-                {formatValidationErrors(field.state.meta.errors)}
-              </p>
-            )}
+            {field.state.meta.isTouched &&
+              field.state.meta.errors?.length > 0 && (
+                <FieldError className="form-error">
+                  {field.state.meta.errors[0]}
+                </FieldError>
+              )}
           </Field>
         )}
       </form.Field>
