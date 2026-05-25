@@ -2,15 +2,16 @@ import * as z from "zod";
 
 export const loginSchema = z.object({
   email: z
-    .string({ error: "Invalid credentials" })
+    .string({ required_error: "Invalid credentials" })
     .trim()
-    .toLowerCase()
-    .email({ error: "Invalid credentials" }),
+    .transform((s) => s.toLowerCase()) // use transform instead of toLowerCase()
+    .email({ message: "Invalid credentials" }), // use message, not error
 
   password: z
-    .string({ error: "Invalid credentials" })
-    .min(1, { error: "Invalid credentials" }),
+    .string({ required_error: "Invalid credentials" })
+    .min(1, { message: "Invalid credentials" }),
 });
+
 export const patientRegisterFormSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(8, "Password must be at least 8 characters."),
