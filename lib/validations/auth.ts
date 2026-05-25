@@ -4,8 +4,8 @@ export const loginSchema = z.object({
   email: z
     .string({ required_error: "Invalid credentials" })
     .trim()
-    .transform((s) => s.toLowerCase()) // use transform instead of toLowerCase()
-    .email({ message: "Invalid credentials" }), // use message, not error
+    .transform((s) => s.toLowerCase())
+    .email({ message: "Invalid credentials" }),
 
   password: z
     .string({ required_error: "Invalid credentials" })
