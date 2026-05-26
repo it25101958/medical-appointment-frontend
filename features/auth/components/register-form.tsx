@@ -16,8 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { InputGroupAddon, InputGroupText } from "@/components/ui/input-group";
 
-import { patientRegisterFormSchema } from "@/lib/validations/auth";
-import { registerAction } from "@/lib/actions/register-action";
+import { patientRegisterFormSchema } from "@/features/auth";
+import { registerAction } from "@/features/auth";
 import { InputGroup, InputGroupTextarea } from "@/components/ui/input-group";
 import {
   SelectContent,
@@ -34,7 +34,6 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-import { formatDate } from "date-fns";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -318,21 +317,21 @@ export function RegisterForm() {
       </FieldGroup>
 
       <form.Subscribe
-        selector={(state) => [
-          state.values.address,
-          state.values.dateOfBirth,
-          state.values.email,
-          state.values.firstName,
-          state.values.gender,
-          state.values.lastName,
-          state.values.nic,
-          state.values.password,
-          state.values.phone,
-          state.canSubmit,
-          state.isSubmitting,
-        ]}
+        selector={(state) => ({
+          address: state.values.address,
+          dateOfBirth: state.values.dateOfBirth,
+          email: state.values.email,
+          firstName: state.values.firstName,
+          gender: state.values.gender,
+          lastName: state.values.lastName,
+          nic: state.values.nic,
+          password: state.values.password,
+          phone: state.values.phone,
+          canSubmit: state.canSubmit,
+          isSubmitting: state.isSubmitting,
+        })}
       >
-        {([
+        {({
           address,
           dateOfBirth,
           email,
@@ -344,7 +343,7 @@ export function RegisterForm() {
           phone,
           canSubmit,
           isSubmitting,
-        ]) => {
+        }) => {
           const hasRequiredFields = [
             address,
             dateOfBirth,

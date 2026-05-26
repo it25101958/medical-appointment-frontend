@@ -1,4 +1,4 @@
-import { LoginForm } from "@/features/auth/components/login-form";
+import { LoginForm } from "@/features/auth";
 import AuthLayout from "@/components/layout/auth-layout";
 
 export default function PatientLoginPage() {

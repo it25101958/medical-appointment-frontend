@@ -158,7 +158,7 @@ const NavigationContainer = () => {
               variant="outline"
               className="hidden sm:inline-flex px-4 py-2 font-medium"
             >
-              Login
+              Sign in
             </Button>
           </Link>
           <ThemeToggle />
@@ -192,7 +192,7 @@ const NavigationContainer = () => {
                   href="/patient/login"
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
                 >
-                  Login
+                  sign in
                 </Link>
                 <Link
                   href="/admin/laboratory"

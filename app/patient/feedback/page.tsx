@@ -23,7 +23,7 @@ import {
   SearchBar,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/features/admin/components/pagination-controls";
+import { PaginationControls } from "@/features/admin";
 import {
   FeedbackForm,
   feedbackApi,
@@ -228,7 +228,7 @@ export default function PatientFeedbackPage() {
         />
       ) : (
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading your patient profile...
+          Loading your patient profile...
         </div>
       )}
 

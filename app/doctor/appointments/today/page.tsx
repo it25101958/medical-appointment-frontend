@@ -1,5 +1,5 @@
-import { appointmentApi } from "@/features/appointments/api/appointment.api";
-import type { AppointmentResponse } from "@/features/appointments/types/appointment.types";
+import { appointmentApi } from "@/features/appointments";
+import type { AppointmentResponse } from "@/features/appointments";
 import { TodayAppointmentsList } from "./today-appointments-list";
 import { getErrorMessage } from "@/lib/utils";
 

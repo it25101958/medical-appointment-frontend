@@ -42,9 +42,9 @@ import {
   updateLaboratory,
   type Laboratory,
   type LaboratoryPayload,
-} from "@/lib/services/laboratory-service";
+} from "@/features/laboratory";
 import { getErrorMessage } from "@/lib/utils";
-import { CrudActionButton } from "@/features/shared/components/crud-action-button";
+import { CrudActionButton } from "@/features/shared";
 
 function createEmptyForm(): LaboratoryPayload {
   return {

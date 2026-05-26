@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { RegisterForm } from "@/features/auth/components/register-form";
+import { RegisterForm } from "@/features/auth";
 
 export default function RegisterPage() {
   return (

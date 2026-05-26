@@ -9,8 +9,8 @@ import {
   loginEmailSchema,
   loginPasswordSchema,
   loginSchema,
-} from "@/lib/validations/auth";
-import { loginAction } from "@/lib/actions/auth-actions";
+} from "@/features/auth";
+import { loginAction } from "@/features/auth";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
@@ -85,7 +85,6 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
         name="email"
         validators={{
           onChange: zodValidator(loginEmailSchema),
-          onBlur: zodValidator(loginEmailSchema),
         }}
       >
         {(field) => (
@@ -118,7 +117,6 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
         name="password"
         validators={{
           onChange: zodValidator(loginPasswordSchema),
-          onBlur: zodValidator(loginPasswordSchema),
         }}
       >
         {(field) => (
@@ -126,7 +124,7 @@ export function LoginForm({ audience = "portal" }: LoginFormProps) {
             <div className="flex items-center justify-between gap-3">
               <FieldLabel htmlFor={field.name}>Password</FieldLabel>
               <Link
-                href={`/auth/forgot-password?audience=${audience}`}
+                href={`/auth/forgot-password`}
                 className="text-xs font-medium text-primary underline-offset-4 transition-colors hover:underline"
               >
                 Forgot password?

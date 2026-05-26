@@ -53,7 +53,6 @@ export const appointmentApi = {
       }
     }
 
-    // Compatibility fallback for projects where only a broad list endpoint exists.
     try {
       const allAppointments = await apiRequest<AppointmentResponse[]>(
         BASE_URL,

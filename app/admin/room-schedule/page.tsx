@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from "@/components/ui";
 import type { Column } from "@/components/ui";
-import { PaginationControls } from "@/features/admin/components/pagination-controls";
+import { PaginationControls } from "@/features/admin";
 import { highlightText } from "@/lib/highlight-search";
 import {
   Calendar,
@@ -50,7 +50,7 @@ import {
   type RoomScheduleRequest,
   type DayOfWeek,
 } from "@/features/room-schedule";
-import { Room, getRooms } from "@/lib/services/room-service";
+import { Room, getRooms } from "@/features/room";
 import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 

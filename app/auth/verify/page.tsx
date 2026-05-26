@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { VerifyForm } from "@/features/auth/components/verify-form";
+import { VerifyForm } from "@/features/auth";
 
 export default function VerifyPage() {
   return (

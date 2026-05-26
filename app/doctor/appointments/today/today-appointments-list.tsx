@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 
 import { apiRequest } from "@/lib/api-client";
-import { AppointmentResponse } from "@/features/appointments/types/appointment.types";
+import { AppointmentResponse } from "@/features/appointments";
 import { cn, getErrorMessage } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -44,24 +44,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AppointmentDetailsDialog } from "@/features/appointments/components/appointment-details-dialog";
+import { AppointmentDetailsDialog } from "@/features/appointments";
 import {
   getMedicationsByStatus,
   type Medication,
-} from "@/lib/services/medication-service";
-import {
-  getLaboratories,
-  type Laboratory,
-} from "@/lib/services/laboratory-service";
-import {
-  getActiveLabTests,
-  type LabTest,
-} from "@/lib/services/labtest-service";
-import { labOrderApi } from "@/features/lab-orders/api/lab-order.api";
-import type {
-  LabOrderRequest,
-  LabOrderResponse,
-} from "@/features/lab-orders/types/lab-order.types";
+} from "@/features/medications";
+import { getLaboratories, type Laboratory } from "@/features/laboratory";
+import { getActiveLabTests, type LabTest } from "@/features/labtest";
+import { labOrderApi } from "@/features/lab-orders";
+import type { LabOrderRequest, LabOrderResponse } from "@/features/lab-orders";
 
 interface Props {
   appointments: AppointmentResponse[];

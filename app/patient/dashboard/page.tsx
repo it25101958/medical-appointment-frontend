@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DashboardShell } from "@/features/dashboard";
-import { AppointmentForm } from "@/features/appointments/components/appointment-form";
+import { AppointmentForm } from "@/features/appointments";
 import {
   Dialog,
   DialogContent,

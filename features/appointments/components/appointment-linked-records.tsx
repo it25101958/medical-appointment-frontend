@@ -9,10 +9,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
-import { labOrderApi } from "@/features/lab-orders/api/lab-order.api";
-import { LabOrderDetailsDialog } from "@/features/lab-orders/components/lab-order-details-dialog";
-import type { LabOrderResponse } from "@/features/lab-orders/types/lab-order.types";
-import { PrescriptionDetailsDialog } from "@/features/admin/components/prescription-details-dialog";
+import { labOrderApi } from "@/features/lab-orders";
+import { LabOrderDetailsDialog } from "@/features/lab-orders";
+import type { LabOrderResponse } from "@/features/lab-orders";
+import { PrescriptionDetailsDialog } from "@/features/admin";
+import type { PrescriptionResponse } from "@/features/prescriptions";
 import type { PrescriptionResponse } from "@/types/prescription-types";
 import { billingApi, type BillingResponse } from "@/features/billing";
 import { paymentApi, type PaymentResponse } from "@/features/payment";
@@ -48,14 +49,14 @@ export function AppointmentLinkedRecords({
       try {
         const [prescriptionsPage, orders, billingRecords, paymentRecords] =
           await Promise.all([
-          apiRequest<PrescriptionsPage>("/prescription/my?page=0&size=100", {
-            method: "GET",
-            cache: "no-store",
-          }).catch(() => ({ content: [] })),
-          labOrderApi.search().catch(() => []),
-          billingApi.getByAppointment(appointmentId).catch(() => []),
-          paymentApi.getByAppointment(appointmentId).catch(() => []),
-        ]);
+            apiRequest<PrescriptionsPage>("/prescription/my?page=0&size=100", {
+              method: "GET",
+              cache: "no-store",
+            }).catch(() => ({ content: [] })),
+            labOrderApi.search().catch(() => []),
+            billingApi.getByAppointment(appointmentId).catch(() => []),
+            paymentApi.getByAppointment(appointmentId).catch(() => []),
+          ]);
 
         setPrescription(
           (prescriptionsPage.content || []).find(

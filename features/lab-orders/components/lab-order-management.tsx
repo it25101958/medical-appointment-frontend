@@ -33,12 +33,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui";
-import { DeleteConfirmDialog } from "@/features/shared/components/delete-confirm-dialog";
-import { getLaboratories, type Laboratory } from "@/lib/services/laboratory-service";
-import { getActiveLabTests, type LabTest } from "@/lib/services/labtest-service";
+import { DeleteConfirmDialog } from "@/features/shared";
+import { getLaboratories, type Laboratory } from "@/features/laboratory";
+import { getActiveLabTests, type LabTest } from "@/features/labtest";
 import { getErrorMessage } from "@/lib/utils";
 import { labOrderApi } from "../api/lab-order.api";
-import { labOrderSchema, type LabOrderValues } from "../schemas/lab-order.schema";
+import {
+  labOrderSchema,
+  type LabOrderValues,
+} from "../schemas/lab-order.schema";
 import { LabOrderResponse } from "../types/lab-order.types";
 
 type DraftItem = {
@@ -115,9 +118,8 @@ export function LabOrderManagement() {
   const [selectedOrder, setSelectedOrder] = useState<LabOrderResponse | null>(
     null,
   );
-  const [formValues, setFormValues] = useState<LabOrderValues>(
-    createEmptyForm(),
-  );
+  const [formValues, setFormValues] =
+    useState<LabOrderValues>(createEmptyForm());
   const [patientIdFilter, setPatientIdFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>("ALL");
   const [dateFilter, setDateFilter] = useState("");
@@ -370,7 +372,10 @@ export function LabOrderManagement() {
           </Card>
         ) : (
           orders.map((order) => (
-            <Card key={order.labOrderId} className="border-border/60 bg-card/80">
+            <Card
+              key={order.labOrderId}
+              className="border-border/60 bg-card/80"
+            >
               <CardContent className="p-5">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-2">
@@ -516,7 +521,12 @@ export function LabOrderManagement() {
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
                 <Label>Lab order items *</Label>
-                <Button type="button" size="sm" variant="outline" onClick={addItem}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={addItem}
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   Add Test
                 </Button>

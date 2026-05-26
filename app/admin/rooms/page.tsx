@@ -40,7 +40,7 @@ import {
   createRoom,
   updateRoom,
   deleteRoom,
-} from "@/lib/services/room-service";
+} from "@/features/room";
 
 function getErrorMessage(error: unknown) {
   if (typeof error === "string") return error;
@@ -346,118 +346,121 @@ export default function AdminRoomsPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
-              <Label className="form-label mb-0" htmlFor="room-number">
-                Room Number
-              </Label>
-              <div className="relative">
-                <Hash className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="room-number"
-                className="pl-9"
-                value={formValues.roomNumber}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    roomNumber: event.target.value,
-                  }))
-                }
-                placeholder="e.g., 101, 202, A-03"
-              />
+              <div className="grid gap-2">
+                <Label className="form-label mb-0" htmlFor="room-number">
+                  Room Number
+                </Label>
+                <div className="relative">
+                  <Hash className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="room-number"
+                    className="pl-9"
+                    value={formValues.roomNumber}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        roomNumber: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g., 101, 202, A-03"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2">
-              <Label className="form-label mb-0" htmlFor="room-type">
-                Room Type
-              </Label>
-              <div className="relative">
-                <DoorOpen className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="room-type"
-                className="pl-9"
-                value={formValues.roomType}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    roomType: event.target.value,
-                  }))
-                }
-                placeholder="e.g., Consulting, Lab, Ward"
-              />
+              <div className="grid gap-2">
+                <Label className="form-label mb-0" htmlFor="room-type">
+                  Room Type
+                </Label>
+                <div className="relative">
+                  <DoorOpen className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="room-type"
+                    className="pl-9"
+                    value={formValues.roomType}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        roomType: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g., Consulting, Lab, Ward"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2">
-              <Label className="form-label mb-0" htmlFor="room-capacity">
-                Capacity
-              </Label>
-              <div className="relative">
-                <Boxes className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="room-capacity"
-                type="number"
-                className="pl-9"
-                value={formValues.capacity}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    capacity: parseInt(event.target.value) || 0,
-                  }))
-                }
-                placeholder="Enter capacity (e.g., 2, 4, 6)"
-              />
+              <div className="grid gap-2">
+                <Label className="form-label mb-0" htmlFor="room-capacity">
+                  Capacity
+                </Label>
+                <div className="relative">
+                  <Boxes className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="room-capacity"
+                    type="number"
+                    className="pl-9"
+                    value={formValues.capacity}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        capacity: parseInt(event.target.value) || 0,
+                      }))
+                    }
+                    placeholder="Enter capacity (e.g., 2, 4, 6)"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2">
-              <Label className="form-label mb-0" htmlFor="equipment-available">
-                Equipment Available
-              </Label>
-              <div className="relative">
-                <Boxes className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="equipment-available"
-                className="pl-9"
-                value={formValues.equipmentAvailable}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    equipmentAvailable: event.target.value,
-                  }))
-                }
-                placeholder="e.g., ECG Machine, Monitor"
-              />
-              </div>
-            </div>
-
-            <div className="grid gap-2 sm:col-span-2">
-              <Label className="form-label mb-0" htmlFor="room-status">
-                Status
-              </Label>
-              <Select
-                value={formValues.status}
-                onValueChange={(value) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    status: value,
-                  }))
-                }
-              >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-                <SelectContent
-                  position="popper"
-                  align="start"
-                  className="w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)]"
+              <div className="grid gap-2">
+                <Label
+                  className="form-label mb-0"
+                  htmlFor="equipment-available"
                 >
-                  <SelectItem value="AVAILABLE">Available</SelectItem>
-                  <SelectItem value="OCCUPIED">Occupied</SelectItem>
-                  <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                  Equipment Available
+                </Label>
+                <div className="relative">
+                  <Boxes className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="equipment-available"
+                    className="pl-9"
+                    value={formValues.equipmentAvailable}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        equipmentAvailable: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g., ECG Machine, Monitor"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:col-span-2">
+                <Label className="form-label mb-0" htmlFor="room-status">
+                  Status
+                </Label>
+                <Select
+                  value={formValues.status}
+                  onValueChange={(value) =>
+                    setFormValues((current) => ({
+                      ...current,
+                      status: value,
+                    }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent
+                    position="popper"
+                    align="start"
+                    className="w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)]"
+                  >
+                    <SelectItem value="AVAILABLE">Available</SelectItem>
+                    <SelectItem value="OCCUPIED">Occupied</SelectItem>
+                    <SelectItem value="MAINTENANCE">Maintenance</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 

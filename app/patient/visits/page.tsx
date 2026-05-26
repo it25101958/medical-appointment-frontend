@@ -35,13 +35,13 @@ import {
   Textarea,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/features/admin/components/pagination-controls";
-import { AppointmentDetailsDialog } from "@/features/appointments/components/appointment-details-dialog";
-import { AppointmentStatusBadge } from "@/features/appointments/components/appointment-status-badge";
-import { appointmentApi } from "@/features/appointments/api/appointment.api";
-import type { AppointmentResponse } from "@/features/appointments/types/appointment.types";
-import { feedbackApi } from "@/features/feedback/api/feedback.api";
-import type { FeedbackResponse } from "@/features/feedback/types/feedback.types";
+import { PaginationControls } from "@/features/admin";
+import { AppointmentDetailsDialog } from "@/features/appointments";
+import { AppointmentStatusBadge } from "@/features/appointments";
+import { appointmentApi } from "@/features/appointments";
+import type { AppointmentResponse } from "@/features/appointments";
+import { feedbackApi } from "@/features/feedback";
+import type { FeedbackResponse } from "@/features/feedback";
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
@@ -181,7 +181,10 @@ export default function PatientVisitsPage() {
     });
   }, [deferredSearchQuery, sortedAppointments]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredAppointments.length / pageSize));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredAppointments.length / pageSize),
+  );
 
   const paginatedAppointments = useMemo(() => {
     const startIndex = currentPage * pageSize;
@@ -568,7 +571,9 @@ export default function PatientVisitsPage() {
                 </div>
                 <div>
                   <DialogTitle className="text-xl font-semibold tracking-tight">
-                    {feedbackMode === "create" ? "Add Feedback" : "Edit Feedback"}
+                    {feedbackMode === "create"
+                      ? "Add Feedback"
+                      : "Edit Feedback"}
                   </DialogTitle>
                   <DialogDescription>
                     {feedbackMode === "create"
@@ -602,7 +607,10 @@ export default function PatientVisitsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label className="form-label mb-0" htmlFor="visit-feedback-comments">
+              <Label
+                className="form-label mb-0"
+                htmlFor="visit-feedback-comments"
+              >
                 Comments
               </Label>
               <Textarea
@@ -652,8 +660,8 @@ export default function PatientVisitsPage() {
                     Delete Feedback
                   </DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to delete this feedback? This action cannot
-                    be undone.
+                    Are you sure you want to delete this feedback? This action
+                    cannot be undone.
                   </DialogDescription>
                 </div>
               </div>

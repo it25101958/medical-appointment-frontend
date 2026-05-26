@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LoginForm } from "@/features/auth/components/login-form";
+import { LoginForm } from "@/features/auth";
 import Image from "next/image";
 import AuthLayout from "@/components/layout/auth-layout";
 

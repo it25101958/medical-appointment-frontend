@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAppointments } from "@/features/appointments/hooks/use-appointments";
-import { AppointmentTable } from "@/features/appointments/components/appointment-table";
+import { AppointmentTable } from "@/features/appointments";
 
 export default function AppointmentsPage() {
   const { appointments, isLoading, refetch } = useAppointments();

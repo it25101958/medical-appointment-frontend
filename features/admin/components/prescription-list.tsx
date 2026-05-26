@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { PrescriptionDetailsDialog } from "./prescription-details-dialog";
-import type { PrescriptionResponse } from "@/types/prescription-types";
+import type { PrescriptionResponse } from "@/features/prescriptions";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -79,24 +79,27 @@ export function PrescriptionList({
     });
   }, [deferredSearchQuery, data]);
 
-  const viewPrescription = useCallback(async (prescription: PrescriptionListItem) => {
-    setLoadingPrescriptionId(prescription.prescriptionId);
-    try {
-      const details = await apiRequest<PrescriptionResponse>(
-        `/prescription/${prescription.prescriptionId}`,
-        {
-          method: "GET",
-          cache: "no-store",
-        },
-      );
+  const viewPrescription = useCallback(
+    async (prescription: PrescriptionListItem) => {
+      setLoadingPrescriptionId(prescription.prescriptionId);
+      try {
+        const details = await apiRequest<PrescriptionResponse>(
+          `/prescription/${prescription.prescriptionId}`,
+          {
+            method: "GET",
+            cache: "no-store",
+          },
+        );
 
-      setSelectedPrescription(details);
-    } catch (error) {
-      toast.error(getErrorMessage(error, "Could not load prescription"));
-    } finally {
-      setLoadingPrescriptionId(null);
-    }
-  }, []);
+        setSelectedPrescription(details);
+      } catch (error) {
+        toast.error(getErrorMessage(error, "Could not load prescription"));
+      } finally {
+        setLoadingPrescriptionId(null);
+      }
+    },
+    [],
+  );
 
   const columns: Column<PrescriptionListItem>[] = useMemo(
     () => [
@@ -179,19 +182,19 @@ export function PrescriptionList({
       )}
 
       <div className={showSearch ? "mt-6" : ""}>
-      <DataTable
-        columns={columns}
-        data={filteredPrescriptions}
-        pageable={true}
-        pageSize={10}
-        showActions={false}
-        minWidth="1080px"
-        emptyMessage={
-          loadingPrescriptionId
-            ? `Loading prescription #${loadingPrescriptionId}...`
-            : "No prescriptions found."
-        }
-      />
+        <DataTable
+          columns={columns}
+          data={filteredPrescriptions}
+          pageable={true}
+          pageSize={10}
+          showActions={false}
+          minWidth="1080px"
+          emptyMessage={
+            loadingPrescriptionId
+              ? `Loading prescription #${loadingPrescriptionId}...`
+              : "No prescriptions found."
+          }
+        />
       </div>
 
       <PrescriptionDetailsDialog

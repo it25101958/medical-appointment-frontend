@@ -1,4 +1,3 @@
-// src/features/appointments/hooks/use-appointments.ts
 "use client";
 
 import { useCallback, useEffect, useState } from "react";

@@ -29,7 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   PrescriptionResponse,
   PrescriptionItemResponse,
-} from "@/types/prescription-types";
+} from "@/features/prescriptions";
 
 interface Props {
   prescription: PrescriptionResponse | null;
@@ -177,39 +177,39 @@ export function PrescriptionDetailsDialog({ prescription, onClose }: Props) {
             </div>
 
             <div className="overflow-hidden rounded-lg border border-border bg-card">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Medication</TableHead>
-                  <TableHead>Dosage</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Instructions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {prescription.items.map((item: PrescriptionItemResponse) => (
-                  <TableRow key={item.prescriptionItemId}>
-                    <TableCell>
-                      <div className="space-y-0.5">
-                        <p className="text-sm">{item.medicationName}</p>
-                        {item.genericName ? (
-                          <p className="text-xs text-muted-foreground">
-                            {item.genericName}
-                          </p>
-                        ) : null}
-                      </div>
-                    </TableCell>
-                    <TableCell>{item.dosage}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>
-                      {item.specialInstructions || (
-                        <span className="text-muted-foreground">-</span>
-                      )}
-                    </TableCell>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Medication</TableHead>
+                    <TableHead>Dosage</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead>Instructions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {prescription.items.map((item: PrescriptionItemResponse) => (
+                    <TableRow key={item.prescriptionItemId}>
+                      <TableCell>
+                        <div className="space-y-0.5">
+                          <p className="text-sm">{item.medicationName}</p>
+                          {item.genericName ? (
+                            <p className="text-xs text-muted-foreground">
+                              {item.genericName}
+                            </p>
+                          ) : null}
+                        </div>
+                      </TableCell>
+                      <TableCell>{item.dosage}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell>
+                        {item.specialInstructions || (
+                          <span className="text-muted-foreground">-</span>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </div>
         </div>

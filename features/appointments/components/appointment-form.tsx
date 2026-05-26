@@ -31,7 +31,7 @@ import {
   doctorApi,
   getDoctorDisplayName,
   type DoctorResponse,
-} from "@/features/doctors/api/doctor.api";
+} from "@/features/doctors";
 
 interface AppointmentFormProps {
   patientId: number;

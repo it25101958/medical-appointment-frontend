@@ -11,10 +11,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  resendVerificationAction,
-  verifyAccountAction,
-} from "@/lib/actions/verification-actions";
+import { resendVerificationAction, verifyAccountAction } from "@/features/auth";
 import { FieldLabel } from "@/components/ui/field";
 
 export function VerifyForm() {

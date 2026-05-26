@@ -42,9 +42,9 @@ import {
   updateLabTest,
   type LabTest,
   type LabTestPayload,
-} from "@/lib/services/labtest-service";
+} from "@/features/labtest";
 import { getErrorMessage } from "@/lib/utils";
-import { CrudActionButton } from "@/features/shared/components/crud-action-button";
+import { CrudActionButton } from "@/features/shared";
 
 type LabTestFilter = "all" | "active" | "inactive";
 
@@ -440,120 +440,126 @@ export function LabTestManagement({
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2 sm:col-span-1">
-              <Label className="form-label mb-0" htmlFor="labtest-name">
-                Test Name
-              </Label>
-              <div className="relative">
-                <FlaskConical className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="labtest-name"
-                className="pl-9"
-                value={formValues.testName}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    testName: event.target.value,
-                  }))
-                }
-                placeholder="e.g., Complete Blood Count"
-              />
+              <div className="grid gap-2 sm:col-span-1">
+                <Label className="form-label mb-0" htmlFor="labtest-name">
+                  Test Name
+                </Label>
+                <div className="relative">
+                  <FlaskConical className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="labtest-name"
+                    className="pl-9"
+                    value={formValues.testName}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        testName: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g., Complete Blood Count"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2 sm:col-span-1">
-              <Label className="form-label mb-0" htmlFor="labtest-category">
-                Category
-              </Label>
-              <div className="relative">
-                <Tag className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="labtest-category"
-                className="pl-9"
-                value={formValues.category}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    category: event.target.value,
-                  }))
-                }
-                placeholder="e.g., Hematology"
-              />
+              <div className="grid gap-2 sm:col-span-1">
+                <Label className="form-label mb-0" htmlFor="labtest-category">
+                  Category
+                </Label>
+                <div className="relative">
+                  <Tag className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="labtest-category"
+                    className="pl-9"
+                    value={formValues.category}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        category: event.target.value,
+                      }))
+                    }
+                    placeholder="e.g., Hematology"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-2 sm:col-span-2">
-              <Label className="form-label mb-0" htmlFor="labtest-description">
-                Description
-              </Label>
-              <Textarea
-                id="labtest-description"
-                value={formValues.description}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    description: event.target.value,
-                  }))
-                }
-                placeholder="Describe what the lab test checks"
-                rows={4}
-              />
-            </div>
-
-            <div className="grid gap-2 sm:col-span-1">
-              <Label className="form-label mb-0" htmlFor="labtest-price">
-                Standard Price
-              </Label>
-              <div className="relative">
-                <BadgeDollarSign className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="labtest-price"
-                type="number"
-                min="0"
-                step="0.01"
-                className="pl-9"
-                value={formValues.standardPrice}
-                onChange={(event) =>
-                  setFormValues((current) => ({
-                    ...current,
-                    standardPrice: Number(event.target.value) || 0,
-                  }))
-                }
-                placeholder="0.00"
-              />
-              </div>
-            </div>
-
-            <div className="grid gap-2 sm:col-span-1">
-              <Label className="form-label mb-0" htmlFor="labtest-status">
-                Status
-              </Label>
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={formValues.isActive ? "default" : "outline"}
-                  onClick={() =>
-                    setFormValues((current) => ({ ...current, isActive: true }))
-                  }
+              <div className="grid gap-2 sm:col-span-2">
+                <Label
+                  className="form-label mb-0"
+                  htmlFor="labtest-description"
                 >
-                  Active
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={!formValues.isActive ? "default" : "outline"}
-                  onClick={() =>
+                  Description
+                </Label>
+                <Textarea
+                  id="labtest-description"
+                  value={formValues.description}
+                  onChange={(event) =>
                     setFormValues((current) => ({
                       ...current,
-                      isActive: false,
+                      description: event.target.value,
                     }))
                   }
-                >
-                  Inactive
-                </Button>
+                  placeholder="Describe what the lab test checks"
+                  rows={4}
+                />
               </div>
-            </div>
+
+              <div className="grid gap-2 sm:col-span-1">
+                <Label className="form-label mb-0" htmlFor="labtest-price">
+                  Standard Price
+                </Label>
+                <div className="relative">
+                  <BadgeDollarSign className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="labtest-price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    className="pl-9"
+                    value={formValues.standardPrice}
+                    onChange={(event) =>
+                      setFormValues((current) => ({
+                        ...current,
+                        standardPrice: Number(event.target.value) || 0,
+                      }))
+                    }
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-2 sm:col-span-1">
+                <Label className="form-label mb-0" htmlFor="labtest-status">
+                  Status
+                </Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={formValues.isActive ? "default" : "outline"}
+                    onClick={() =>
+                      setFormValues((current) => ({
+                        ...current,
+                        isActive: true,
+                      }))
+                    }
+                  >
+                    Active
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={!formValues.isActive ? "default" : "outline"}
+                    onClick={() =>
+                      setFormValues((current) => ({
+                        ...current,
+                        isActive: false,
+                      }))
+                    }
+                  >
+                    Inactive
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 

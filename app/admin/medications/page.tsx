@@ -30,12 +30,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CrudActionButton } from "@/features/shared/components/crud-action-button";
+import { CrudActionButton } from "@/features/shared";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchBar } from "@/components/ui/search-bar";
 import { RefreshCcw } from "lucide-react";
-import { DeleteConfirmDialog } from "@/features/shared/components/delete-confirm-dialog";
-import { PaginationControls } from "@/features/admin/components/pagination-controls";
+import { DeleteConfirmDialog } from "@/features/shared";
+import { PaginationControls } from "@/features/admin";
 import {
   deleteMedication,
   getMedications,
@@ -43,7 +43,7 @@ import {
   updateMedication,
   type Medication,
   type MedicationPayload,
-} from "@/lib/services/medication-service";
+} from "@/features/medications";
 import { getErrorMessage } from "@/lib/utils";
 import { Edit3, Pill, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -490,7 +490,9 @@ export default function AdminMedicationsPage() {
                 </div>
                 <div>
                   <DialogTitle className="text-xl font-semibold tracking-tight">
-                    {selectedMedication ? "Edit Medication" : "Create Medication"}
+                    {selectedMedication
+                      ? "Edit Medication"
+                      : "Create Medication"}
                   </DialogTitle>
                   <DialogDescription>
                     Maintain medication inventory details and availability.

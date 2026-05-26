@@ -24,7 +24,7 @@ import { getErrorMessage } from "@/lib/utils";
 import type {
   PrescriptionItemResponse,
   PrescriptionResponse,
-} from "@/types/prescription-types";
+} from "@/features/prescriptions";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -145,7 +145,10 @@ export default function PatientMedicationsPage() {
               {highlightText(medication.medicationName, deferredSearchQuery)}
             </p>
             <p className="text-xs text-muted-foreground">
-              {highlightText(medication.genericName || "-", deferredSearchQuery)}
+              {highlightText(
+                medication.genericName || "-",
+                deferredSearchQuery,
+              )}
             </p>
           </div>
         ),
@@ -332,13 +335,7 @@ export default function PatientMedicationsPage() {
   );
 }
 
-function InfoPanel({
-  label,
-  value,
-}: {
-  label: string;
-  value: ReactNode;
-}) {
+function InfoPanel({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
       <p className="text-xs text-muted-foreground">{label}</p>
