@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
 import { apiRequest } from "@/lib/api-client";
+import { getUser, updateUser } from "@/features/admin/api/admin.api";
 import { formatValidationErrors, getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ import {
 import { getRoleBadgeClass, getStatusBadgeClass } from "@/lib/theme";
 import { Hash, Mail, MapPin, Phone, UserCog, User2 } from "lucide-react";
 import * as z from "zod";
+import type { AdminUserDetails } from "../types/admin.types";
 
 const userUpdateSchema = z.object({
   firstName: z.string().min(1),
@@ -31,21 +33,6 @@ const userUpdateSchema = z.object({
   phone: z.string().min(1),
   address: z.string().min(1),
 });
-
-export interface UserDetails {
-  userId: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  NIC: string;
-  address: string;
-  isActive: boolean;
-  roleType: number;
-  roleName?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 interface UserDetailsDialogProps {
   userId: number | null;
@@ -60,7 +47,7 @@ export function UserDetailsDialog({
   onOpenChange,
   onUpdated,
 }: UserDetailsDialogProps) {
-  const [user, setUser] = useState<UserDetails | null>(null);
+  const [user, setUser] = useState<AdminUserDetails | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -70,11 +57,7 @@ export function UserDetailsDialog({
       if (!user) return;
       setSaving(true);
       try {
-        await apiRequest(`/users/${user.userId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(value),
-        });
+        await updateUser(user.userId, value);
         toast.success("User updated successfully");
         onUpdated?.();
         onOpenChange(false);
@@ -90,11 +73,11 @@ export function UserDetailsDialog({
 
   useEffect(() => {
     if (!userId || !open) return;
+    const resolvedUserId = userId;
     async function fetchUser() {
       setLoading(true);
-      console.log(userId);
       try {
-        const data: UserDetails = await apiRequest(`/users/${userId}`);
+        const data = await getUser(resolvedUserId);
         setUser({
           ...data,
           roleName: data.roleName || getRoleName(data.roleType),
