@@ -14,7 +14,7 @@ export function SearchBar({
   resultCount,
 }: SearchBarProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 mb-6">
       <Input
         value={value}
         onChange={(event) => onChange(event.target.value)}
