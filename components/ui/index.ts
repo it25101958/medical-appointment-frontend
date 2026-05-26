@@ -109,4 +109,4 @@ export {
 } from "./navigation-menu";
 
 // Other
-export { Sonner } from "./sonner";
+export { Toaster } from "./sonner";
