@@ -185,21 +185,49 @@
   }
 
   .tableHead {
-    @apply font-light tracking-wider text-base text-left;
+    @apply px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground;
   }
 
   .table-border {
     @apply border border-border rounded-lg;
   }
 
-  .table-dark-border th,
-  .table-dark-border td {
-    @apply border border-border;
+  .table-dark-border thead tr {
+    @apply border-b border-border;
   }
 
-  /* Table head text style */
+  .table-dark-border tbody tr + tr {
+    @apply border-t border-border;
+  }
+
+  .table-dark-border th + th,
+  .table-dark-border td + td {
+    @apply border-l border-border;
+  }
+
+  /* Table head text style (match admin user-list) */
   .table-head-text {
-    @apply font-light tracking-wider text-base;
+    @apply text-xs font-medium tracking-wide text-muted-foreground;
+  }
+
+  .table-header-row {
+    @apply bg-muted/30;
+  }
+
+  .table-row-hover {
+    @apply hover:bg-muted/20;
+  }
+
+  .table-pagination {
+    @apply flex items-center justify-between pl-4 py-3;
+  }
+
+  .table-pagination-meta {
+    @apply text-sm mr-5 text-muted-foreground font-medium;
+  }
+
+  .table-pagination-controls {
+    @apply flex items-center justify-between px-4 bg-card flex-wrap gap-2;
   }
 
   .boxwidth {
