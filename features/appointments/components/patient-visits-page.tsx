@@ -32,6 +32,7 @@ import {
   Label,
   PageHeader,
   SearchBar,
+  StatusBadge,
   Textarea,
   type Column,
 } from "@/components/ui";
@@ -320,26 +321,16 @@ export default function PatientVisitsPage() {
     {
       header: "Appointment",
       render: (appointment) => (
-        <div className="space-y-1">
-          <p className="font-medium">
-            {highlightText(
-              `#${appointment.appointmentNumber}`,
-              deferredSearchQuery,
-            )}
-          </p>
-          <p className="text-xs text-muted-foreground">
-            ID #{appointment.appointmentId}
-          </p>
-        </div>
+        <div className="space-y-1">{appointment.appointmentNumber}</div>
       ),
-      className: "min-w-[160px] px-5 py-4",
+      className: "",
     },
     {
       header: "Date & Time",
       render: (appointment) => (
         <div className="space-y-1 text-sm">
-          <span className="flex items-center gap-1.5">
-            <CalendarDays className="size-3.5 text-muted-foreground" />
+          <span className="flex items-center gap-1.5 ext-muted-foreground">
+            <CalendarDays className="size-3.5 t" />
             {appointment.appointmentDate}
           </span>
           <span className="flex items-center gap-1.5 text-muted-foreground">
@@ -348,32 +339,30 @@ export default function PatientVisitsPage() {
           </span>
         </div>
       ),
-      className: "min-w-[170px] px-5 py-4",
+      className: "",
     },
     {
       header: "Doctor",
       render: (appointment) =>
         highlightText(
-          appointment.doctor?.fullName || `Doctor #${appointment.doctorId}`,
+          appointment.doctor?.fullName || `${appointment.doctorId}`,
           deferredSearchQuery,
         ),
-      className: "min-w-[220px] px-5 py-4 text-muted-foreground",
+      className: "",
     },
     {
       header: "Type",
       render: (appointment) => (
-        <Badge variant="outline" className="rounded-full px-3 py-0.5 text-xs">
-          {appointment.appointmentType.replace("_", " ")}
-        </Badge>
+        <StatusBadge status={appointment.appointmentType} />
       ),
-      className: "w-[170px] px-5 py-4",
+      className: "",
     },
     {
       header: "Status",
       render: (appointment) => (
         <AppointmentStatusBadge status={appointment.status} />
       ),
-      className: "w-[140px] px-5 py-4",
+      className: "",
     },
     {
       header: "Actions",
@@ -420,7 +409,8 @@ export default function PatientVisitsPage() {
           </div>
         );
       },
-      className: "w-[130px] px-5 py-4 text-center",
+      className: "",
+      align: "center",
     },
   ];
 

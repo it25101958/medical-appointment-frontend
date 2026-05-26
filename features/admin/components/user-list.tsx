@@ -38,7 +38,7 @@ export function UserTable({
     {
       header: "ID",
       headerClassName: "",
-      className: "wfont-medium text-muted-foreground",
+      className: "font-medium text-muted-foreground",
       render: (user) => highlightText(user.userId.toString(), searchQuery),
     },
     {
