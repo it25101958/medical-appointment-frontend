@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { highlightText } from "@/lib/highlight-search";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { DataTable, StatusBadge, type Column } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -181,6 +181,86 @@ export default function AdminRoomsPage() {
     }
   }
 
+  const roomColumns = useMemo<Column<Room>[]>(
+    () => [
+      {
+        header: "Room ID",
+        headerClassName: "w-[120px]",
+        className: "w-[120px] font-medium text-muted-foreground",
+        render: (room) => room.roomId,
+      },
+      {
+        header: "Number",
+        headerClassName: "w-[140px]",
+        className: "w-[140px]",
+        render: (room) =>
+          highlightText(
+            (room.roomNumber as string) || "-",
+            deferredSearchQuery,
+          ),
+      },
+      {
+        header: "Type",
+        headerClassName: "w-[170px]",
+        className: "w-[170px] text-muted-foreground",
+        render: (room) =>
+          highlightText((room.roomType as string) || "-", deferredSearchQuery),
+      },
+      {
+        header: "Capacity",
+        headerClassName: "w-[120px]",
+        className: "w-[120px]",
+        render: (room) => (room.capacity as number) || "-",
+      },
+      {
+        header: "Equipment",
+        headerClassName: "w-[220px]",
+        className: "w-[220px] text-muted-foreground",
+        render: (room) =>
+          highlightText(
+            (room.equipmentAvailable as string) || "-",
+            deferredSearchQuery,
+          ),
+      },
+      {
+        header: "Status",
+        headerClassName: "w-[140px]",
+        className: "w-[140px] text-muted-foreground",
+        render: (room) => (
+          <StatusBadge status={(room.status as string) || "AVAILABLE"} />
+        ),
+      },
+      {
+        header: "Actions",
+        headerClassName: "w-[150px] text-center",
+        className: "w-[150px] text-center",
+        render: (room) => (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => openEditDialog(room)}
+              aria-label="Edit room"
+              title="Edit"
+            >
+              <Edit3 className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon-sm"
+              variant="destructive"
+              onClick={() => openDeleteDialog(room)}
+              aria-label="Delete room"
+              title="Delete"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+      },
+    ],
+    [deferredSearchQuery],
+  );
+
   return (
     <div className="col-start-1 col-end-14">
       <PageHeader
@@ -208,113 +288,20 @@ export default function AdminRoomsPage() {
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <ScrollArea className="bg-card rounded-lg border-b border-border overflow-x-auto">
-          <table className="min-w-[950px] w-full text-sm">
-            <thead className="bg-muted/30">
-              <tr>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Room ID
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Number
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Type
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Capacity
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Equipment
-                </th>
-                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
-                  Status
-                </th>
-                <th className="px-4 py-3 text-center font-medium text-muted-foreground">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-sm text-muted-foreground"
-                  >
-                    Loading rooms...
-                  </td>
-                </tr>
-              ) : rooms.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-4 py-10 text-center text-sm text-muted-foreground"
-                  >
-                    No rooms found.
-                  </td>
-                </tr>
-              ) : (
-                filteredRooms.map((room) => (
-                  <tr
-                    key={room.roomId}
-                    className="border-t border-border hover:bg-muted/20"
-                  >
-                    <td className="px-4 py-4 font-medium text-muted-foreground">
-                      {room.roomId}
-                    </td>
-                    <td className="px-4 py-4 text-sm">
-                      {highlightText(
-                        (room.roomNumber as string) || "—",
-                        deferredSearchQuery,
-                      )}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-muted-foreground">
-                      {highlightText(
-                        (room.roomType as string) || "—",
-                        deferredSearchQuery,
-                      )}
-                    </td>
-                    <td className="px-4 py-4 text-sm">
-                      {(room.capacity as number) || "—"}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-muted-foreground">
-                      {highlightText(
-                        (room.equipmentAvailable as string) || "—",
-                        deferredSearchQuery,
-                      )}
-                    </td>
-                    <td className="px-4 py-4 text-sm text-muted-foreground">
-                      {(room.status as string) || "AVAILABLE"}
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          size="icon-sm"
-                          variant="outline"
-                          onClick={() => openEditDialog(room)}
-                          aria-label="Edit room"
-                          title="Edit"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon-sm"
-                          variant="destructive"
-                          onClick={() => openDeleteDialog(room)}
-                          aria-label="Delete room"
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </ScrollArea>
+        {isLoading ? (
+          <div className="px-4 py-10 text-center text-sm text-muted-foreground">
+            Loading rooms...
+          </div>
+        ) : (
+          <DataTable
+            columns={roomColumns}
+            data={filteredRooms}
+            pageable={false}
+            showActions={false}
+            minWidth="950px"
+            emptyMessage="No rooms found."
+          />
+        )}
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
