@@ -217,10 +217,7 @@ export default function AdminRoomSchedulePage() {
         className:
           "w-[160px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
         render: (schedule) =>
-          highlightText(
-            `${schedule.startTime} - ${schedule.endTime}`,
-            deferredSearchQuery,
-          ),
+          highlightText(`${schedule.startTime} - ${schedule.endTime}`, deferredSearchQuery),
       },
       {
         header: "Actions",
