@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-interface StyledDialogProps {
+export interface StyledDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
