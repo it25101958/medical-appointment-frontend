@@ -3,6 +3,7 @@
 import { Button, DataTable, type Column } from "@/components/ui";
 import { StatusBadge } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
+import { formatDate } from "@/features/shared/util/format-date";
 
 export interface User {
   userId: number;
@@ -12,6 +13,8 @@ export interface User {
   roleType: number;
   roleName: string;
   isActive: boolean;
+  NIC: number;
+  createdAt: string;
 }
 
 interface UserTableProps {
@@ -34,17 +37,17 @@ export function UserTable({
   const columns: Column<User>[] = [
     {
       header: "ID",
-      headerClassName: "w-[80px]",
-      className: "w-[80px] font-medium text-muted-foreground",
+      headerClassName: "",
+      className: "wfont-medium text-muted-foreground",
       render: (user) => highlightText(user.userId.toString(), searchQuery),
     },
     {
       header: "Name",
-      headerClassName: "w-[180px]",
-      className: "w-[180px]",
+      headerClassName: "",
+      className: "",
       render: (user) => (
         <span
-          className="text-sm font-medium text-foreground hover:text-primary hover:underline cursor-pointer"
+          className=" font-medium text-muted-foreground hover:text-primary hover:underline cursor-pointer"
           onClick={() => onViewUserDetails?.(user.userId)}
         >
           {highlightText(`${user.firstName} ${user.lastName}`, searchQuery)}
@@ -53,36 +56,39 @@ export function UserTable({
     },
     {
       header: "Email",
-      headerClassName: "w-[220px]",
-      className: "w-[220px] text-sm text-muted-foreground",
+      headerClassName: "",
+      className: "text-sm text-muted-foreground",
       render: (user) => highlightText(user.email, searchQuery),
     },
     {
       header: "Role",
-      headerClassName: "w-[140px]",
-      className: "w-[140px]",
-      render: (user) => (
-        <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
-          {highlightText(user.roleName, searchQuery)}
-        </span>
-      ),
+      headerClassName: "",
+      className: "",
+      render: (user) => <StatusBadge status={user.roleName} />,
     },
     {
       header: "Status",
-      headerClassName: "w-[100px] text-center",
-      className: "w-[100px] text-center",
+      headerClassName: "text-center",
+      className: "text-center",
       render: (user) => (
         <StatusBadge status={user.isActive ? "ACTIVE" : "INACTIVE"} />
       ),
     },
     {
+      header: "Created At",
+      headerClassName: "",
+      className: "",
+      render: (user) => highlightText(formatDate(user.createdAt), searchQuery),
+    },
+    {
       header: "Actions",
-      headerClassName: "w-[220px] text-center",
-      className: "w-[220px] text-center",
+      headerClassName: "",
+      className: "",
+      align: "center",
       render: (user) => {
         const isSystemAdmin = user.userId === SYSTEM_ADMIN_ID;
         return (
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-end justify-end gap-2">
             <Button
               size="sm"
               variant="outline"
