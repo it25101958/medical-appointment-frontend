@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
@@ -14,11 +14,10 @@ import {
 import { resendVerificationAction, verifyAccountAction } from "@/features/auth";
 import { FieldLabel } from "@/components/ui/field";
 
-export function VerifyForm() {
+export function VerifyForm({ initialEmail = "" }: { initialEmail?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const emailFromUrl = searchParams.get("email") || "";
+  const emailFromUrl = initialEmail || "";
 
   const [code, setCode] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
