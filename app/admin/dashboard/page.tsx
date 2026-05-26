@@ -40,7 +40,7 @@ export default function AdminPage() {
       icon: FlaskConical,
       title: "Lab Tests",
       buttonText: "Manage Lab Tests",
-      action: () => router.push("/admin/labtest"),
+      action: () => router.push("/admin/lab-test"),
     },
     {
       icon: FilePlus,
@@ -58,7 +58,7 @@ export default function AdminPage() {
       icon: Users,
       title: "Patients",
       buttonText: "View Patients",
-      action: () => router.push("/admin/Patients"),
+      action: () => router.push("/admin/patients"),
     },
     {
       icon: Bed,
