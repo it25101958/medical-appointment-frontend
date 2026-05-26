@@ -2,7 +2,6 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import {
-  Badge,
   Button,
   Card,
   CardContent,
@@ -20,16 +19,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  ScrollArea,
+  DataTable,
+  StatusBadge,
+  type Column,
 } from "@/components/ui";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { CrudActionButton } from "@/features/shared";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -74,32 +67,6 @@ function normalize(value: string) {
 function formatDate(value?: string) {
   if (!value) return "—";
   return new Date(value).toLocaleString();
-}
-
-function getStatusBadgeClasses(status: string) {
-  const normalized = normalize(status);
-
-  if (
-    ["active", "available", "in stock", "in-stock"].some((item) =>
-      normalized.includes(item),
-    )
-  ) {
-    return "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300";
-  }
-
-  if (["low", "limited"].some((item) => normalized.includes(item))) {
-    return "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-300";
-  }
-
-  if (
-    ["out", "discontinued", "inactive", "expired"].some((item) =>
-      normalized.includes(item),
-    )
-  ) {
-    return "border-destructive/20 bg-destructive/10 text-destructive";
-  }
-
-  return "border-border bg-muted/40 text-muted-foreground";
 }
 
 export default function AdminMedicationsPage() {
@@ -301,6 +268,86 @@ export default function AdminMedicationsPage() {
     [filteredMedications.length, medications],
   );
 
+  const medicationColumns = useMemo<Column<Medication>[]>(
+    () => [
+      {
+        header: "ID",
+        headerClassName: "w-[90px]",
+        className: "w-[90px] font-semibold text-foreground",
+        render: (medication) => medication.medicationId,
+      },
+      {
+        header: "Name",
+        headerClassName: "w-[200px]",
+        className: "w-[200px] font-medium text-foreground",
+        render: (medication) =>
+          highlightText(medication.name, deferredSearchQuery),
+      },
+      {
+        header: "Generic",
+        headerClassName: "w-[200px]",
+        className: "w-[200px] text-muted-foreground",
+        render: (medication) =>
+          highlightText(medication.genericName, deferredSearchQuery),
+      },
+      {
+        header: "Manufacturer",
+        headerClassName: "w-[200px]",
+        className: "w-[200px] text-muted-foreground",
+        render: (medication) =>
+          highlightText(medication.manufacturer, deferredSearchQuery),
+      },
+      {
+        header: "Dosage",
+        headerClassName: "w-[150px]",
+        className: "w-[150px] text-muted-foreground",
+        render: (medication) =>
+          highlightText(medication.dosage, deferredSearchQuery),
+      },
+      {
+        header: "Form",
+        headerClassName: "w-[150px]",
+        className: "w-[150px] text-muted-foreground",
+        render: (medication) =>
+          highlightText(medication.dosageForm, deferredSearchQuery),
+      },
+      {
+        header: "Status",
+        headerClassName: "w-[160px]",
+        className: "w-[160px]",
+        render: (medication) => <StatusBadge status={medication.status} />,
+      },
+      {
+        header: "Updated",
+        headerClassName: "w-[180px]",
+        className: "w-[180px] text-sm text-muted-foreground",
+        render: (medication) =>
+          formatDate(medication.updatedAt || medication.createdAt),
+      },
+      {
+        header: "Actions",
+        headerClassName: "w-[150px] text-center",
+        className: "w-[150px] text-center",
+        render: (medication) => (
+          <div className="flex items-center justify-center gap-2">
+            <CrudActionButton
+              label="Edit medication"
+              icon={<Edit3 className="size-4" />}
+              onClick={() => openEditDialog(medication)}
+            />
+            <CrudActionButton
+              label="Delete medication"
+              icon={<Trash2 className="size-4" />}
+              destructive
+              onClick={() => openDeleteDialog(medication)}
+            />
+          </div>
+        ),
+      },
+    ],
+    [deferredSearchQuery],
+  );
+
   return (
     <div className="col-start-1 col-end-14">
       <PageHeader
@@ -364,106 +411,15 @@ export default function AdminMedicationsPage() {
           </div>
         ) : (
           <>
-            <ScrollArea className="max-h-[620px] w-full">
-              <Table className="min-w-[1180px]">
-                <TableHeader>
-                  <TableRow className="bg-muted/45 hover:bg-muted/45">
-                    <TableHead className="w-[90px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      ID
-                    </TableHead>
-                    <TableHead className="w-[200px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Name
-                    </TableHead>
-                    <TableHead className="w-[200px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Generic
-                    </TableHead>
-                    <TableHead className="w-[200px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Manufacturer
-                    </TableHead>
-                    <TableHead className="w-[150px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Dosage
-                    </TableHead>
-                    <TableHead className="w-[150px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Form
-                    </TableHead>
-                    <TableHead className="w-[160px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Status
-                    </TableHead>
-                    <TableHead className="w-[180px] px-5 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Updated
-                    </TableHead>
-                    <TableHead className="w-[150px] px-5 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {paginatedMedications.map((medication) => (
-                    <TableRow
-                      key={medication.medicationId}
-                      className="group transition-colors hover:bg-muted/25"
-                    >
-                      <TableCell className="w-[90px] px-5 py-4 font-semibold text-foreground">
-                        {medication.medicationId}
-                      </TableCell>
-                      <TableCell className="w-[200px] px-5 py-4 font-medium text-foreground">
-                        {highlightText(medication.name, deferredSearchQuery)}
-                      </TableCell>
-                      <TableCell className="w-[200px] px-5 py-4 text-muted-foreground">
-                        {highlightText(
-                          medication.genericName,
-                          deferredSearchQuery,
-                        )}
-                      </TableCell>
-                      <TableCell className="w-[200px] px-5 py-4 text-muted-foreground">
-                        {highlightText(
-                          medication.manufacturer,
-                          deferredSearchQuery,
-                        )}
-                      </TableCell>
-                      <TableCell className="w-[150px] px-5 py-4 text-muted-foreground">
-                        {highlightText(medication.dosage, deferredSearchQuery)}
-                      </TableCell>
-                      <TableCell className="w-[150px] px-5 py-4 text-muted-foreground">
-                        {highlightText(
-                          medication.dosageForm,
-                          deferredSearchQuery,
-                        )}
-                      </TableCell>
-                      <TableCell className="w-[160px] px-5 py-4">
-                        <Badge
-                          variant="outline"
-                          className={`rounded-full px-3 py-0.5 uppercase tracking-wide ${getStatusBadgeClasses(medication.status)}`}
-                        >
-                          {medication.status || "—"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="w-[180px] px-5 py-4 text-sm text-muted-foreground">
-                        {formatDate(
-                          medication.updatedAt || medication.createdAt,
-                        )}
-                      </TableCell>
-                      <TableCell className="w-[150px] px-5 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <CrudActionButton
-                            label="Edit medication"
-                            icon={<Edit3 className="size-4" />}
-                            onClick={() => openEditDialog(medication)}
-                          />
-                          <CrudActionButton
-                            label="Delete medication"
-                            icon={<Trash2 className="size-4" />}
-                            destructive
-                            onClick={() => openDeleteDialog(medication)}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </ScrollArea>
+            <DataTable
+              columns={medicationColumns}
+              data={paginatedMedications}
+              pageable={false}
+              showActions={false}
+              minWidth="1180px"
+              emptyMessage="No medications match your search."
+              bordered={false}
+            />
 
             <PaginationControls
               currentPage={currentPage}
