@@ -1,11 +1,16 @@
 "use client";
 
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Eye, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  Badge,
   Button,
   DataTable,
   Dialog,
@@ -15,6 +20,7 @@ import {
   DialogTitle,
   PageHeader,
   SearchBar,
+  StatusBadge,
   type Column,
 } from "@/components/ui";
 import { apiRequest } from "@/lib/api-client";
@@ -29,20 +35,6 @@ interface CurrentUser {
   roleType: number;
 }
 
-function getStatusClasses(status: string) {
-  const normalized = status.toUpperCase();
-
-  if (normalized === "COMPLETED") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
-  }
-
-  if (normalized === "IN_PROGRESS") {
-    return "border-amber-200 bg-amber-50 text-amber-700";
-  }
-
-  return "border-slate-200 bg-slate-50 text-slate-700";
-}
-
 function normalize(value: string) {
   return value.trim().toLowerCase();
 }
@@ -50,9 +42,8 @@ function normalize(value: string) {
 export function PatientLabResults() {
   const [patient, setPatient] = useState<CurrentUser | null>(null);
   const [results, setResults] = useState<LabResultResponse[]>([]);
-  const [selectedResult, setSelectedResult] = useState<LabResultResponse | null>(
-    null,
-  );
+  const [selectedResult, setSelectedResult] =
+    useState<LabResultResponse | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -154,16 +145,7 @@ export function PatientLabResults() {
       },
       {
         header: "Status",
-        render: (result) => (
-          <Badge
-            variant="outline"
-            className={`rounded-full px-3 py-0.5 text-xs ${getStatusClasses(
-              result.status,
-            )}`}
-          >
-            {result.status}
-          </Badge>
-        ),
+        render: (result) => <StatusBadge status={result.status} />,
         className: "w-[140px] px-5 py-4",
       },
       {
@@ -261,12 +243,7 @@ export function PatientLabResults() {
                   <h3 className="text-lg font-semibold">
                     {selectedResult.testName}
                   </h3>
-                  <Badge
-                    variant="outline"
-                    className={getStatusClasses(selectedResult.status)}
-                  >
-                    {selectedResult.status}
-                  </Badge>
+                  <StatusBadge status={selectedResult.status} />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
                   Appointment #{selectedResult.appointmentId}
@@ -287,10 +264,7 @@ export function PatientLabResults() {
                       : "-"
                   }
                 />
-                <InfoPanel
-                  label="Result ID"
-                  value={`#${selectedResult.id}`}
-                />
+                <InfoPanel label="Result ID" value={`#${selectedResult.id}`} />
               </div>
 
               {selectedResult.remarks && (
