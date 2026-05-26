@@ -21,6 +21,7 @@ import {
   DialogTitle,
   PageHeader,
   SearchBar,
+  StatusBadge,
   type Column,
 } from "@/components/ui";
 import { PaginationControls } from "@/features/admin";
@@ -167,11 +168,7 @@ export default function PatientFeedbackPage() {
     },
     {
       header: "Status",
-      render: (item) => (
-        <Badge variant="outline" className="rounded-full px-3 py-0.5 text-xs">
-          {item.status}
-        </Badge>
-      ),
+      render: (item) => <StatusBadge status={item.status} />,
       className: "w-[130px] px-5 py-4",
     },
     {
@@ -253,6 +250,7 @@ export default function PatientFeedbackPage() {
               showActions={false}
               minWidth="980px"
               emptyMessage="No feedback submitted yet."
+              bordered={false}
             />
             <PaginationControls
               currentPage={currentPage}
