@@ -1,18 +1,20 @@
 // Appointments Feature - Barrel Exports
 
 // Types & Schemas
-export type { Appointment, AppointmentStatus } from "./types/appointment.types";
+export type {
+  AppointmentResponse,
+  AppointmentStatus,
+} from "./types/appointment.types";
 export type {
   RoomScheduleRequest,
   RoomScheduleResponse,
-} from "./types/appointment.types";
+} from "../room-schedule";
 
 // API
 export { appointmentApi } from "./api/appointment.api";
 
 // Hooks
-export { useAppointment } from "./hooks/use-appointment";
-export { useAppointments } from "./hooks/use-appointments";
+export { useAppointments } from "./hooks/use-appointment";
 
 // Utils
 export {
