@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { highlightText } from "@/lib/highlight-search";
-import { PaginationControls } from "@/components/ui/pagination-controls";
+import { PaginationControls } from "./pagination-controls";
 
 export type Column<T> = {
   header: string;
@@ -22,6 +22,17 @@ export type Column<T> = {
   render?: (row: T) => React.ReactNode;
   className?: string;
   headerClassName?: string;
+  align?: TableTextAlign;
+  headerAlign?: TableTextAlign;
+  cellAlign?: TableTextAlign;
+};
+
+type TableTextAlign = "left" | "center" | "right";
+
+const textAlignClasses: Record<TableTextAlign, string> = {
+  left: "xl text-start",
+  center: "text-center",
+  right: "text-end",
 };
 
 interface DataTableProps<T> {
@@ -41,6 +52,9 @@ interface DataTableProps<T> {
   showActions?: boolean;
   minWidth?: string;
   bordered?: boolean;
+  defaultHeaderAlign?: TableTextAlign;
+  defaultCellAlign?: TableTextAlign;
+  actionAlign?: TableTextAlign;
 }
 
 export function DataTable<T extends object>({
@@ -60,6 +74,9 @@ export function DataTable<T extends object>({
   showActions = true,
   minWidth = "1000px",
   bordered = true,
+  defaultHeaderAlign = "left",
+  defaultCellAlign = "left",
+  actionAlign = "right",
 }: DataTableProps<T>) {
   const [internalPage, setInternalPage] = React.useState(0);
   const [internalPageSize, setInternalPageSize] = React.useState(pageSize);
@@ -113,7 +130,11 @@ export function DataTable<T extends object>({
           bordered ? "table-border rounded-lg" : "rounded-none border-0",
         )}
       >
-        <Table className="w-full" style={{ minWidth }} data-testid="data-table">
+        <Table
+          className="w-full table-auto"
+          style={{ minWidth }}
+          data-testid="data-table"
+        >
           <TableHeader>
             <TableRow className="table-header-row">
               {columns.map((col, idx) => {
@@ -125,8 +146,12 @@ export function DataTable<T extends object>({
                   <TableHead
                     key={idx}
                     className={cn(
-                      "tableHead table-head-text",
-                      isActionColumn && "text-center",
+                      "table-head-text",
+                      textAlignClasses[
+                        col.headerAlign ??
+                          col.align ??
+                          (isActionColumn ? actionAlign : defaultHeaderAlign)
+                      ],
                       col.headerClassName,
                     )}
                   >
@@ -136,7 +161,12 @@ export function DataTable<T extends object>({
               })}
 
               {showActions && (
-                <TableHead className="w-[130px] tableHead table-head-text text-center">
+                <TableHead
+                  className={cn(
+                    "w-[130px] table-head-text",
+                    textAlignClasses[actionAlign],
+                  )}
+                >
                   Actions
                 </TableHead>
               )}
@@ -173,7 +203,11 @@ export function DataTable<T extends object>({
                         key={cIdx}
                         className={cn(
                           "px-4 py-3 align-middle text-sm",
-                          isActionColumn && "text-center",
+                          textAlignClasses[
+                            isActionColumn
+                              ? actionAlign
+                              : (col.cellAlign ?? col.align ?? defaultCellAlign)
+                          ],
                           col.className,
                         )}
                       >
@@ -188,8 +222,10 @@ export function DataTable<T extends object>({
                   })}
 
                   {showActions && (
-                    <TableCell className="px-4 py-3 text-center align-middle">
-                      <div className="flex items-center justify-center gap-2">
+                    <TableCell
+                      className={cn("px-4 py-3", textAlignClasses[actionAlign])}
+                    >
+                      <div className="flex items-center justify-end gap-2">
                         {onView && (
                           <Button
                             size="sm"
@@ -214,7 +250,7 @@ export function DataTable<T extends object>({
       </ScrollArea>
 
       {pageable && totalPages > 1 && (
-        <div className="border-t border-border">
+        <div className="">
           <PaginationControls
             currentPage={resolvedCurrentPage}
             totalPages={totalPages}
