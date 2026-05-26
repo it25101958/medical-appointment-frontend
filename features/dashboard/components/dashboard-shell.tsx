@@ -17,7 +17,7 @@ interface BentoItem {
   buttonText: string;
 }
 
-interface DashboardShellProps {
+export interface DashboardShellProps {
   badgeText: string;
   title: React.ReactNode;
   description: string;
