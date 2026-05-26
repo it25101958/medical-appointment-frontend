@@ -163,19 +163,32 @@ export function LabOrderDetailsDialog({
               Ordered Tests
             </div>
 
-            <Table>
+            <Table className="table-dark-border">
               <TableHeader>
-                <TableRow>
-                  <TableHead>Test</TableHead>
-                  <TableHead>Quantity</TableHead>
-                  <TableHead>Unit Price</TableHead>
-                  <TableHead>Total</TableHead>
-                  <TableHead>Status</TableHead>
+                <TableRow className="table-header-row">
+                  <TableHead className="tableHead table-head-text">
+                    Test
+                  </TableHead>
+                  <TableHead className="tableHead table-head-text">
+                    Quantity
+                  </TableHead>
+                  <TableHead className="tableHead table-head-text">
+                    Unit Price
+                  </TableHead>
+                  <TableHead className="tableHead table-head-text">
+                    Total
+                  </TableHead>
+                  <TableHead className="tableHead table-head-text">
+                    Status
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {labOrder.items.map((item) => (
-                  <TableRow key={item.labOrderItemId}>
+                  <TableRow
+                    key={item.labOrderItemId}
+                    className="table-row-hover"
+                  >
                     <TableCell>{item.testName}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
                     <TableCell>{formatMoney(item.unitPrice)}</TableCell>
