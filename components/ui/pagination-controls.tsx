@@ -58,7 +58,7 @@ export function PaginationControls({
             value={pageSize.toString()}
             onValueChange={(val) => onPageSizeChange(Number(val))}
           >
-            <SelectTrigger className="w-28">
+            <SelectTrigger className="w-32">
               <SelectValue placeholder="Page Size" />
             </SelectTrigger>
             <SelectContent>
