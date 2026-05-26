@@ -177,18 +177,29 @@ export function PrescriptionDetailsDialog({ prescription, onClose }: Props) {
             </div>
 
             <div className="overflow-hidden rounded-lg border border-border bg-card">
-              <Table>
+              <Table className="table-dark-border">
                 <TableHeader>
-                  <TableRow>
-                    <TableHead>Medication</TableHead>
-                    <TableHead>Dosage</TableHead>
-                    <TableHead>Quantity</TableHead>
-                    <TableHead>Instructions</TableHead>
+                  <TableRow className="table-header-row">
+                    <TableHead className="tableHead table-head-text">
+                      Medication
+                    </TableHead>
+                    <TableHead className="tableHead table-head-text">
+                      Dosage
+                    </TableHead>
+                    <TableHead className="tableHead table-head-text">
+                      Quantity
+                    </TableHead>
+                    <TableHead className="tableHead table-head-text">
+                      Instructions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {prescription.items.map((item: PrescriptionItemResponse) => (
-                    <TableRow key={item.prescriptionItemId}>
+                    <TableRow
+                      key={item.prescriptionItemId}
+                      className="table-row-hover"
+                    >
                       <TableCell>
                         <div className="space-y-0.5">
                           <p className="text-sm">{item.medicationName}</p>
