@@ -184,10 +184,6 @@
     @apply text-xs font-light text-destructive mt-1;
   }
 
-  .tableHead {
-    @apply px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground;
-  }
-
   .table-border {
     @apply border border-border rounded-lg;
   }
@@ -205,9 +201,8 @@
     @apply border-l border-border;
   }
 
-  /* Table head text style (match admin user-list) */
   .table-head-text {
-    @apply text-xs font-medium tracking-wide text-muted-foreground;
+    @apply text-xs px-4 py-2 font-medium tracking-wide text-muted-foreground;
   }
 
   .table-header-row {
