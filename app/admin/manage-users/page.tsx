@@ -1,6 +1,7 @@
 "use client";
 
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useCallback } from "react";
 import {
   UserDetailsDialog,
   UserTable,
@@ -8,8 +9,17 @@ import {
   type User,
 } from "@/features/admin";
 import { PaginationControls } from "@/components/ui";
-import { apiRequest } from "@/lib/api-client";
+import type {
+  LoadCurrent,
+  PageableResponse,
+} from "@/features/admin/types/admin.types";
 import { toast } from "sonner";
+import {
+  loadCurrent as loadCurrentApi,
+  fetchUsers as fetchUsersApi,
+  toggleActive as toggleActiveApi,
+  changeRole as changeRoleApi,
+} from "@/features/admin/api/admin.api";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -59,20 +69,8 @@ function normalize(value: string) {
   return value.trim().toLowerCase();
 }
 
-interface PageableResponse {
-  content: User[];
-  totalPages: number;
-  totalElements: number;
-  number: number;
-  size: number;
-}
-
 export default function ManageUsersPage() {
-  const [currentUser, setCurrentUser] = useState<{
-    userId: number;
-    roleType: number;
-    accessLevel?: string;
-  } | null>(null);
+  const [currentUser, setCurrentUser] = useState<LoadCurrent | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -111,35 +109,12 @@ export default function ManageUsersPage() {
     useState<User | null>(null);
   const [deactivating, setDeactivating] = useState(false);
 
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, pageSize]);
-
-  useEffect(() => {
-    let mounted = true;
-    async function loadCurrent() {
-      try {
-        const data = await apiRequest<{
-          userId: number;
-          roleType: number;
-          accessLevel?: string;
-        }>("/users/me", { method: "GET", cache: "no-store" });
-        if (mounted) setCurrentUser(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    loadCurrent();
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const data: PageableResponse = await apiRequest(
-        `/users?page=${currentPage}&size=${pageSize}&sort=userId,asc`,
+      const data: PageableResponse<User> = await fetchUsersApi(
+        currentPage,
+        pageSize,
       );
 
       const mappedUsers = data.content.map((user) => ({
@@ -154,7 +129,29 @@ export default function ManageUsersPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentPage, pageSize]);
+
+  useEffect(() => {
+    (async () => {
+      await fetchUsers();
+    })();
+  }, [fetchUsers]);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadCurrent() {
+      try {
+        const data = await loadCurrentApi();
+        if (mounted) setCurrentUser(data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    loadCurrent();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleViewUserDetails = (userId: number) => {
     setViewUserId(userId);
@@ -168,12 +165,7 @@ export default function ManageUsersPage() {
     }
 
     try {
-      await apiRequest(
-        `/users/${active ? "activate" : "deactivate"}/${userId}`,
-        {
-          method: "PATCH",
-        },
-      );
+      await toggleActiveApi(userId, active);
       await fetchUsers();
       toast.success(
         `User ${active ? "activated" : "deactivated"} successfully`,
@@ -235,12 +227,7 @@ export default function ManageUsersPage() {
     }
 
     try {
-      await apiRequest(
-        `/users/role/${selectedUser.userId}?newRoleType=${newRole}`,
-        {
-          method: "PATCH",
-        },
-      );
+      await changeRoleApi(selectedUser.userId, newRole);
       await fetchUsers();
       setOpen(false);
       setSelectedUser(null);
