@@ -39,6 +39,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  StatusBadge,
   SelectTrigger,
   SelectValue,
   type Column,
@@ -153,9 +154,14 @@ export function PaymentManagement({
       const data = patientId
         ? await paymentApi.getByPatient(patientId)
         : await paymentApi.getAll();
-      setPayments(data || []);
+
+      const sortedData = (data || [])
+        .slice()
+        .sort((left, right) => right.paymentId - left.paymentId);
+
+      setPayments(sortedData);
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to load payment records"));
+      toast.error(getErrorMessage(error, "Failed to load payments"));
     } finally {
       setLoading(false);
     }
@@ -315,14 +321,7 @@ export function PaymentManagement({
       {
         header: "Status",
         render: (payment) => (
-          <Badge
-            variant="outline"
-            className={`rounded-full px-3 py-0.5 text-xs ${getStatusClasses(
-              payment.paymentStatus,
-            )}`}
-          >
-            {getStatusLabel(payment.paymentStatus)}
-          </Badge>
+          <StatusBadge status={getStatusLabel(payment.paymentStatus)} />
         ),
         className: "w-[140px] px-5 py-4",
       },
