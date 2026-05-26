@@ -28,7 +28,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SearchBar } from "@/components/ui/search-bar";
 import { RefreshCcw } from "lucide-react";
 import { DeleteConfirmDialog } from "@/features/shared";
-import { PaginationControls } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 import {
   deleteMedication,
   getMedications,
@@ -42,6 +42,7 @@ import { Edit3, Pill, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { highlightText } from "@/lib/highlight-search";
 import { Label } from "@/components/ui";
+import { formatDate } from "@/features/shared/util/format-date";
 
 const MEDICATION_STATUS_OPTIONS = [
   "AVAILABLE",
@@ -62,11 +63,6 @@ function createEmptyForm(): MedicationPayload {
 
 function normalize(value: string) {
   return value.trim().toLowerCase();
-}
-
-function formatDate(value?: string) {
-  if (!value) return "—";
-  return new Date(value).toLocaleString();
 }
 
 export default function AdminMedicationsPage() {
@@ -272,55 +268,55 @@ export default function AdminMedicationsPage() {
     () => [
       {
         header: "ID",
-        headerClassName: "w-[90px]",
-        className: "w-[90px] font-semibold text-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) => medication.medicationId,
       },
       {
         header: "Name",
-        headerClassName: "w-[200px]",
-        className: "w-[200px] font-medium text-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           highlightText(medication.name, deferredSearchQuery),
       },
       {
         header: "Generic",
-        headerClassName: "w-[200px]",
-        className: "w-[200px] text-muted-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           highlightText(medication.genericName, deferredSearchQuery),
       },
       {
         header: "Manufacturer",
-        headerClassName: "w-[200px]",
-        className: "w-[200px] text-muted-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           highlightText(medication.manufacturer, deferredSearchQuery),
       },
       {
         header: "Dosage",
-        headerClassName: "w-[150px]",
-        className: "w-[150px] text-muted-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           highlightText(medication.dosage, deferredSearchQuery),
       },
       {
         header: "Form",
-        headerClassName: "w-[150px]",
-        className: "w-[150px] text-muted-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           highlightText(medication.dosageForm, deferredSearchQuery),
       },
       {
         header: "Status",
-        headerClassName: "w-[160px]",
-        className: "w-[160px]",
+        headerClassName: "",
+        className: "",
         render: (medication) => <StatusBadge status={medication.status} />,
       },
       {
         header: "Updated",
-        headerClassName: "w-[180px]",
-        className: "w-[180px] text-sm text-muted-foreground",
+        headerClassName: "",
+        className: "",
         render: (medication) =>
           formatDate(medication.updatedAt || medication.createdAt),
       },
