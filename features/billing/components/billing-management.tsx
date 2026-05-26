@@ -36,6 +36,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  StatusBadge,
   SelectTrigger,
   SelectValue,
   type Column,
@@ -219,7 +220,10 @@ export function BillingManagement({
   }
 
   async function handleSave() {
-    if (!Number(formValues.totalAmount) || Number(formValues.totalAmount) <= 0) {
+    if (
+      !Number(formValues.totalAmount) ||
+      Number(formValues.totalAmount) <= 0
+    ) {
       toast.error("Total amount must be greater than 0.");
       return;
     }
@@ -283,7 +287,9 @@ export function BillingManagement({
       {
         header: "Final Amount",
         render: (billing) => (
-          <span className="font-medium">{formatCurrency(billing.finalAmount)}</span>
+          <span className="font-medium">
+            {formatCurrency(billing.finalAmount)}
+          </span>
         ),
         className: "w-[160px] px-5 py-4",
       },
@@ -311,16 +317,7 @@ export function BillingManagement({
       },
       {
         header: "Status",
-        render: (billing) => (
-          <Badge
-            variant="outline"
-            className={`rounded-full px-3 py-0.5 text-xs ${getStatusClasses(
-              billing.status,
-            )}`}
-          >
-            {billing.status}
-          </Badge>
-        ),
+        render: (billing) => <StatusBadge status={billing.status} />,
         className: "w-[130px] px-5 py-4",
       },
       {
