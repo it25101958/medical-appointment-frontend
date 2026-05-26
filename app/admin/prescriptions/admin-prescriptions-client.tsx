@@ -3,7 +3,8 @@
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { SearchBar } from "@/components/ui/search-bar";
-import { PrescriptionList, PaginationControls } from "@/features/admin";
+import { PrescriptionList } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 
 interface PrescriptionListItem {
   prescriptionId: number;
