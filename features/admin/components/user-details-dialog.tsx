@@ -25,7 +25,6 @@ import { getRoleBadgeClass, getStatusBadgeClass } from "@/lib/theme";
 import { Hash, Mail, MapPin, Phone, UserCog, User2 } from "lucide-react";
 import * as z from "zod";
 
-// --- Zod schema for editable fields
 const userUpdateSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
