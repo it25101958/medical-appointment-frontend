@@ -6,7 +6,6 @@ import { CalendarDays, Eye, Pill, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  Badge,
   Button,
   DataTable,
   Dialog,
@@ -17,6 +16,7 @@ import {
   PageHeader,
   SearchBar,
   type Column,
+  StatusBadge,
 } from "@/components/ui";
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
@@ -179,11 +179,7 @@ export default function PatientMedicationsPage() {
       },
       {
         header: "Status",
-        render: (medication) => (
-          <Badge variant="outline" className="rounded-full px-3 py-0.5 text-xs">
-            {medication.status}
-          </Badge>
-        ),
+        render: (medication) => <StatusBadge status={medication.status} />,
         className: "w-[130px] px-5 py-4",
       },
       {
