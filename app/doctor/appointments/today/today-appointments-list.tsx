@@ -13,14 +13,14 @@ import { toast } from "sonner";
 
 import { apiRequest } from "@/lib/api-client";
 import { AppointmentResponse } from "@/features/appointments";
-import { cn, getErrorMessage } from "@/lib/utils";
+import { getErrorMessage } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { DataTable, StatusBadge, type Column } from "@/components/ui";
 import {
   Dialog,
   DialogContent,
@@ -36,14 +36,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { AppointmentDetailsDialog } from "@/features/appointments";
 import {
   getMedicationsByStatus,
@@ -56,27 +48,6 @@ import type { LabOrderRequest, LabOrderResponse } from "@/features/lab-orders";
 
 interface Props {
   appointments: AppointmentResponse[];
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-    CONFIRMED: "bg-blue-100 text-blue-800 border-blue-200",
-    COMPLETED: "bg-green-100 text-green-800 border-green-200",
-    CANCELLED: "bg-red-100 text-red-800 border-red-200",
-  };
-
-  return (
-    <Badge
-      variant="outline"
-      className={cn(
-        "rounded-full px-3 py-1 text-xs font-normal",
-        styles[status] ?? "bg-muted text-muted-foreground",
-      )}
-    >
-      {status}
-    </Badge>
-  );
 }
 
 function formatTime(time: string) {
@@ -405,160 +376,146 @@ export function TodayAppointmentsList({ appointments }: Props) {
     );
   }
 
+  const columns: Column<AppointmentResponse>[] = [
+    {
+      header: "Queue",
+      headerClassName: "min-w-[110px]",
+      className: "min-w-[110px]",
+      render: (appointment) => (
+        <span className="text-sm">{appointment.appointmentNumber}</span>
+      ),
+    },
+    {
+      header: "Time",
+      headerClassName: "min-w-[130px]",
+      className: "min-w-[130px]",
+      render: (appointment) => (
+        <span className="text-sm">
+          {formatTime(appointment.appointmentTime)}
+        </span>
+      ),
+    },
+    {
+      header: "Patient",
+      headerClassName: "min-w-[130px]",
+      className: "min-w-[130px]",
+      render: (appointment) => (
+        <span className="text-sm">{appointment.patient.fullName}</span>
+      ),
+    },
+    {
+      header: "Room",
+      headerClassName: "min-w-[130px]",
+      className: "min-w-[130px]",
+      render: (appointment) => (
+        <span className="text-sm">{appointment.room.roomNumber}</span>
+      ),
+    },
+    {
+      header: "Type",
+      headerClassName: "min-w-[150px]",
+      className: "min-w-[150px]",
+      render: (appointment) => (
+        <span className="text-sm">{appointment.appointmentType}</span>
+      ),
+    },
+    {
+      header: "Status",
+      headerClassName: "min-w-[130px]",
+      className: "min-w-[130px]",
+      render: (appointment) => <StatusBadge status={appointment.status} />,
+    },
+    {
+      header: "Notes",
+      headerClassName: "min-w-[220px]",
+      className: "min-w-[220px]",
+      render: (appointment) => (
+        <span className="line-clamp-2 text-sm text-muted-foreground">
+          {appointment.notes || "No notes added"}
+        </span>
+      ),
+    },
+    {
+      header: "View",
+      headerClassName: "text-center min-w-[120px]",
+      className: "text-center min-w-[120px]",
+      render: (appointment) => (
+        <Button
+          variant="outline"
+          size="sm"
+          className="rounded-xl"
+          onClick={() => loadAppointment(appointment.appointmentId)}
+          disabled={loadingAppointmentId === appointment.appointmentId}
+        >
+          {loadingAppointmentId === appointment.appointmentId
+            ? "Loading..."
+            : "View"}
+        </Button>
+      ),
+    },
+    {
+      header: "Prescription",
+      headerClassName: "text-center min-w-[160px]",
+      className: "text-center min-w-[160px]",
+      render: (appointment) => {
+        const clinicalAccessMessage = getClinicalAccessMessage(
+          appointment,
+          now,
+        );
+        const canModifyClinical = !clinicalAccessMessage;
+
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl"
+            onClick={() => openPrescriptionDialog(appointment)}
+            disabled={!canModifyClinical}
+            title={clinicalAccessMessage || undefined}
+          >
+            Add Prescription
+          </Button>
+        );
+      },
+    },
+    {
+      header: "Lab Order",
+      headerClassName: "text-center min-w-[160px]",
+      className: "text-center min-w-[160px]",
+      render: (appointment) => {
+        const clinicalAccessMessage = getClinicalAccessMessage(
+          appointment,
+          now,
+        );
+        const canModifyClinical = !clinicalAccessMessage;
+
+        return (
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl"
+            onClick={() => openLabOrderDialog(appointment)}
+            disabled={!canModifyClinical || checkingLabOrder}
+            title={clinicalAccessMessage || undefined}
+          >
+            {checkingLabOrder ? "Checking..." : "Add Lab Order"}
+          </Button>
+        );
+      },
+    },
+  ];
+
   return (
     <>
       <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-        <ScrollArea className="w-full rounded-2xl">
-          <Table className="min-w-[1000px]">
-            <TableHeader>
-              <TableRow className="bg-muted/30">
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[110px]">
-                  Queue
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[130px]">
-                  Time
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[130px]">
-                  Patient
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[130px]">
-                  Room
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[150px]">
-                  Type
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[130px]">
-                  Status
-                </TableHead>
-                <TableHead className="px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground min-w-[220px]">
-                  Notes
-                </TableHead>
-                <TableHead className="px-4 py-2 text-center text-xs font-medium tracking-wide text-muted-foreground min-w-[120px]">
-                  View
-                </TableHead>
-                <TableHead className="px-4 py-2 text-center text-xs font-medium tracking-wide text-muted-foreground min-w-[160px]">
-                  Prescription
-                </TableHead>
-                <TableHead className="px-4 py-2 text-center text-xs font-medium tracking-wide text-muted-foreground min-w-[160px]">
-                  Lab Order
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {appointments.map((appointment) => (
-                <TableRow
-                  key={appointment.appointmentId}
-                  className="hover:bg-muted/20"
-                >
-                  <TableCell className="px-4 py-2">
-                    <span className="text-sm">
-                      {appointment.appointmentNumber}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <span className="text-sm">
-                      {formatTime(appointment.appointmentTime)}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <span className="text-sm">
-                      {appointment.patient.fullName}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <span className="text-sm">
-                      {appointment.room.roomNumber}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <span className="text-sm">
-                      {appointment.appointmentType}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <StatusBadge status={appointment.status} />
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2">
-                    <span className="line-clamp-2 text-sm text-muted-foreground">
-                      {appointment.notes || "No notes added"}
-                    </span>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2 text-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl"
-                      onClick={() => loadAppointment(appointment.appointmentId)}
-                      disabled={
-                        loadingAppointmentId === appointment.appointmentId
-                      }
-                    >
-                      {loadingAppointmentId === appointment.appointmentId
-                        ? "Loading..."
-                        : "View"}
-                    </Button>
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2 text-center">
-                    {(() => {
-                      const clinicalAccessMessage = getClinicalAccessMessage(
-                        appointment,
-                        now,
-                      );
-                      const canModifyClinical = !clinicalAccessMessage;
-
-                      return (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-xl"
-                          onClick={() => openPrescriptionDialog(appointment)}
-                          disabled={!canModifyClinical}
-                          title={clinicalAccessMessage || undefined}
-                        >
-                          Add Prescription
-                        </Button>
-                      );
-                    })()}
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2 text-center">
-                    {(() => {
-                      const clinicalAccessMessage = getClinicalAccessMessage(
-                        appointment,
-                        now,
-                      );
-                      const canModifyClinical = !clinicalAccessMessage;
-
-                      return (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="rounded-xl"
-                          onClick={() => openLabOrderDialog(appointment)}
-                          disabled={!canModifyClinical || checkingLabOrder}
-                          title={clinicalAccessMessage || undefined}
-                        >
-                          {checkingLabOrder ? "Checking..." : "Add Lab Order"}
-                        </Button>
-                      );
-                    })()}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <ScrollBar orientation="horizontal" />
-          <ScrollBar orientation="vertical" />
-        </ScrollArea>
+        <DataTable
+          columns={columns}
+          data={appointments}
+          pageable={false}
+          showActions={false}
+          minWidth="1000px"
+          className="rounded-2xl"
+        />
       </div>
       <AppointmentDetailsDialog
         appointment={selectedAppointment}
