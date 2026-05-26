@@ -3,8 +3,8 @@
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import { Calendar, Eye } from "lucide-react";
 import {
-  Badge,
   DataTable,
+  StatusBadge,
   type Column,
   Button,
   SearchBar,
@@ -23,22 +23,6 @@ interface PrescriptionListItem {
   doctorName: string;
   status: string;
   createdAt: string;
-}
-
-function getStatusBadgeClasses(status: string) {
-  switch (status.trim().toLowerCase()) {
-    case "completed":
-      return "border-emerald-200 bg-emerald-50 text-emerald-700";
-    case "pending":
-      return "border-amber-200 bg-amber-50 text-amber-700";
-    case "cancelled":
-    case "canceled":
-      return "border-rose-200 bg-rose-50 text-rose-700";
-    case "draft":
-      return "border-slate-200 bg-slate-50 text-slate-700";
-    default:
-      return "border-sky-200 bg-sky-50 text-sky-700";
-  }
 }
 
 function normalize(value: string) {
@@ -127,16 +111,7 @@ export function PrescriptionList({
       },
       {
         header: "Status",
-        render: (p: PrescriptionListItem) => (
-          <Badge
-            variant="outline"
-            className={`rounded-full px-3 py-0.5 text-[11px] font-medium ${getStatusBadgeClasses(
-              p.status,
-            )}`}
-          >
-            {p.status}
-          </Badge>
-        ),
+        render: (p: PrescriptionListItem) => <StatusBadge status={p.status} />,
       },
       {
         header: "Created",
