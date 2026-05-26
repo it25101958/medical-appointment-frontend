@@ -24,7 +24,7 @@ import {
   StatusBadge,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 import {
   FeedbackForm,
   feedbackApi,
