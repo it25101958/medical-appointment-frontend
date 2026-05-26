@@ -20,6 +20,7 @@ import {
   type Column,
   PageHeader,
   SearchBar,
+  StatusBadge,
 } from "@/components/ui";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -56,12 +57,6 @@ function createEmptyForm(): LabTestPayload {
     standardPrice: 0,
     isActive: true,
   };
-}
-
-function getStatusBadgeClasses(isActive: boolean) {
-  return isActive
-    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-    : "border-slate-200 bg-slate-50 text-slate-700";
 }
 
 function normalize(value: string) {
@@ -270,14 +265,7 @@ export function LabTestManagement({
       {
         header: "Status",
         render: (labTest) => (
-          <Badge
-            variant="outline"
-            className={`rounded-full px-3 py-0.5 text-[11px] font-medium ${getStatusBadgeClasses(
-              Boolean(labTest.isActive),
-            )}`}
-          >
-            {labTest.isActive ? "Active" : "Inactive"}
-          </Badge>
+          <StatusBadge status={labTest.isActive ? "ACTIVE" : "INACTIVE"} />
         ),
         className: "w-[120px] px-5 py-4",
       },
@@ -615,14 +603,9 @@ export function LabTestManagement({
                   <Badge variant="outline" className="rounded-full px-3 py-0.5">
                     #{selectedLabTest.id}
                   </Badge>
-                  <Badge
-                    variant="outline"
-                    className={`rounded-full px-3 py-0.5 ${getStatusBadgeClasses(
-                      Boolean(selectedLabTest.isActive),
-                    )}`}
-                  >
-                    {selectedLabTest.isActive ? "Active" : "Inactive"}
-                  </Badge>
+                  <StatusBadge
+                    status={selectedLabTest.isActive ? "ACTIVE" : "INACTIVE"}
+                  />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {selectedLabTest.description}
