@@ -415,7 +415,7 @@ export default function PatientVisitsPage() {
   ];
 
   return (
-    <div className="col-start-1 col-end-14 space-y-6">
+    <div className="col-start-1 col-end-14">
       <PageHeader
         title="My Visits"
         description="Review your appointment history and open each visit to view full details."
