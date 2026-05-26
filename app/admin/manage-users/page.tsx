@@ -4,10 +4,10 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import {
   UserDetailsDialog,
   UserTable,
-  PaginationControls,
   AdminUserRegistrationDialog,
   type User,
 } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 import { apiRequest } from "@/lib/api-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { SearchBar } from "@/components/ui/search-bar";
 import { PageHeader } from "@/components/ui/page-header";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  AlertTriangle,
-  RefreshCcw,
-  Plus,
-  ShieldCheck,
-} from "lucide-react";
+import { AlertTriangle, RefreshCcw, Plus, ShieldCheck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -131,7 +126,7 @@ export default function ManageUsersPage() {
         }>("/users/me", { method: "GET", cache: "no-store" });
         if (mounted) setCurrentUser(data);
       } catch (error) {
-        // ignore — page will show restricted controls if no user
+        console.log(error);
       }
     }
     loadCurrent();
@@ -292,19 +287,17 @@ export default function ManageUsersPage() {
         }
       />
 
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search by ID, name, email, or role"
-          resultCount={filteredUsers.length}
-        />
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by ID, name, email, or role"
+        resultCount={filteredUsers.length}
+      />
 
       <div className="overflow-hidden w-auto rounded-lg border border-border bg-card mb-6">
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentPage} // triggers animation when page changes
+            key={currentPage}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -337,7 +330,6 @@ export default function ManageUsersPage() {
         />
       </div>
 
-      {/* Change Role Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="gap-5 border-border/60 bg-card p-0 shadow-xl sm:max-w-[460px]">
           <DialogHeader>
@@ -425,7 +417,6 @@ export default function ManageUsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Admin User Registration Dialog */}
       <AdminUserRegistrationDialog
         open={registerDialogOpen}
         onOpenChange={setRegisterDialogOpen}
@@ -433,7 +424,6 @@ export default function ManageUsersPage() {
         currentUser={currentUser}
       />
 
-      {/* Deactivate User Confirmation Dialog */}
       <Dialog
         open={deactivateDialogOpen}
         onOpenChange={(dialogOpen) => {
