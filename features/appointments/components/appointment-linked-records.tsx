@@ -14,7 +14,6 @@ import { LabOrderDetailsDialog } from "@/features/lab-orders";
 import type { LabOrderResponse } from "@/features/lab-orders";
 import { PrescriptionDetailsDialog } from "@/features/admin";
 import type { PrescriptionResponse } from "@/features/prescriptions";
-import type { PrescriptionResponse } from "@/types/prescription-types";
 import { billingApi, type BillingResponse } from "@/features/billing";
 import { paymentApi, type PaymentResponse } from "@/features/payment";
 
