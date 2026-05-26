@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { highlightText } from "@/lib/highlight-search";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 
 export type Column<T> = {
   header: string;
@@ -33,8 +34,13 @@ interface DataTableProps<T> {
   className?: string;
   pageable?: boolean;
   pageSize?: number;
+  pageSizeOptions?: number[];
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (size: number) => void;
   showActions?: boolean;
   minWidth?: string;
+  bordered?: boolean;
 }
 
 export function DataTable<T extends object>({
@@ -47,26 +53,46 @@ export function DataTable<T extends object>({
   className,
   pageable = true,
   pageSize = 10,
+  pageSizeOptions = [5, 10, 20],
+  currentPage,
+  onPageChange,
+  onPageSizeChange,
   showActions = true,
   minWidth = "1000px",
+  bordered = true,
 }: DataTableProps<T>) {
-  const [currentPage, setCurrentPage] = React.useState(0);
+  const [internalPage, setInternalPage] = React.useState(0);
+  const [internalPageSize, setInternalPageSize] = React.useState(pageSize);
 
-  React.useEffect(() => {
-    setCurrentPage(0);
-  }, [data.length, pageSize]);
+  const resolvedCurrentPage =
+    typeof currentPage === "number" ? currentPage : internalPage;
+  const resolvedPageSize = onPageSizeChange ? pageSize : internalPageSize;
 
-  const totalPages = Math.ceil(data.length / pageSize);
-  const startIdx = currentPage * pageSize;
-  const endIdx = startIdx + pageSize;
+  const totalPages = Math.ceil(data.length / resolvedPageSize);
+  const startIdx = resolvedCurrentPage * resolvedPageSize;
+  const endIdx = startIdx + resolvedPageSize;
   const paginatedData = data.slice(startIdx, endIdx);
 
-  const handlePrevious = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
-  };
+  const setPage = React.useCallback(
+    (nextPage: number) => {
+      const boundedPage = Math.max(0, Math.min(nextPage, totalPages - 1));
 
-  const handleNext = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1));
+      onPageChange?.(boundedPage);
+
+      if (typeof currentPage !== "number") {
+        setInternalPage(boundedPage);
+      }
+    },
+    [currentPage, onPageChange, totalPages],
+  );
+
+  const handlePageSizeChange = (size: number) => {
+    if (onPageSizeChange) {
+      onPageSizeChange(size);
+    } else {
+      setInternalPageSize(size);
+    }
+    setPage(0);
   };
 
   const getCellValue = (row: T, accessor?: keyof T | string) => {
@@ -81,24 +107,36 @@ export function DataTable<T extends object>({
 
   return (
     <div className={cn("space-y-4", className)}>
-      <ScrollArea className="bg-card rounded-lg border border-border overflow-x-auto">
+      <ScrollArea
+        className={cn(
+          "table-dark-border bg-card overflow-x-auto",
+          bordered ? "table-border rounded-lg" : "rounded-none border-0",
+        )}
+      >
         <Table className="w-full" style={{ minWidth }} data-testid="data-table">
           <TableHeader>
-            <TableRow className="bg-muted/30">
-              {columns.map((col, idx) => (
-                <TableHead
-                  key={idx}
-                  className={cn(
-                    "px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
-                    col.headerClassName,
-                  )}
-                >
-                  {col.header}
-                </TableHead>
-              ))}
+            <TableRow className="table-header-row">
+              {columns.map((col, idx) => {
+                const isActionColumn =
+                  typeof col.header === "string" &&
+                  col.header.toLowerCase().includes("action");
+
+                return (
+                  <TableHead
+                    key={idx}
+                    className={cn(
+                      "tableHead table-head-text",
+                      isActionColumn && "text-center",
+                      col.headerClassName,
+                    )}
+                  >
+                    {col.header}
+                  </TableHead>
+                );
+              })}
 
               {showActions && (
-                <TableHead className="w-[130px] px-4 py-2 text-center text-xs font-medium tracking-wide text-muted-foreground">
+                <TableHead className="w-[130px] tableHead table-head-text text-center">
                   Actions
                 </TableHead>
               )}
@@ -120,27 +158,37 @@ export function DataTable<T extends object>({
                 <TableRow
                   key={rIdx}
                   className={cn(
-                    "hover:bg-muted/20",
+                    "table-row-hover",
                     onRowClick && "cursor-pointer",
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
-                  {columns.map((col, cIdx) => (
-                    <TableCell
-                      key={cIdx}
-                      className={cn("px-4 py-2 align-middle", col.className)}
-                    >
-                      {col.render
-                        ? col.render(row)
-                        : highlightText(
-                            getCellValue(row, col.accessor),
-                            searchQuery,
-                          )}
-                    </TableCell>
-                  ))}
+                  {columns.map((col, cIdx) => {
+                    const isActionColumn =
+                      typeof col.header === "string" &&
+                      col.header.toLowerCase().includes("action");
+
+                    return (
+                      <TableCell
+                        key={cIdx}
+                        className={cn(
+                          "px-4 py-3 align-middle text-sm",
+                          isActionColumn && "text-center",
+                          col.className,
+                        )}
+                      >
+                        {col.render
+                          ? col.render(row)
+                          : highlightText(
+                              getCellValue(row, col.accessor),
+                              searchQuery,
+                            )}
+                      </TableCell>
+                    );
+                  })}
 
                   {showActions && (
-                    <TableCell className="px-4 py-2 text-center align-middle">
+                    <TableCell className="px-4 py-3 text-center align-middle">
                       <div className="flex items-center justify-center gap-2">
                         {onView && (
                           <Button
@@ -166,32 +214,15 @@ export function DataTable<T extends object>({
       </ScrollArea>
 
       {pageable && totalPages > 1 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
-          <span className="text-sm text-muted-foreground">
-            Page {currentPage + 1} of {totalPages}
-          </span>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePrevious}
-              disabled={currentPage === 0}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNext}
-              disabled={currentPage === totalPages - 1}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+        <div className="border-t border-border">
+          <PaginationControls
+            currentPage={resolvedCurrentPage}
+            totalPages={totalPages}
+            pageSize={resolvedPageSize}
+            pageSizeOptions={pageSizeOptions}
+            onPageChange={(page) => setPage(page)}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </div>
       )}
     </div>
