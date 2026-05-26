@@ -35,7 +35,7 @@ import {
   Textarea,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 import { AppointmentDetailsDialog } from "@/features/appointments";
 import { AppointmentStatusBadge } from "@/features/appointments";
 import { appointmentApi } from "@/features/appointments";
