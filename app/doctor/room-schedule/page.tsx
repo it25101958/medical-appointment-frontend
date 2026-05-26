@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, ScrollArea, DataTable, type Column } from "@/components/ui";
+import { Button, ScrollArea, type Column } from "@/components/ui";
 import { RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import {
   roomScheduleApi,
   type RoomScheduleResponse,
 } from "@/features/room-schedule";
+import RoomScheduleList from "@/features/room-schedule/components/room-schedule-list";
 import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -60,46 +61,28 @@ export default function DoctorRoomSchedulePage() {
     }
   }
 
-  return (
-    <div className="col-start-1 col-end-14">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold">My Room Schedules</h1>
-          <p className="text-sm text-muted-foreground max-w-2xl">
-            View all your assigned room schedules across the week.
-          </p>
-        </div>
-        <Button onClick={fetchSchedules} size="sm" variant="outline">
-          <RefreshCcw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
+  const columns: Column<RoomScheduleResponse>[] = [
+    { header: "Schedule ID", accessor: "roomScheduleId" },
+    { header: "Room", render: (schedule) => `Room ${schedule.roomNumber}` },
+    { header: "Day", accessor: "dayOfWeek" },
+    {
+      header: "Time Slot",
+      render: (schedule) => `${schedule.startTime} - ${schedule.endTime}`,
+    },
+    {
+      header: "Created At",
+      render: (schedule) => new Date(schedule.createdAt).toLocaleDateString(),
+    },
+  ];
 
-      <DataTable
-        columns={[
-          { header: "Schedule ID", accessor: "roomScheduleId" },
-          {
-            header: "Room",
-            render: (schedule: RoomScheduleResponse) =>
-              `Room ${schedule.roomNumber}`,
-          },
-          { header: "Day", accessor: "dayOfWeek" },
-          {
-            header: "Time Slot",
-            render: (schedule: RoomScheduleResponse) =>
-              `${schedule.startTime} - ${schedule.endTime}`,
-          },
-          {
-            header: "Created At",
-            render: (schedule: RoomScheduleResponse) =>
-              new Date(schedule.createdAt).toLocaleDateString(),
-          },
-        ]}
-        data={schedules}
-        pageable={true}
-        pageSize={10}
-        showActions={false}
-        emptyMessage="No schedules assigned yet."
-      />
-    </div>
+  return (
+    <RoomScheduleList
+      title="My Room Schedules"
+      description="View all your assigned room schedules across the week."
+      data={schedules}
+      columns={columns}
+      isLoading={isLoading}
+      onRefresh={fetchSchedules}
+    />
   );
 }
