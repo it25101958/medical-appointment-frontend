@@ -51,7 +51,7 @@ import {
   type DayOfWeek,
 } from "@/features/room-schedule";
 import { Room, getRooms } from "@/features/room";
-import { apiRequest } from "@/lib/api-client";
+import { getUsersByRole } from "@/features/admin/api/admin.api";
 import { getErrorMessage } from "@/lib/utils";
 
 interface UserOption {
@@ -277,17 +277,20 @@ export default function AdminRoomSchedulePage() {
     try {
       const [roomsData, doctorsData] = await Promise.all([
         getRooms().catch(() => []),
-        apiRequest<UserOption[]>("/users/role/3", {
-          method: "GET",
-          cache: "no-store",
-        }).catch(() => []),
+        getUsersByRole(3).catch(() => []),
       ]);
       const allSchedules = await roomScheduleApi.getAll().catch(() => []);
 
       setSchedules(allSchedules || []);
       setCurrentPage(0);
       setRooms(roomsData || []);
-      setDoctors(doctorsData || []);
+      setDoctors(
+        (doctorsData || []).map((d) => ({
+          userId: d.userId,
+          firstName: d.firstName || "",
+          lastName: d.lastName || "",
+        })),
+      );
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
