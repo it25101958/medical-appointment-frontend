@@ -3,6 +3,10 @@
 // Data & Tables
 export { DataTable, type Column } from "./data-table";
 export {
+  PaginationControls,
+  type PaginationControlsProps,
+} from "./pagination-controls";
+export {
   StyledTable,
   StyledTableRow,
   StyledTableCell,
@@ -43,6 +47,7 @@ export {
 
 // Layout
 export { Badge } from "./badge";
+export { StatusBadge } from "./status-badge";
 export {
   Card,
   CardHeader,
