@@ -7,8 +7,8 @@ import {
   Mail,
   Phone,
   RefreshCcw,
-  ShieldCheck,
-  User,
+  Edit3,
+  Key,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -66,7 +66,9 @@ export function UserProfile() {
   }
 
   useEffect(() => {
-    loadProfile();
+    (async () => {
+      await loadProfile();
+    })();
   }, []);
 
   const fullName = useMemo(() => {
@@ -77,107 +79,97 @@ export function UserProfile() {
     return name || "My Profile";
   }, [profile]);
 
-  const status = profile?.isActive ?? profile?.active;
-  const role = profile?.roleName || profile?.role || profile?.roleType;
-
   return (
-    <div className="col-start-1 col-end-14 space-y-6">
+    <div className="col-start-1 col-end-14">
       <PageHeader
         title="My Profile"
         description="Review the account details connected to your signed-in user."
         actions={
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={loadProfile}
-            disabled={loading}
-            aria-label="Refresh profile"
-            title="Refresh"
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={loadProfile}
+              disabled={loading}
+              aria-label="Refresh profile"
+              title="Refresh"
+            >
+              <RefreshCcw className="h-4 w-4" />
+            </Button>
+          </div>
         }
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="border-b border-border/60 bg-muted/30 px-6 py-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <User className="size-6" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold tracking-tight">
-                  {loading ? "Loading profile..." : fullName}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  User #{formatValue(profile?.userId)}
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="rounded-full px-3 py-1">
-                {formatValue(role)}
-              </Badge>
-              {status !== undefined && (
-                <Badge
-                  variant="outline"
-                  className={
-                    status
-                      ? "rounded-full border-emerald-200 bg-emerald-50 px-3 py-1 text-emerald-700"
-                      : "rounded-full border-destructive/20 bg-destructive/10 px-3 py-1 text-destructive"
-                  }
-                >
-                  {formatValue(status)}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-
         {loading ? (
           <div className="px-6 py-10 text-center text-sm text-muted-foreground">
             Loading your profile...
           </div>
         ) : profile ? (
-          <div className="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-3">
-            <ProfileInfo
-              icon={<Mail className="size-4" />}
-              label="Email"
-              value={formatValue(profile.email)}
-            />
-            <ProfileInfo
-              icon={<Phone className="size-4" />}
-              label="Phone"
-              value={formatValue(profile.phone)}
-            />
-            <ProfileInfo
-              icon={<IdCard className="size-4" />}
-              label="NIC"
-              value={formatValue(profile.nic || profile.NIC)}
-            />
-            <ProfileInfo
-              icon={<ShieldCheck className="size-4" />}
-              label="Role"
-              value={formatValue(role)}
-            />
-            <ProfileInfo
-              icon={<CalendarDays className="size-4" />}
-              label="Created"
-              value={formatDate(profile.createdAt)}
-            />
-            <ProfileInfo
-              icon={<CalendarDays className="size-4" />}
-              label="Updated"
-              value={formatDate(profile.updatedAt)}
-            />
-            <div className="rounded-lg border border-border/60 bg-muted/20 p-4 md:col-span-2 xl:col-span-3">
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Address
-              </p>
-              <p className="mt-2 text-sm font-medium">
-                {formatValue(profile.address)}
-              </p>
+          <div className="grid gap-6 p-6 md:grid-cols-3">
+            <div className="col-span-1 flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-primary to-emerald-400 text-white">
+                  <span className="text-2xl font-semibold">
+                    {String(fullName)
+                      .split(" ")
+                      .map((s) => s[0])
+                      .slice(0, 2)
+                      .join("")}
+                  </span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold">{fullName}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {formatValue(profile.userId)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => toast.info("Change password")}>
+                  <Key className="h-4 w-4 mr-2" /> Change Password
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => toast.info("View activity")}
+                >
+                  Activity
+                </Button>
+              </div>
+            </div>
+
+            <div className="col-span-2 grid gap-4 md:grid-cols-2">
+              <ProfileInfo
+                icon={<Mail className="size-4" />}
+                label="Email"
+                value={formatValue(profile.email)}
+              />
+              <ProfileInfo
+                icon={<Phone className="size-4" />}
+                label="Phone"
+                value={formatValue(profile.phone)}
+              />
+              <ProfileInfo
+                icon={<IdCard className="size-4" />}
+                label="NIC"
+                value={formatValue(profile.nic || profile.NIC)}
+              />
+              <ProfileInfo
+                icon={<CalendarDays className="size-4" />}
+                label="Created"
+                value={formatDate(profile.createdAt)}
+              />
+
+              <div className="rounded-lg border border-border/60 bg-muted/20 p-4 md:col-span-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Address
+                </p>
+                <p className="mt-2 text-sm font-medium">
+                  {formatValue(profile.address)}
+                </p>
+              </div>
             </div>
           </div>
         ) : (
