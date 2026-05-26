@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from "@/components/ui";
 import type { Column } from "@/components/ui";
-import { PaginationControls } from "@/features/admin";
+import { PaginationControls } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
 import {
   Calendar,
