@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, CheckCircle2 } from "lucide-react";
 import HeroVisual from "./hero-visual";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -23,13 +24,13 @@ export default function Hero() {
           your family&apos;s health journey all from one secure platform.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 mt-8">
-          <a href="/patient/login">
-            <Button className="">
+        <div className="flex flex-col sm:flex-row gap-4 mt-8 w-full">
+          <Link href="/patient/login">
+            <Button className="w-full sm:w-auto">
               Book Appointment <Calendar className="ml-2 size-5" />
             </Button>
-          </a>
-          <Button variant="outline" className="">
+          </Link>
+          <Button variant="outline" className="w-full sm:w-auto">
             View Services
           </Button>
         </div>
