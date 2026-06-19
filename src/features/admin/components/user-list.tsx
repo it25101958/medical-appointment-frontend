@@ -17,12 +17,18 @@ export interface User {
   createdAt: string;
 }
 
-interface UserTableProps {
+export interface UserTableProps {
   users: User[];
   searchQuery?: string;
   onToggleActive: (userId: number, active: boolean) => void;
   onEditRole?: (user: User) => void;
   onViewUserDetails?: (userId: number) => void;
+  currentPage: number;
+  totalPages: number;
+  pageSize: number;
+  pageSizeOptions?: number[];
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (size: number) => void;
 }
 
 const SYSTEM_ADMIN_ID = 1;
@@ -33,6 +39,12 @@ export function UserTable({
   onToggleActive,
   onEditRole,
   onViewUserDetails,
+  currentPage,
+  totalPages,
+  pageSize,
+  pageSizeOptions,
+  onPageChange,
+  onPageSizeChange,
 }: UserTableProps) {
   const columns: Column<User>[] = [
     {
@@ -83,12 +95,12 @@ export function UserTable({
     {
       header: "Actions",
       headerClassName: "",
-      className: "",
+      className: "min-w-[220px] whitespace-nowrap",
       align: "center",
       render: (user) => {
         const isSystemAdmin = user.userId === SYSTEM_ADMIN_ID;
         return (
-          <div className="flex items-end justify-end gap-2">
+          <div className="flex items-center justify-center gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -119,7 +131,13 @@ export function UserTable({
       columns={columns}
       data={users}
       searchQuery={searchQuery}
-      pageable={false}
+      pageable={true}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      pageSize={pageSize}
+      pageSizeOptions={pageSizeOptions}
+      onPageChange={onPageChange}
+      onPageSizeChange={onPageSizeChange}
       showActions={false}
       minWidth="1000px"
       emptyMessage="No users found."
