@@ -206,7 +206,6 @@ const NavigationContainer = () => {
                 onClick={handleLogout}
                 disabled={isLoggingOut}
               >
-                <LogOut className="size-4" />
                 {isLoggingOut ? "Logging out..." : "Logout"}
               </Button>
             ) : (
