@@ -27,7 +27,7 @@ export function PaginationControls({
   onPageSizeChange = () => {},
 }: PaginationControlsProps) {
   return (
-    <div className="table-pagination">
+    <div className="table-pagination border-t border-border">
       <p className="table-pagination-meta">
         Page {currentPage + 1} of {totalPages}
       </p>
