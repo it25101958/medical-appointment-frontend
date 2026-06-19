@@ -188,23 +188,6 @@
     @apply text-xs font-light text-destructive mt-1;
   }
 
-  .table-border {
-    @apply border border-border rounded-lg;
-  }
-
-  .table-dark-border thead tr {
-    @apply border-b border-border;
-  }
-
-  .table-dark-border tbody tr + tr {
-    @apply border-t border-border;
-  }
-
-  .table-dark-border th + th,
-  .table-dark-border td + td {
-    @apply border-l border-border;
-  }
-
   .table-head-text {
     @apply text-xs px-4 py-2 font-medium tracking-wide text-muted-foreground;
   }
