@@ -14,6 +14,7 @@ import {
   Drill,
   PhoneCall,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -94,6 +95,21 @@ function getUserRole() {
   return Number.isFinite(role) && role > 0 ? role : null;
 }
 
+function getDashboardHref(role: number | null) {
+  switch (role) {
+    case 1:
+      return "/admin/dashboard";
+    case 2:
+      return "/staff/dashboard";
+    case 3:
+      return "/doctor/dashboard";
+    case 4:
+      return "/patient/dashboard";
+    default:
+      return "/portal";
+  }
+}
+
 const NavigationContainer = () => {
   const router = useRouter();
   const pathname = usePathname();
@@ -102,6 +118,8 @@ const NavigationContainer = () => {
   const [hasCheckedAuth, setHasCheckedAuth] = React.useState(false);
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const isAuthenticated = userRole !== null;
+  const dashboardHref = getDashboardHref(userRole);
+  const shouldShowDashboardLink = isAuthenticated && pathname === "/";
 
   React.useEffect(() => {
     setUserRole(getUserRole());
@@ -197,6 +215,16 @@ const NavigationContainer = () => {
         </NavigationMenu>
 
         <div className="flex items-center gap-2">
+          {hasCheckedAuth && shouldShowDashboardLink && (
+            <Link href={dashboardHref} passHref>
+              <Button
+                variant="default"
+                className="hidden sm:inline-flex px-4 py-2 font-medium"
+              >
+                Dashboard
+              </Button>
+            </Link>
+          )}
           {hasCheckedAuth &&
             (isAuthenticated ? (
               <Button
@@ -245,6 +273,16 @@ const NavigationContainer = () => {
             </SheetHeader>
             <div className="px-6 flex flex-col gap-6">
               <nav className="flex flex-col gap-2">
+                {hasCheckedAuth && shouldShowDashboardLink && (
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
+                  >
+                    <LayoutDashboard className="size-4" />
+                    Dashboard
+                  </Link>
+                )}
                 {hasCheckedAuth &&
                   (isAuthenticated ? (
                     <button
@@ -295,10 +333,12 @@ const NavigationContainer = () => {
                 </Link>
               </nav>
               <Link
-                href={isAuthenticated ? "/patient/dashboard" : "/patient/login"}
+                href={isAuthenticated ? dashboardHref : "/patient/login"}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <Button className="px-4 py-2">Book Appointment</Button>
+                <Button className="px-4 py-2">
+                  {isAuthenticated ? "Dashboard" : "Book Appointment"}
+                </Button>
               </Link>
             </div>
           </SheetContent>
