@@ -123,7 +123,6 @@ export function UserTable({
       showActions={false}
       minWidth="1000px"
       emptyMessage="No users found."
-      bordered={false}
     />
   );
 }
