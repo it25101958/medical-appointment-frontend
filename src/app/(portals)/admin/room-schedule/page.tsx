@@ -411,7 +411,6 @@ export default function AdminRoomSchedulePage() {
           pageable={false}
           showActions={false}
           emptyMessage="No schedules found"
-          bordered={false}
         />
 
         <PaginationControls
