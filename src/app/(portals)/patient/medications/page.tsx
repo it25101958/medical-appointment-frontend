@@ -21,6 +21,7 @@ import {
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
+import { formatDateOnly } from "@/features/shared/util/format-date";
 import type {
   PrescriptionItemResponse,
   PrescriptionResponse,
@@ -178,6 +179,15 @@ export default function PatientMedicationsPage() {
         className: "min-w-[180px] px-5 py-4 text-muted-foreground",
       },
       {
+        header: "Date",
+        render: (medication) => (
+          <span className="text-sm text-muted-foreground">
+            {formatDateOnly(medication.prescriptionDate)}
+          </span>
+        ),
+        className: "w-[150px] px-5 py-4",
+      },
+      {
         header: "Status",
         render: (medication) => <StatusBadge status={medication.status} />,
         className: "w-[130px] px-5 py-4",
@@ -305,9 +315,7 @@ export default function PatientMedicationsPage() {
                     selectedMedication.prescriptionDate ? (
                       <span className="inline-flex items-center gap-1.5">
                         <CalendarDays className="size-3" />
-                        {new Date(
-                          selectedMedication.prescriptionDate,
-                        ).toLocaleDateString()}
+                        {formatDateOnly(selectedMedication.prescriptionDate)}
                       </span>
                     ) : (
                       "-"
