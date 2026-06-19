@@ -74,13 +74,13 @@ export default function PatientDashboard() {
     },
     {
       icon: FileText,
-      title: "My Prescriptions",
+      title: "Prescriptions",
       buttonText: "View Current",
       action: () => router.push("/patient/prescriptions"),
     },
     {
       icon: Pill,
-      title: "My Medications",
+      title: "Medications",
       buttonText: "View Medicines",
       action: () => router.push("/patient/medications"),
     },
@@ -92,21 +92,15 @@ export default function PatientDashboard() {
     },
     {
       icon: CreditCard,
-      title: "Medical Billing",
+      title: "Billing",
       buttonText: "Pay Invoices",
       action: () => router.push("/patient/payment"),
     },
     {
       icon: History,
-      title: "Medical History",
+      title: "History",
       buttonText: "View Records",
       action: () => router.push("/patient/visits"),
-    },
-    {
-      icon: MessageSquare,
-      title: "Feedback",
-      buttonText: "Share Feedback",
-      action: () => router.push("/patient/feedback"),
     },
   ];
 

@@ -35,10 +35,10 @@ const Bento: React.FC<BentoItem> = ({
   return (
     <div className="bento">
       <Icon className="text-gray-500 h-6 w-6" />
-      <h3 className="text-lg font-semibold mt-2">{title}</h3>
+      <h3 className="main-title font-semibold mt-2">{title}</h3>
       <Button
         variant="outline"
-        className="bentoText"
+        className="bentoText sm:text-sm"
         onClick={action || undefined}
       >
         {buttonText}

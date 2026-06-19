@@ -57,7 +57,7 @@ export function AuthLayout({
       {showImage && imagePosition === "left" && ImagePanel}
 
       <div
-        className={`flex-1 w-full flex flex-col justify-center rounded-3xl border border-border/60 bg-card/50 p-8 shadow-sm md:p-10 ${className}`}
+        className={`flex-1 w-full flex flex-col justify-center rounded-3xl md:border md:border-border/60 md:bg-card/50 md:p-8  md:p-10 ${className}`}
       >
         <div className="mb-6 flex flex-col space-y-2 text-center lg:text-left">
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>

@@ -126,7 +126,9 @@ export function DataTable<T extends object>({
     <div className={cn("space-y-4", className)}>
       <ScrollArea
         className={cn(
-          "table-dark-border bg-card overflow-x-auto",
+          // allow both horizontal and vertical scrolling; limit height so vertical
+          // scrollbar appears when content overflows
+          "table-dark-border bg-card overflow-auto max-h-[60vh] md:max-h-[50vh]",
           bordered ? "table-border rounded-lg" : "rounded-none border-0",
         )}
       >
