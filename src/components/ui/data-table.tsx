@@ -47,6 +47,7 @@ interface DataTableProps<T> {
   pageSize?: number;
   pageSizeOptions?: number[];
   currentPage?: number;
+  totalPages?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   showActions?: boolean;
@@ -66,9 +67,10 @@ export function DataTable<T extends object>({
   emptyMessage = "No results found.",
   className,
   pageable = true,
-  pageSize = 10,
-  pageSizeOptions = [5, 10, 20],
+  pageSize = 5,
+  pageSizeOptions = [5, 10],
   currentPage,
+  totalPages: totalPagesProp,
   onPageChange,
   onPageSizeChange,
   showActions = true,
@@ -80,15 +82,18 @@ export function DataTable<T extends object>({
 }: DataTableProps<T>) {
   const [internalPage, setInternalPage] = React.useState(0);
   const [internalPageSize, setInternalPageSize] = React.useState(pageSize);
+  const isServerPaginated = typeof totalPagesProp === "number";
 
   const resolvedCurrentPage =
     typeof currentPage === "number" ? currentPage : internalPage;
   const resolvedPageSize = onPageSizeChange ? pageSize : internalPageSize;
 
-  const totalPages = Math.ceil(data.length / resolvedPageSize);
+  const totalPages = isServerPaginated
+    ? (totalPagesProp ?? 1)
+    : Math.ceil(data.length / resolvedPageSize);
   const startIdx = resolvedCurrentPage * resolvedPageSize;
   const endIdx = startIdx + resolvedPageSize;
-  const paginatedData = data.slice(startIdx, endIdx);
+  const paginatedData = isServerPaginated ? data : data.slice(startIdx, endIdx);
 
   const setPage = React.useCallback(
     (nextPage: number) => {
@@ -114,11 +119,8 @@ export function DataTable<T extends object>({
 
   const getCellValue = (row: T, accessor?: keyof T | string) => {
     if (!accessor) return "";
-
     const value = (row as Record<string, unknown>)[accessor as string];
-
     if (value === null || value === undefined) return "";
-
     return String(value);
   };
 
@@ -270,7 +272,7 @@ export function DataTable<T extends object>({
       </ScrollArea>
 
       {pageable && totalPages > 1 && (
-        <div className="border-t border-border bg-card">
+        <div className=" bg-card">
           <PaginationControls
             currentPage={resolvedCurrentPage}
             totalPages={totalPages}
@@ -283,22 +285,6 @@ export function DataTable<T extends object>({
       )}
     </div>
   );
-}
-
-export function tableBadgeClassName(
-  type: "primary" | "success" | "danger" | "warning" | "muted",
-) {
-  const base = "rounded-md px-2.5 py-1 text-xs font-medium";
-
-  const variants = {
-    primary: "bg-primary/10 text-primary",
-    success: "bg-green-500/10 text-green-600 dark:text-green-400",
-    danger: "bg-destructive/10 text-destructive",
-    warning: "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400",
-    muted: "bg-muted text-muted-foreground",
-  };
-
-  return cn(base, variants[type]);
 }
 
 export default DataTable;
