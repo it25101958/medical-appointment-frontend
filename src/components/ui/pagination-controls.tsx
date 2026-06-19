@@ -21,8 +21,8 @@ export interface PaginationControlsProps {
 export function PaginationControls({
   currentPage,
   totalPages,
-  pageSize = 10,
-  pageSizeOptions = [5, 10, 20],
+  pageSize = 5,
+  pageSizeOptions = [5, 10],
   onPageChange = () => {},
   onPageSizeChange = () => {},
 }: PaginationControlsProps) {
