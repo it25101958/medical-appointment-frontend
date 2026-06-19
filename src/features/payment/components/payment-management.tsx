@@ -46,6 +46,7 @@ import {
 } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
+import { formatDateTime } from "@/features/shared/util/format-date";
 
 import { paymentApi } from "../api/payment.api";
 import type { PaymentPayload, PaymentResponse } from "../types/payment.types";
@@ -184,6 +185,7 @@ export function PaymentManagement({
         payment.paymentMethod,
         getStatusLabel(payment.paymentStatus),
         payment.transactionId,
+        payment.createdAt,
       ]
         .filter(Boolean)
         .join(" ")
@@ -332,6 +334,15 @@ export function PaymentManagement({
         className: "w-[190px] px-5 py-4 text-muted-foreground",
       },
       {
+        header: "Created",
+        render: (payment) => (
+          <span className="text-sm text-muted-foreground">
+            {formatDateTime(payment.createdAt)}
+          </span>
+        ),
+        className: "w-[190px] px-5 py-4",
+      },
+      {
         header: "Actions",
         render: (payment) => (
           <div className="flex items-center justify-center gap-2">
@@ -421,7 +432,7 @@ export function PaymentManagement({
             pageSize={10}
             showActions={false}
             emptyMessage="No payment records found."
-            minWidth="1150px"
+            minWidth="1320px"
           />
         )}
       </div>
@@ -719,19 +730,11 @@ function PaymentDetailsDialog({
             />
             <InfoPanel
               label="Created"
-              value={
-                payment.createdAt
-                  ? new Date(payment.createdAt).toLocaleString()
-                  : "-"
-              }
+              value={formatDateTime(payment.createdAt)}
             />
             <InfoPanel
               label="Updated"
-              value={
-                payment.updatedAt
-                  ? new Date(payment.updatedAt).toLocaleString()
-                  : "-"
-              }
+              value={formatDateTime(payment.updatedAt)}
             />
           </div>
         )}
