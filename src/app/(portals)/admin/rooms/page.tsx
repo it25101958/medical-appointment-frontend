@@ -296,7 +296,7 @@ export default function AdminRoomsPage() {
           <DataTable
             columns={roomColumns}
             data={filteredRooms}
-            pageable={false}
+            pageable={true}
             showActions={false}
             minWidth="950px"
             emptyMessage="No rooms found."

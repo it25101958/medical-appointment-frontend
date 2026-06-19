@@ -89,8 +89,8 @@ export function DataTable<T extends object>({
   const resolvedPageSize = onPageSizeChange ? pageSize : internalPageSize;
 
   const totalPages = isServerPaginated
-    ? (totalPagesProp ?? 1)
-    : Math.ceil(data.length / resolvedPageSize);
+    ? Math.max(1, totalPagesProp ?? 1)
+    : Math.max(1, Math.ceil(data.length / resolvedPageSize));
   const startIdx = resolvedCurrentPage * resolvedPageSize;
   const endIdx = startIdx + resolvedPageSize;
   const paginatedData = isServerPaginated ? data : data.slice(startIdx, endIdx);
@@ -271,8 +271,8 @@ export function DataTable<T extends object>({
         </Table>
       </ScrollArea>
 
-      {pageable && totalPages > 1 && (
-        <div className=" bg-card">
+      {pageable && (
+        <div className="bg-card">
           <PaginationControls
             currentPage={resolvedCurrentPage}
             totalPages={totalPages}
