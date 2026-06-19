@@ -13,7 +13,6 @@ import {
   Star,
   Trash2,
   CalendarDays,
-  Clock3,
   Eye,
   RefreshCcw,
 } from "lucide-react";
@@ -36,13 +35,13 @@ import {
   Textarea,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/components/ui";
 import { AppointmentDetailsDialog } from "@/features/appointments";
 import { AppointmentStatusBadge } from "@/features/appointments";
 import { appointmentApi } from "@/features/appointments";
 import type { AppointmentResponse } from "@/features/appointments";
 import { feedbackApi } from "@/features/feedback";
 import type { FeedbackResponse } from "@/features/feedback";
+import { formatAppointmentDateTime } from "@/features/shared/util/format-date";
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
@@ -87,8 +86,6 @@ export default function PatientVisitsPage() {
     useState<FeedbackResponse | null>(null);
   const [isDeletingFeedback, setIsDeletingFeedback] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(8);
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -181,26 +178,6 @@ export default function PatientVisitsPage() {
       return haystack.includes(query);
     });
   }, [deferredSearchQuery, sortedAppointments]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredAppointments.length / pageSize),
-  );
-
-  const paginatedAppointments = useMemo(() => {
-    const startIndex = currentPage * pageSize;
-    return filteredAppointments.slice(startIndex, startIndex + pageSize);
-  }, [currentPage, filteredAppointments, pageSize]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [deferredSearchQuery, pageSize]);
-
-  useEffect(() => {
-    if (currentPage > totalPages - 1) {
-      setCurrentPage(totalPages - 1);
-    }
-  }, [currentPage, totalPages]);
 
   const feedbackByAppointment = useMemo(() => {
     const map = new Map<number, FeedbackResponse>();
@@ -329,13 +306,12 @@ export default function PatientVisitsPage() {
       header: "Date & Time",
       render: (appointment) => (
         <div className="space-y-1 text-sm">
-          <span className="flex items-center gap-1.5 ext-muted-foreground">
-            <CalendarDays className="size-3.5 t" />
-            {appointment.appointmentDate}
-          </span>
           <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Clock3 className="size-3.5" />
-            {appointment.appointmentTime}
+            <CalendarDays className="size-3.5" />
+            {formatAppointmentDateTime(
+              appointment.appointmentDate,
+              appointment.appointmentTime,
+            )}
           </span>
         </div>
       ),
@@ -452,23 +428,13 @@ export default function PatientVisitsPage() {
           <>
             <DataTable
               columns={visitColumns}
-              data={paginatedAppointments}
-              pageable={false}
+              data={filteredAppointments}
+              pageable
+              pageSize={8}
+              pageSizeOptions={[5, 8, 10, 20]}
               showActions={false}
               minWidth="1120px"
               emptyMessage="No visits found for your account."
-              bordered={false}
-            />
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 8, 10, 20]}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setCurrentPage(0);
-              }}
             />
           </>
         )}
