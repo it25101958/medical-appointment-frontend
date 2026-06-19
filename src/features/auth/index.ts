@@ -3,6 +3,7 @@
 // Actions
 export {
   loginAction,
+  logoutAction,
   registerAction,
   verifyAccountAction,
   resendVerificationAction,

@@ -128,6 +128,25 @@ export async function loginAction(
   }
 }
 
+export async function logoutAction() {
+  const cookieStore = await cookies();
+
+  cookieStore.set("token", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 0,
+  });
+
+  cookieStore.set("user-role", "", {
+    path: "/",
+    maxAge: 0,
+  });
+
+  return { success: true };
+}
+
 export async function registerAction(payload: RegisterPayload) {
   try {
     const response = await apiRequest("/auth/register", {

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   HeartPulse,
@@ -12,12 +13,14 @@ import {
   FlaskConical,
   Drill,
   PhoneCall,
+  LogOut,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ThemeToggle } from "./theme-toggle";
+import { logoutAction } from "@/features/auth";
 import {
   Sheet,
   SheetContent,
@@ -76,7 +79,48 @@ const services = [
   },
 ];
 
+function getCookieValue(name: string) {
+  if (typeof document === "undefined") return null;
+
+  const cookie = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${name}=`));
+
+  return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
+}
+
+function getUserRole() {
+  const role = Number(getCookieValue("user-role"));
+  return Number.isFinite(role) && role > 0 ? role : null;
+}
+
 const NavigationContainer = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [userRole, setUserRole] = React.useState<number | null>(null);
+  const [hasCheckedAuth, setHasCheckedAuth] = React.useState(false);
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const isAuthenticated = userRole !== null;
+
+  React.useEffect(() => {
+    setUserRole(getUserRole());
+    setHasCheckedAuth(true);
+  }, [pathname]);
+
+  async function handleLogout() {
+    try {
+      setIsLoggingOut(true);
+      await logoutAction();
+      setUserRole(null);
+      setMobileMenuOpen(false);
+      router.replace("/");
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
+
   return (
     <header className="col-span-full flex items-center justify-between w-full">
       <Link href="/" className="flex items-center gap-2 group">
@@ -153,14 +197,28 @@ const NavigationContainer = () => {
         </NavigationMenu>
 
         <div className="flex items-center gap-2">
-          <Link href="/patient/login" passHref>
-            <Button
-              variant="outline"
-              className="hidden sm:inline-flex px-4 py-2 font-medium"
-            >
-              Sign in
-            </Button>
-          </Link>
+          {hasCheckedAuth &&
+            (isAuthenticated ? (
+              <Button
+                type="button"
+                variant="outline"
+                className="hidden sm:inline-flex px-4 py-2 font-medium"
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                <LogOut className="size-4" />
+                {isLoggingOut ? "Logging out..." : "Logout"}
+              </Button>
+            ) : (
+              <Link href="/patient/login" passHref>
+                <Button
+                  variant="outline"
+                  className="hidden sm:inline-flex px-4 py-2 font-medium"
+                >
+                  Sign in
+                </Button>
+              </Link>
+            ))}
           <ThemeToggle />
           <Link href="/payment/online-payment" passHref>
             <Button
@@ -174,7 +232,7 @@ const NavigationContainer = () => {
       </div>
       <div className="flex items-center md:hidden">
         <ThemeToggle />
-        <Sheet>
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="ml-3">
               <Menu className="size-5" />
@@ -188,40 +246,61 @@ const NavigationContainer = () => {
             </SheetHeader>
             <div className="px-6 flex flex-col gap-6">
               <nav className="flex flex-col gap-2">
-                <Link
-                  href="/patient/login"
-                  className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
-                >
-                  sign in
-                </Link>
+                {hasCheckedAuth &&
+                  (isAuthenticated ? (
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
+                      className="flex items-center gap-2 p-3 text-left text-sm font-medium text-primary hover:bg-muted rounded-xl transition-colors disabled:opacity-60"
+                    >
+                      <LogOut className="size-4" />
+                      {isLoggingOut ? "Logging out..." : "Logout"}
+                    </button>
+                  ) : (
+                    <Link
+                      href="/patient/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
+                    >
+                      Sign in
+                    </Link>
+                  ))}
                 <Link
                   href="/admin/laboratory"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
                 >
                   Laboratory
                 </Link>
                 <Link
                   href="/admin/labtest"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
                 >
                   Lab Tests
                 </Link>
                 <Link
                   href="/services"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
                 >
                   Services
                 </Link>
                 <Link
                   href="/contact"
+                  onClick={() => setMobileMenuOpen(false)}
                   className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors"
                 >
                   Contact
                 </Link>
               </nav>
-              <a href="/patient/login">
+              <Link
+                href={isAuthenticated ? "/patient/dashboard" : "/patient/login"}
+                onClick={() => setMobileMenuOpen(false)}
+              >
                 <Button className="px-4 py-2">Book Appointment</Button>
-              </a>
+              </Link>
             </div>
           </SheetContent>
         </Sheet>
