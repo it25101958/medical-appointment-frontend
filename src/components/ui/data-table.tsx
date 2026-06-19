@@ -122,18 +122,25 @@ export function DataTable<T extends object>({
     return String(value);
   };
 
+  const columnSeparatorClass = bordered
+    ? "border-l border-solid !border-border first:border-l-0"
+    : "";
+  const headerSeparatorClass = bordered
+    ? "border-b border-solid !border-border"
+    : "";
+  const rowSeparatorClass = (rowIndex: number) =>
+    bordered && rowIndex > 0 ? "border-t border-solid !border-border" : "";
+
   return (
-    <div className={cn("space-y-4", className)}>
+    <div className={cn(className)}>
       <ScrollArea
         className={cn(
-          // allow both horizontal and vertical scrolling; limit height so vertical
-          // scrollbar appears when content overflows
-          "table-dark-border bg-card overflow-auto max-h-[60vh] md:max-h-[50vh]",
-          bordered ? "table-border rounded-lg" : "rounded-none border-0",
+          "bg-card overflow-auto max-h-[60vh] md:max-h-[50vh]",
+          bordered ? "rounded-lg" : "rounded-none",
         )}
       >
         <Table
-          className="w-full table-auto"
+          className="w-full table-auto border-separate border-spacing-0"
           style={{ minWidth }}
           data-testid="data-table"
         >
@@ -149,6 +156,8 @@ export function DataTable<T extends object>({
                     key={idx}
                     className={cn(
                       "table-head-text",
+                      columnSeparatorClass,
+                      headerSeparatorClass,
                       textAlignClasses[
                         col.headerAlign ??
                           col.align ??
@@ -166,6 +175,8 @@ export function DataTable<T extends object>({
                 <TableHead
                   className={cn(
                     "w-[130px] table-head-text",
+                    columnSeparatorClass,
+                    headerSeparatorClass,
                     textAlignClasses[actionAlign],
                   )}
                 >
@@ -205,6 +216,8 @@ export function DataTable<T extends object>({
                         key={cIdx}
                         className={cn(
                           "px-4 py-3 align-middle text-sm",
+                          columnSeparatorClass,
+                          rowSeparatorClass(rIdx),
                           textAlignClasses[
                             isActionColumn
                               ? actionAlign
@@ -225,7 +238,12 @@ export function DataTable<T extends object>({
 
                   {showActions && (
                     <TableCell
-                      className={cn("px-4 py-3", textAlignClasses[actionAlign])}
+                      className={cn(
+                        "px-4 py-3",
+                        columnSeparatorClass,
+                        rowSeparatorClass(rIdx),
+                        textAlignClasses[actionAlign],
+                      )}
                     >
                       <div className="flex items-center justify-end gap-2">
                         {onView && (
@@ -252,7 +270,7 @@ export function DataTable<T extends object>({
       </ScrollArea>
 
       {pageable && totalPages > 1 && (
-        <div className="">
+        <div className="border-t border-border bg-card">
           <PaginationControls
             currentPage={resolvedCurrentPage}
             totalPages={totalPages}
