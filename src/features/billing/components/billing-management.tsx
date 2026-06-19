@@ -43,6 +43,10 @@ import {
 } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
+import {
+  formatDateOnly,
+  formatDateTime,
+} from "@/features/shared/util/format-date";
 
 import { billingApi } from "../api/billing.api";
 import type {
@@ -297,20 +301,16 @@ export function BillingManagement({
         header: "Billing Date",
         render: (billing) => (
           <span className="text-sm text-muted-foreground">
-            {billing.billingDate
-              ? new Date(billing.billingDate).toLocaleDateString()
-              : "-"}
+            {formatDateTime(billing.billingDate)}
           </span>
         ),
-        className: "w-[150px] px-5 py-4",
+        className: "w-[190px] px-5 py-4",
       },
       {
         header: "Due Date",
         render: (billing) => (
           <span className="text-sm text-muted-foreground">
-            {billing.dueDate
-              ? new Date(billing.dueDate).toLocaleDateString()
-              : "-"}
+            {formatDateOnly(billing.dueDate)}
           </span>
         ),
         className: "w-[150px] px-5 py-4",
@@ -621,19 +621,11 @@ export function BillingManagement({
               />
               <InfoPanel
                 label="Billing Date"
-                value={
-                  selectedBilling.billingDate
-                    ? new Date(selectedBilling.billingDate).toLocaleString()
-                    : "-"
-                }
+                value={formatDateTime(selectedBilling.billingDate)}
               />
               <InfoPanel
                 label="Due Date"
-                value={
-                  selectedBilling.dueDate
-                    ? new Date(selectedBilling.dueDate).toLocaleString()
-                    : "-"
-                }
+                value={formatDateOnly(selectedBilling.dueDate)}
               />
               <InfoPanel label="Status" value={selectedBilling.status} />
             </div>
