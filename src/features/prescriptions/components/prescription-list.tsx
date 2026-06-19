@@ -15,6 +15,7 @@ import { getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { PrescriptionDetailsDialog } from "./prescription-details-dialog";
 import type { PrescriptionResponse } from "@/features/prescriptions";
+import { formatDateTime } from "@/features/shared/util/format-date";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -55,6 +56,7 @@ export function PrescriptionList({
         prescription.patientName,
         prescription.doctorName,
         prescription.status,
+        prescription.createdAt,
       ]
         .filter(Boolean)
         .join(" ")
@@ -118,10 +120,10 @@ export function PrescriptionList({
         render: (p: PrescriptionListItem) => (
           <div className="flex items-center justify-end gap-2 text-muted-foreground">
             <Calendar className="size-3" />
-            {new Date(p.createdAt).toLocaleDateString()}
+            {formatDateTime(p.createdAt)}
           </div>
         ),
-        className: "px-5 py-4 text-right",
+        className: "w-[190px] px-5 py-4 text-right",
       },
       {
         header: "Actions",
