@@ -14,7 +14,7 @@ export function highlightText(text: string, query: string): React.ReactNode {
           key={idx}
           className={
             part.toLowerCase() === query.toLowerCase()
-              ? "bg-yellow-300 dark:bg-yellow-600 text-foreground font-medium rounded px-0.5"
+              ? "bg-purple-300 dark:bg-purple-600 text-foreground font-medium"
               : ""
           }
         >
