@@ -24,12 +24,12 @@ import {
   StatusBadge,
   type Column,
 } from "@/components/ui";
-import { PaginationControls } from "@/components/ui";
 import {
   FeedbackForm,
   feedbackApi,
   type FeedbackResponse,
 } from "@/features/feedback";
+import { formatDateTime } from "@/features/shared/util/format-date";
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
@@ -52,8 +52,6 @@ export default function PatientFeedbackPage() {
     useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(8);
 
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -118,23 +116,6 @@ export default function PatientFeedbackPage() {
     });
   }, [deferredSearchQuery, feedback]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredFeedback.length / pageSize));
-
-  const paginatedFeedback = useMemo(() => {
-    const startIndex = currentPage * pageSize;
-    return filteredFeedback.slice(startIndex, startIndex + pageSize);
-  }, [currentPage, filteredFeedback, pageSize]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [deferredSearchQuery, pageSize]);
-
-  useEffect(() => {
-    if (currentPage > totalPages - 1) {
-      setCurrentPage(totalPages - 1);
-    }
-  }, [currentPage, totalPages]);
-
   const feedbackColumns: Column<FeedbackResponse>[] = [
     {
       header: "Feedback",
@@ -175,10 +156,10 @@ export default function PatientFeedbackPage() {
       header: "Created",
       render: (item) => (
         <span className="text-sm text-muted-foreground">
-          {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : "-"}
+          {formatDateTime(item.createdAt)}
         </span>
       ),
-      className: "w-[150px] px-5 py-4",
+      className: "w-[190px] px-5 py-4",
     },
     {
       header: "Actions",
@@ -245,23 +226,13 @@ export default function PatientFeedbackPage() {
           <>
             <DataTable
               columns={feedbackColumns}
-              data={paginatedFeedback}
-              pageable={false}
+              data={filteredFeedback}
+              pageable
+              pageSize={8}
+              pageSizeOptions={[5, 8, 10, 20]}
               showActions={false}
               minWidth="980px"
               emptyMessage="No feedback submitted yet."
-              bordered={false}
-            />
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 8, 10, 20]}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setCurrentPage(0);
-              }}
             />
           </>
         )}
@@ -313,11 +284,7 @@ export default function PatientFeedbackPage() {
                 />
                 <InfoPanel
                   label="Created"
-                  value={
-                    selectedFeedback.createdAt
-                      ? new Date(selectedFeedback.createdAt).toLocaleString()
-                      : "-"
-                  }
+                  value={formatDateTime(selectedFeedback.createdAt)}
                 />
               </div>
 
