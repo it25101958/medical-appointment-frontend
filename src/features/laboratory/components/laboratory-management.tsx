@@ -19,6 +19,7 @@ import {
   Badge,
   Button,
   DataTable,
+  PaginationControls,
   type Column,
   PageHeader,
   SearchBar,
@@ -45,6 +46,7 @@ import {
 } from "@/features/laboratory";
 import { getErrorMessage } from "@/lib/utils";
 import { CrudActionButton } from "@/features/shared";
+import { usePagination } from "@/lib/use-pagination";
 
 function createEmptyForm(): LaboratoryPayload {
   return {
