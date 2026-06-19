@@ -414,7 +414,6 @@ export default function AdminMedicationsPage() {
               showActions={false}
               minWidth="1180px"
               emptyMessage="No medications match your search."
-              bordered={false}
             />
 
             <PaginationControls
