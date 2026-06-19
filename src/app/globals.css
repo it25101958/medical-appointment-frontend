@@ -169,7 +169,7 @@
   }
 
   .form-label {
-    @apply text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2;
+    @apply text-xs uppercase tracking-widest text-muted-foreground font-bold;
   }
 
   .bentoText {
