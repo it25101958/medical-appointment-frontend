@@ -26,6 +26,7 @@ import {
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
+import { formatDateTime } from "@/features/shared/util/format-date";
 import { labResultApi } from "../api/lab-result.api";
 import { LabResultResponse } from "../types/lab-result.types";
 
@@ -103,6 +104,7 @@ export function PatientLabResults() {
         result.referenceRange,
         result.status,
         result.remarks,
+        result.updatedAt,
       ]
         .filter(Boolean)
         .join(" ")
@@ -147,6 +149,15 @@ export function PatientLabResults() {
         header: "Status",
         render: (result) => <StatusBadge status={result.status} />,
         className: "w-[140px] px-5 py-4",
+      },
+      {
+        header: "Updated",
+        render: (result) => (
+          <span className="text-sm text-muted-foreground">
+            {formatDateTime(result.updatedAt)}
+          </span>
+        ),
+        className: "w-[190px] px-5 py-4",
       },
       {
         header: "Actions",
@@ -207,7 +218,7 @@ export function PatientLabResults() {
             pageable
             pageSize={10}
             showActions={false}
-            minWidth="1080px"
+            minWidth="1240px"
             emptyMessage="No lab results found."
           />
         )}
@@ -258,11 +269,7 @@ export function PatientLabResults() {
                 />
                 <InfoPanel
                   label="Updated"
-                  value={
-                    selectedResult.updatedAt
-                      ? new Date(selectedResult.updatedAt).toLocaleString()
-                      : "-"
-                  }
+                  value={formatDateTime(selectedResult.updatedAt)}
                 />
                 <InfoPanel label="Result ID" value={`#${selectedResult.id}`} />
               </div>
