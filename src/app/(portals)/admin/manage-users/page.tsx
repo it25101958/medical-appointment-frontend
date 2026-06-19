@@ -8,7 +8,6 @@ import {
   AdminUserRegistrationDialog,
   type User,
 } from "@/features/admin";
-import { PaginationControls } from "@/components/ui";
 import type {
   LoadCurrent,
   PageableResponse,
@@ -296,6 +295,15 @@ export default function ManageUsersPage() {
               onToggleActive={handleToggleActiveRequest}
               onEditRole={openRoleDialog}
               onViewUserDetails={handleViewUserDetails}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              pageSize={pageSize}
+              pageSizeOptions={[5, 10, 20]}
+              onPageChange={(page) => setCurrentPage(page)}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setCurrentPage(0);
+              }}
             />
             <UserDetailsDialog
               userId={viewUserId}
@@ -304,17 +312,6 @@ export default function ManageUsersPage() {
             />
           </motion.div>
         </AnimatePresence>
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          pageSize={pageSize}
-          pageSizeOptions={[5, 10, 20, 50]}
-          onPageChange={(page) => setCurrentPage(page)}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(0);
-          }}
-        />
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
