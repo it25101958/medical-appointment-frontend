@@ -220,14 +220,14 @@ const NavigationContainer = () => {
               </Link>
             ))}
           <ThemeToggle />
-          <Link href="/payment/online-payment" passHref>
+          {/* <Link href="/payment/online-payment" passHref>
             <Button
               variant="default"
               className="hidden sm:inline-flex px-4 py-2 font-medium"
             >
               Online Payment
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
       <div className="flex items-center md:hidden">
