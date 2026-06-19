@@ -172,8 +172,12 @@
     @apply text-xs uppercase tracking-widest text-muted-foreground font-bold;
   }
 
-  .bentoText {
-    @apply xs:mt-2 xs:text-xs;
+  .bento-title {
+    @apply lg:text-xl xs:text-xs font-semibold py-2;
+  }
+
+  .bento-text {
+    @apply xs:mt-2 xs:text-xs  sm:text-sm;
   }
 
   .bento {
