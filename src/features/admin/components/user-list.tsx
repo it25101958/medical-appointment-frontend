@@ -2,8 +2,8 @@
 
 import { Button, DataTable, type Column } from "@/components/ui";
 import { StatusBadge } from "@/components/ui";
-import { highlightText } from "@/lib/highlight-search";
 import { formatDate } from "@/features/shared/util/format-date";
+import { highlightText } from "@/lib/highlight-search";
 
 export interface User {
   userId: number;
