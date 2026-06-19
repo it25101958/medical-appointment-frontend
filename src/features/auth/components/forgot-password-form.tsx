@@ -27,7 +27,6 @@ export function ForgotPasswordForm() {
     validators: { onSubmit: forgotPasswordSchema },
     onSubmit: async ({ value }) => {
       const email = value.email.trim();
-
       toast.success("If an account exists, a reset code will be sent.", {
         description: email,
       });

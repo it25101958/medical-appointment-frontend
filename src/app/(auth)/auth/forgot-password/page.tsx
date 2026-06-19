@@ -4,7 +4,7 @@ import { ForgotPasswordForm } from "@/features/auth";
 
 export default function ForgotPasswordPage() {
   return (
-    <section className="col-start-4 col-end-10 overflow-hidden rounded-3xl border border-border p-8">
+    <section className="mt-10 col-start-5 col-end-9 overflow-hidden rounded-3xl border border-border p-8">
       <div className="w-auto">
         <div className="mb-6 space-y-2 text-center lg:text-left">
           <h1 className="text-3xl font-semibold tracking-tight">
