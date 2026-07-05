@@ -13,19 +13,11 @@ interface PrescriptionListItem {
 
 interface PrescriptionsResponse {
   content: PrescriptionListItem[];
-  totalPages: number;
 }
 
-export default async function AdminPrescriptionsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const params = await searchParams;
-  const page = Number(params.page) || 0;
-
+export default async function AdminPrescriptionsPage() {
   const data = await apiRequest<PrescriptionsResponse>(
-    `/prescription?page=${page}&size=5`,
+    "/prescription?page=0&size=100",
     {
       method: "GET",
       cache: "no-store",
@@ -41,8 +33,6 @@ export default async function AdminPrescriptionsPage({
 
       <AdminPrescriptionsClient
         data={data.content}
-        currentPage={page}
-        totalPages={data.totalPages}
       />
     </div>
   );
