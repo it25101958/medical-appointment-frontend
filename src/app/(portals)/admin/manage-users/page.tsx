@@ -312,75 +312,79 @@ export default function ManageUsersPage() {
         onOpenChange={setOpen}
         title="Change User Role"
         description="Update access permissions for the selected account."
-        icon={
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <ShieldCheck className="size-5" />
-          </div>
-        }
-        footer={
-          <>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setOpen(false);
-                setSelectedUser(null);
-                setNewRole(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button onClick={handleChangeRole} disabled={newRole === null}>
-              Save Changes
-            </Button>
-          </>
-        }
+        variant="info"
+        message={{
+          title: "Role permission update",
+          content:
+            "Changing this role will update the user's access permissions across the system.",
+        }}
+        cancelAction={{
+          label: "Cancel",
+          variant: "outline",
+          onClick: () => {
+            setOpen(false);
+            setSelectedUser(null);
+            setNewRole(null);
+          },
+        }}
+        primaryAction={{
+          label: "Save Changes",
+          onClick: handleChangeRole,
+          disabled: !selectedUser || newRole === null,
+        }}
       >
-        {selectedUser && (
-          <div className="">
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm font-medium leading-none">
-                  {selectedUser.firstName} {selectedUser.lastName}
-                </p>
+        {selectedUser ? (
+          <div className="space-y-5">
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium leading-none">
+                    {selectedUser.firstName} {selectedUser.lastName}
+                  </p>
 
-                <p className="mt-1 text-xs text-muted-foreground">
-                  User ID {selectedUser.userId}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-muted-foreground">
-                  Current role
-                </span>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {selectedUser.email}
+                  </p>
+                </div>
 
                 <span className={getRoleBadgeClass()}>
-                  {selectedUser.roleName}
+                  {selectedUser.roleName.toLocaleLowerCase()}
                 </span>
               </div>
             </div>
+
+            <Field>
+              <FieldLabel>New Role</FieldLabel>
+
+              <Select
+                value={newRole?.toString() || ""}
+                onValueChange={(value) => setNewRole(Number(value))}
+              >
+                <SelectTrigger className="h-10 w-full bg-background">
+                  <SelectValue placeholder="Select new role" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {ROLE_OPTIONS.filter(
+                    (role) => role.label !== selectedUser?.roleName,
+                  ).map((role) => (
+                    <SelectItem key={role.value} value={role.value.toString()}>
+                      {role.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed border-border/70 bg-muted/20 px-4 py-6 text-center">
+            <p className="text-sm font-medium">No user selected</p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+              Select a user before changing role permissions.
+            </p>
           </div>
         )}
-
-        <Field>
-          <FieldLabel>New Role</FieldLabel>
-          <Select
-            value={newRole?.toString() || ""}
-            onValueChange={(value) => setNewRole(Number(value))}
-          >
-            <SelectTrigger className="h-10 w-full bg-background">
-              <SelectValue placeholder="Select new role" />
-            </SelectTrigger>
-            <SelectContent>
-              {ROLE_OPTIONS.filter(
-                (role) => role.label !== selectedUser?.roleName,
-              ).map((role) => (
-                <SelectItem key={role.value} value={role.value.toString()}>
-                  {role.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </Field>
       </DialogBox>
 
       <AdminUserRegistrationDialog
@@ -397,38 +401,42 @@ export default function ManageUsersPage() {
         }}
         title="Deactivate User"
         description="Are you sure you want to deactivate this account?"
-        icon={
-          <div className="flex size-10 items-center justify-center rounded-lg bg-destructive/10 text-destructive">
-            <AlertTriangle className="size-5" />
-          </div>
-        }
-        footer={
-          <>
-            <Button
-              variant="outline"
-              onClick={closeDeactivateDialog}
-              disabled={deactivating}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={confirmDeactivateUser}
-              disabled={deactivating}
-            >
-              {deactivating ? "Deactivating..." : "Deactivate"}
-            </Button>
-          </>
-        }
+        variant="destructive"
+        message={{
+          title: "Confirm account deactivation",
+          content:
+            "This user will no longer be able to sign in or access the medical appointment system.",
+        }}
+        cancelAction={{
+          label: "Cancel",
+          variant: "outline",
+          onClick: closeDeactivateDialog,
+          disabled: deactivating,
+        }}
+        primaryAction={{
+          label: "Deactivate",
+          loadingLabel: "Deactivating...",
+          variant: "destructive",
+          onClick: confirmDeactivateUser,
+          loading: deactivating,
+          disabled: deactivating,
+        }}
       >
-        {pendingDeactivateUser && (
+        {pendingDeactivateUser ? (
           <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
             <p className="text-sm font-medium">
               {pendingDeactivateUser.firstName} {pendingDeactivateUser.lastName}
             </p>
+
             <p className="mt-1 text-xs text-muted-foreground">
-              User ID{pendingDeactivateUser.userId} ·{" "}
               {pendingDeactivateUser.email}
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-dashed border-border/70 bg-muted/20 px-4 py-6 text-center">
+            <p className="text-sm font-medium">No user selected</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Select a user before deactivating an account.
             </p>
           </div>
         )}
