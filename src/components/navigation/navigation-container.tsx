@@ -242,7 +242,7 @@ const NavigationContainer = () => {
                   variant="outline"
                   className="hidden sm:inline-flex px-4 py-2 font-medium"
                 >
-                  Sign in
+                  Sign In
                 </Button>
               </Link>
             ))}
@@ -300,7 +300,7 @@ const NavigationContainer = () => {
                       onClick={() => setMobileMenuOpen(false)}
                       className="p-3 text-sm font-medium hover:bg-muted rounded-xl transition-colors text-primary"
                     >
-                      Sign in
+                      Sign In
                     </Link>
                   ))}
                 <Link
