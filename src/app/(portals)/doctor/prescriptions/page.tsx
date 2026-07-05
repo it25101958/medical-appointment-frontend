@@ -1,6 +1,5 @@
 import { apiRequest } from "@/lib/api-client";
 import { PrescriptionList } from "@/features/admin";
-import { PaginationControls } from "@/components/ui";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -13,19 +12,11 @@ interface PrescriptionListItem {
 
 interface PrescriptionsResponse {
   content: PrescriptionListItem[];
-  totalPages: number;
 }
 
-export default async function DoctorPrescriptionsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page?: string }>;
-}) {
-  const params = await searchParams;
-  const page = Number(params.page) || 0;
-
+export default async function DoctorPrescriptionsPage() {
   const data = await apiRequest<PrescriptionsResponse>(
-    `/prescription/my?page=${page}&size=5`,
+    "/prescription/my?page=0&size=100",
     {
       method: "GET",
       cache: "no-store",
@@ -41,7 +32,6 @@ export default async function DoctorPrescriptionsPage({
 
       <div className="rounded-3xl border border-border/60 bg-card/50 overflow-hidden shadow-sm">
         <PrescriptionList data={data.content} />
-        <PaginationControls currentPage={page} totalPages={data.totalPages} />
       </div>
     </div>
   );
