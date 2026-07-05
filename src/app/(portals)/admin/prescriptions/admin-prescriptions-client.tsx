@@ -4,7 +4,6 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { SearchBar } from "@/components/ui/search-bar";
 import { PrescriptionList } from "@/features/admin";
-import { PaginationControls } from "@/components/ui";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -17,19 +16,13 @@ interface PrescriptionListItem {
 
 interface Props {
   data: PrescriptionListItem[];
-  currentPage: number;
-  totalPages: number;
 }
 
 function normalize(value: string) {
   return value.trim().toLowerCase();
 }
 
-export function AdminPrescriptionsClient({
-  data,
-  currentPage,
-  totalPages,
-}: Props) {
+export function AdminPrescriptionsClient({ data }: Props) {
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
@@ -68,8 +61,6 @@ export function AdminPrescriptionsClient({
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <PrescriptionList data={filteredPrescriptions} showSearch={false} />
-
-        <PaginationControls currentPage={currentPage} totalPages={totalPages} />
       </div>
     </>
   );
