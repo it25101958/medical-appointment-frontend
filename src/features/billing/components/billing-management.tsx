@@ -275,8 +275,15 @@ export function BillingManagement({
     () => [
       {
         header: "Billing ID",
-        render: (billing) =>
-          highlightText(`#${billing.billingId}`, deferredSearchQuery),
+        render: (billing) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(billing)}
+          >
+            {highlightText(`#${billing.billingId}`, deferredSearchQuery)}
+          </button>
+        ),
         className: "w-[130px] px-5 py-4 font-medium",
       },
       {
@@ -322,43 +329,32 @@ export function BillingManagement({
       },
       {
         header: "Actions",
+        isAction: true,
+        requiresManage: true,
         render: (billing) => (
           <div className="flex items-center justify-center gap-2">
             <Button
               size="icon-sm"
               variant="outline"
-              onClick={() => openDetailsDialog(billing)}
-              aria-label="View billing"
-              title="View"
+              onClick={() => openEditDialog(billing)}
+              aria-label="Edit billing"
+              title="Edit"
             >
-              <Eye className="size-4" />
+              <Edit3 className="size-4" />
             </Button>
-            {canManage && (
-              <>
-                <Button
-                  size="icon-sm"
-                  variant="outline"
-                  onClick={() => openEditDialog(billing)}
-                  aria-label="Edit billing"
-                  title="Edit"
-                >
-                  <Edit3 className="size-4" />
-                </Button>
-                <Button
-                  size="icon-sm"
-                  variant="outline"
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => openDeleteDialog(billing)}
-                  aria-label="Delete billing"
-                  title="Delete"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </>
-            )}
+            <Button
+              size="icon-sm"
+              variant="outline"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => openDeleteDialog(billing)}
+              aria-label="Delete billing"
+              title="Delete"
+            >
+              <Trash2 className="size-4" />
+            </Button>
           </div>
         ),
-        className: "w-[150px] px-5 py-4 text-center",
+        className: "w-[130px] px-5 py-4 text-center",
       },
     ],
     [canManage, deferredSearchQuery, openEditDialog],
@@ -408,6 +404,7 @@ export function BillingManagement({
             data={filteredBillings}
             pageable
             pageSize={10}
+            canManage={canManage}
             showActions={false}
             emptyMessage="No billing records found."
           />
