@@ -2,7 +2,7 @@
 
 import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { CalendarDays, Eye, Pill, RefreshCcw } from "lucide-react";
+import { CalendarDays, Pill, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -142,9 +142,13 @@ export default function PatientMedicationsPage() {
         header: "Medication",
         render: (medication) => (
           <div className="space-y-0.5">
-            <p className="font-medium">
+            <button
+              type="button"
+              className="text-left font-medium hover:text-primary hover:underline"
+              onClick={() => setSelectedMedication(medication)}
+            >
               {highlightText(medication.medicationName, deferredSearchQuery)}
-            </p>
+            </button>
             <p className="text-xs text-muted-foreground">
               {highlightText(
                 medication.genericName || "-",
@@ -192,23 +196,6 @@ export default function PatientMedicationsPage() {
         render: (medication) => <StatusBadge status={medication.status} />,
         className: "w-[130px] px-5 py-4",
       },
-      {
-        header: "Actions",
-        render: (medication) => (
-          <div className="flex items-center justify-center">
-            <Button
-              size="icon-sm"
-              variant="outline"
-              onClick={() => setSelectedMedication(medication)}
-              aria-label="View medication"
-              title="View"
-            >
-              <Eye className="size-4" />
-            </Button>
-          </div>
-        ),
-        className: "w-[110px] px-5 py-4 text-center",
-      },
     ],
     [deferredSearchQuery],
   );
@@ -251,7 +238,7 @@ export default function PatientMedicationsPage() {
             pageable
             pageSize={10}
             showActions={false}
-            minWidth="1120px"
+            minWidth="1010px"
             emptyMessage="No medications found."
           />
         )}
