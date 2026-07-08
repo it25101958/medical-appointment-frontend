@@ -1,7 +1,11 @@
 // UI Components Index - Central export point for all styled components
 
 // Data & Tables
-export { DataTable, type Column } from "./data-table";
+export {
+  DataTable,
+  type Column,
+  type DataTableRenderContext,
+} from "./data-table";
 export {
   PaginationControls,
   type PaginationControlsProps,
