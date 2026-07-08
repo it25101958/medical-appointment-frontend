@@ -26,7 +26,7 @@ import {
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
-import { formatDateTime } from "@/features/shared/util/format-date";
+import { formatDate } from "@/features/shared/util/format-date";
 import { labResultApi } from "../api/lab-result.api";
 import { LabResultResponse } from "../types/lab-result.types";
 
@@ -129,8 +129,15 @@ export function PatientLabResults() {
       },
       {
         header: "Test",
-        render: (result) =>
-          highlightText(result.testName || "-", deferredSearchQuery),
+        render: (result) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => setSelectedResult(result)}
+          >
+            {highlightText(result.testName || "-", deferredSearchQuery)}
+          </button>
+        ),
         className: "min-w-[220px] px-5 py-4 font-medium",
       },
       {
@@ -154,27 +161,10 @@ export function PatientLabResults() {
         header: "Updated",
         render: (result) => (
           <span className="text-sm text-muted-foreground">
-            {formatDateTime(result.updatedAt)}
+            {formatDate(result.updatedAt)}
           </span>
         ),
         className: "w-[190px] px-5 py-4",
-      },
-      {
-        header: "Actions",
-        render: (result) => (
-          <div className="flex items-center justify-center">
-            <Button
-              size="icon-sm"
-              variant="outline"
-              onClick={() => setSelectedResult(result)}
-              aria-label="View lab result"
-              title="View"
-            >
-              <Eye className="size-4" />
-            </Button>
-          </div>
-        ),
-        className: "w-[110px] px-5 py-4 text-center",
       },
     ],
     [deferredSearchQuery],
@@ -218,7 +208,7 @@ export function PatientLabResults() {
             pageable
             pageSize={10}
             showActions={false}
-            minWidth="1240px"
+            minWidth="1130px"
             emptyMessage="No lab results found."
           />
         )}
@@ -269,7 +259,7 @@ export function PatientLabResults() {
                 />
                 <InfoPanel
                   label="Updated"
-                  value={formatDateTime(selectedResult.updatedAt)}
+                  value={formatDate(selectedResult.updatedAt)}
                 />
                 <InfoPanel label="Result ID" value={`#${selectedResult.id}`} />
               </div>
