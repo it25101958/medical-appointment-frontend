@@ -16,7 +16,6 @@ import { AppointmentResponse } from "@/features/appointments";
 import { getErrorMessage } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -382,7 +381,16 @@ export function TodayAppointmentsList({ appointments }: Props) {
       headerClassName: "min-w-[110px]",
       className: "min-w-[110px]",
       render: (appointment) => (
-        <span className="text-sm">{appointment.appointmentNumber}</span>
+        <button
+          type="button"
+          className="text-left text-sm font-medium hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
+          onClick={() => loadAppointment(appointment.appointmentId)}
+          disabled={loadingAppointmentId === appointment.appointmentId}
+        >
+          {loadingAppointmentId === appointment.appointmentId
+            ? "Loading..."
+            : appointment.appointmentNumber}
+        </button>
       ),
     },
     {
@@ -433,24 +441,6 @@ export function TodayAppointmentsList({ appointments }: Props) {
         <span className="line-clamp-2 text-sm text-muted-foreground">
           {appointment.notes || "No notes added"}
         </span>
-      ),
-    },
-    {
-      header: "View",
-      headerClassName: "text-center min-w-[120px]",
-      className: "text-center min-w-[120px]",
-      render: (appointment) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="rounded-xl"
-          onClick={() => loadAppointment(appointment.appointmentId)}
-          disabled={loadingAppointmentId === appointment.appointmentId}
-        >
-          {loadingAppointmentId === appointment.appointmentId
-            ? "Loading..."
-            : "View"}
-        </Button>
       ),
     },
     {
@@ -507,14 +497,13 @@ export function TodayAppointmentsList({ appointments }: Props) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <DataTable
           columns={columns}
           data={appointments}
           pageable={false}
           showActions={false}
           minWidth="1000px"
-          className="rounded-2xl"
         />
       </div>
       <AppointmentDetailsDialog
