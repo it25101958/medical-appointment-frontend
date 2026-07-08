@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button, DataTable, type Column } from "@/components/ui";
+import { Button, DataTable, PageHeader, type Column } from "@/components/ui";
 import { RefreshCcw } from "lucide-react";
 
 export default function RoomScheduleList<T extends object>({
@@ -20,28 +20,32 @@ export default function RoomScheduleList<T extends object>({
   onRefresh?: () => void;
 }) {
   return (
-    <div className="col-start-1 col-end-14">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
-        <div>
-          {title ? <h1 className="text-2xl font-semibold">{title}</h1> : null}
-          {description ? (
-            <p className="text-sm text-muted-foreground max-w-2xl">
-              {description}
-            </p>
-          ) : null}
-        </div>
-        <Button onClick={onRefresh} size="sm" variant="outline">
-          <RefreshCcw className="h-4 w-4" /> Refresh
-        </Button>
-      </div>
-
-      <DataTable<T>
-        columns={columns}
-        data={data}
-        pageable
-        pageSize={10}
-        showActions={false}
+    <div className="col-start-1 col-end-14 space-y-6">
+      <PageHeader
+        title={title || "Room Schedules"}
+        description={description || "Review room schedule records."}
+        actions={
+          <Button onClick={onRefresh} size="sm" variant="outline">
+            <RefreshCcw className="h-4 w-4" /> Refresh
+          </Button>
+        }
       />
+
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        {isLoading ? (
+          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
+            Loading room schedules...
+          </div>
+        ) : (
+          <DataTable<T>
+            columns={columns}
+            data={data}
+            pageable
+            pageSize={10}
+            showActions={false}
+          />
+        )}
+      </div>
     </div>
   );
 }
