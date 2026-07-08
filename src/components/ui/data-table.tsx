@@ -19,18 +19,24 @@ import { PaginationControls } from "./pagination-controls";
 export type Column<T> = {
   header: string;
   accessor?: keyof T | string;
-  render?: (row: T) => React.ReactNode;
+  render?: (row: T, context: DataTableRenderContext) => React.ReactNode;
   className?: string;
   headerClassName?: string;
   align?: TableTextAlign;
   headerAlign?: TableTextAlign;
   cellAlign?: TableTextAlign;
+  isAction?: boolean;
+  requiresManage?: boolean;
 };
 
 type TableTextAlign = "left" | "center" | "right";
 
+export type DataTableRenderContext = {
+  canManage: boolean;
+};
+
 const textAlignClasses: Record<TableTextAlign, string> = {
-  left: "xl text-start",
+  left: "text-left",
   center: "text-center",
   right: "text-end",
 };
@@ -51,6 +57,7 @@ interface DataTableProps<T> {
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
   showActions?: boolean;
+  canManage?: boolean;
   minWidth?: string;
   bordered?: boolean;
   defaultHeaderAlign?: TableTextAlign;
@@ -59,6 +66,7 @@ interface DataTableProps<T> {
 }
 
 export function DataTable<T extends object>({
+  canManage = false,
   columns,
   data,
   searchQuery = "",
@@ -73,7 +81,7 @@ export function DataTable<T extends object>({
   totalPages: totalPagesProp,
   onPageChange,
   onPageSizeChange,
-  showActions = true,
+  showActions = false,
   minWidth = "1000px",
   bordered = true,
   defaultHeaderAlign = "left",
@@ -83,6 +91,16 @@ export function DataTable<T extends object>({
   const [internalPage, setInternalPage] = React.useState(0);
   const [internalPageSize, setInternalPageSize] = React.useState(pageSize);
   const isServerPaginated = typeof totalPagesProp === "number";
+  const canManageRows = Boolean(canManage);
+  const visibleColumns = React.useMemo(
+    () => columns.filter((column) => canManageRows || !column.requiresManage),
+    [canManageRows, columns],
+  );
+  const hasBuiltInActions = Boolean(showActions && canManageRows && onView);
+  const renderContext = React.useMemo<DataTableRenderContext>(
+    () => ({ canManage: canManageRows }),
+    [canManageRows],
+  );
 
   const resolvedCurrentPage =
     typeof currentPage === "number" ? currentPage : internalPage;
@@ -148,10 +166,11 @@ export function DataTable<T extends object>({
         >
           <TableHeader>
             <TableRow className="table-header-row">
-              {columns.map((col, idx) => {
+              {visibleColumns.map((col, idx) => {
                 const isActionColumn =
-                  typeof col.header === "string" &&
-                  col.header.toLowerCase().includes("action");
+                  col.isAction ||
+                  col.header.toLowerCase().includes("action") ||
+                  col.header.toLowerCase().includes("manage");
 
                 return (
                   <TableHead
@@ -173,7 +192,7 @@ export function DataTable<T extends object>({
                 );
               })}
 
-              {showActions && (
+              {hasBuiltInActions && (
                 <TableHead
                   className={cn(
                     "w-[130px] table-head-text",
@@ -189,10 +208,13 @@ export function DataTable<T extends object>({
           </TableHeader>
 
           <TableBody>
-            {data.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length + (showActions ? 1 : 0)}
+                  colSpan={Math.max(
+                    visibleColumns.length + (hasBuiltInActions ? 1 : 0),
+                    1,
+                  )}
                   className="text-center text-sm py-6 text-muted-foreground"
                 >
                   {emptyMessage}
@@ -208,10 +230,11 @@ export function DataTable<T extends object>({
                   )}
                   onClick={() => onRowClick?.(row)}
                 >
-                  {columns.map((col, cIdx) => {
+                  {visibleColumns.map((col, cIdx) => {
                     const isActionColumn =
-                      typeof col.header === "string" &&
-                      col.header.toLowerCase().includes("action");
+                      col.isAction ||
+                      col.header.toLowerCase().includes("action") ||
+                      col.header.toLowerCase().includes("manage");
 
                     return (
                       <TableCell
@@ -221,15 +244,15 @@ export function DataTable<T extends object>({
                           columnSeparatorClass,
                           rowSeparatorClass(rIdx),
                           textAlignClasses[
-                            isActionColumn
-                              ? actionAlign
-                              : (col.cellAlign ?? col.align ?? defaultCellAlign)
+                            col.cellAlign ??
+                              col.align ??
+                              (isActionColumn ? actionAlign : defaultCellAlign)
                           ],
                           col.className,
                         )}
                       >
                         {col.render
-                          ? col.render(row)
+                          ? col.render(row, renderContext)
                           : highlightText(
                               getCellValue(row, col.accessor),
                               searchQuery,
@@ -238,7 +261,7 @@ export function DataTable<T extends object>({
                     );
                   })}
 
-                  {showActions && (
+                  {hasBuiltInActions && (
                     <TableCell
                       className={cn(
                         "px-4 py-3",
