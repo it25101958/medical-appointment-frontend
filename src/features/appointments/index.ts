@@ -14,7 +14,7 @@ export type {
 export { appointmentApi } from "./api/appointment.api";
 
 // Hooks
-export { useAppointments } from "./hooks/use-appointment";
+export { useAppointments } from "./hooks/use-appointments";
 
 // Utils
 export {
