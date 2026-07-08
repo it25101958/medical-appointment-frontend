@@ -1,12 +1,10 @@
 "use client";
 
 import { useCallback, useDeferredValue, useMemo, useState } from "react";
-import { Calendar, Eye } from "lucide-react";
 import {
   DataTable,
   StatusBadge,
   type Column,
-  Button,
   SearchBar,
 } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
@@ -15,7 +13,7 @@ import { getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { PrescriptionDetailsDialog } from "./prescription-details-dialog";
 import type { PrescriptionResponse } from "@/features/prescriptions";
-import { formatDateTime } from "@/features/shared/util/format-date";
+import { formatDate } from "@/features/shared/util/format-date";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -57,6 +55,7 @@ export function PrescriptionList({
         prescription.doctorName,
         prescription.status,
         prescription.createdAt,
+        formatDate(prescription.createdAt),
       ]
         .filter(Boolean)
         .join(" ")
@@ -91,11 +90,21 @@ export function PrescriptionList({
     () => [
       {
         header: "ID",
-        render: (p) =>
-          highlightText(
-            p.prescriptionId?.toString() || "",
-            deferredSearchQuery,
-          ),
+        render: (p) => (
+          <button
+            type="button"
+            className="text-left font-semibold hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
+            onClick={() => viewPrescription(p)}
+            disabled={loadingPrescriptionId === p.prescriptionId}
+          >
+            {loadingPrescriptionId === p.prescriptionId
+              ? "Loading..."
+              : highlightText(
+                  p.prescriptionId?.toString() || "",
+                  deferredSearchQuery,
+                )}
+          </button>
+        ),
         className: "w-[120px] px-5 py-4 font-semibold text-foreground",
       },
       {
@@ -116,32 +125,10 @@ export function PrescriptionList({
         render: (p: PrescriptionListItem) => <StatusBadge status={p.status} />,
       },
       {
-        header: "Created",
-        render: (p: PrescriptionListItem) => (
-          <div className="flex items-center justify-end gap-2 text-muted-foreground">
-            <Calendar className="size-3" />
-            {formatDateTime(p.createdAt)}
-          </div>
-        ),
-        className: "w-[190px] px-5 py-4 text-right",
-      },
-      {
-        header: "Actions",
-        render: (p) => (
-          <div className="flex items-center justify-center">
-            <Button
-              size="icon-sm"
-              variant="outline"
-              onClick={() => viewPrescription(p)}
-              aria-label="View prescription"
-              title="View"
-              disabled={loadingPrescriptionId === p.prescriptionId}
-            >
-              <Eye className="size-4" />
-            </Button>
-          </div>
-        ),
-        className: "w-[110px] px-5 py-4 text-center",
+        header: "Created At",
+        render: (p: PrescriptionListItem) =>
+          highlightText(formatDate(p.createdAt), deferredSearchQuery),
+        className: "w-[190px] text-muted-foreground",
       },
     ],
     [deferredSearchQuery, loadingPrescriptionId, viewPrescription],
@@ -165,7 +152,7 @@ export function PrescriptionList({
           pageable={true}
           pageSize={10}
           showActions={false}
-          minWidth="1080px"
+          minWidth="980px"
           emptyMessage={
             loadingPrescriptionId
               ? `Loading prescription #${loadingPrescriptionId}...`
