@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import {
-  AlertCircle,
   Edit3,
   Eye,
   FilePlus,
@@ -16,6 +15,7 @@ import { toast } from "sonner";
 import {
   Badge,
   Button,
+  DataTable,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -31,7 +31,10 @@ import {
   SelectValue,
   Textarea,
   PageHeader,
+  StatusBadge,
+  type Column,
 } from "@/components/ui";
+import { formatDate } from "@/features/shared/util/format-date";
 import { getErrorMessage } from "@/lib/utils";
 import { labResultApi } from "../api/lab-result.api";
 import {
@@ -105,6 +108,80 @@ export function LabResultManagement({
   const sortedResults = useMemo(() => {
     return [...results].sort((a, b) => b.id - a.id);
   }, [results]);
+
+  const resultColumns: Column<LabResultResponse>[] = [
+    {
+      header: "Result",
+      render: (result) => (
+        <div className="space-y-1">
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(result)}
+          >
+            {result.testName}
+          </button>
+          <p className="text-xs text-muted-foreground">#{result.id}</p>
+        </div>
+      ),
+      className: "min-w-[220px] px-5 py-4",
+    },
+    {
+      header: "Appointment",
+      render: (result) => `#${result.appointmentId}`,
+      className: "w-[150px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Patient",
+      render: (result) =>
+        result.patientName?.trim() || `#${result.patientId}`,
+      className: "min-w-[160px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Result Value",
+      render: (result) => result.resultValue || "-",
+      className: "min-w-[180px] px-5 py-4",
+    },
+    {
+      header: "Reference",
+      render: (result) => result.referenceRange || "-",
+      className: "min-w-[180px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Status",
+      render: (result) => <StatusBadge status={result.status} />,
+      className: "w-[140px] px-5 py-4",
+    },
+    {
+      header: "Updated",
+      render: (result) => (
+        <span className="text-sm text-muted-foreground">
+          {formatDate(result.updatedAt)}
+        </span>
+      ),
+      className: "w-[190px] px-5 py-4",
+    },
+    {
+      header: "Manage",
+      isAction: true,
+      requiresManage: true,
+      render: (result) => (
+        <div className="flex items-center justify-center">
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onClick={() => openEditDialog(result)}
+            aria-label="Edit lab result"
+            title="Edit"
+          >
+            <Edit3 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+      className: "w-[110px] px-5 py-4 text-center",
+      align: "center",
+    },
+  ];
 
   async function searchByPatient() {
     if (!patientIdFilter.trim()) {
@@ -247,83 +324,27 @@ export function LabResultManagement({
         </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {loading ? (
-          <div className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-              Loading lab results...
-          </div>
-        ) : sortedResults.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card p-6 text-sm text-muted-foreground">
-              Search by patient ID to view lab results.
+          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
+            Loading lab results...
           </div>
         ) : (
-          sortedResults.map((result) => (
-            <div
-              key={result.id}
-              className="rounded-lg border border-border bg-card p-5"
-            >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold">
-                        {result.testName}
-                      </h2>
-                      <Badge variant="outline">Result #{result.id}</Badge>
-                      <Badge
-                        variant="outline"
-                        className={getStatusClasses(result.status)}
-                      >
-                        {result.status}
-                      </Badge>
-                    </div>
-                    <div className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
-                      <span>Appointment #{result.appointmentId}</span>
-                      <span>Patient #{result.patientId}</span>
-                      <span>
-                        Updated{" "}
-                        {result.updatedAt
-                          ? new Date(result.updatedAt).toLocaleDateString()
-                          : "not available"}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      size="icon-sm"
-                      variant="outline"
-                      onClick={() => openDetailsDialog(result)}
-                      aria-label="View lab result"
-                      title="View"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    {canManage && (
-                      <>
-                        <Button
-                          size="icon-sm"
-                          variant="outline"
-                          onClick={() => openEditDialog(result)}
-                          aria-label="Edit lab result"
-                          title="Edit"
-                        >
-                          <Edit3 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon-sm"
-                          variant="outline"
-                          disabled
-                          title="The backend does not expose DELETE /lab-results/{id}."
-                          aria-label="Delete unavailable"
-                        >
-                          <AlertCircle className="h-4 w-4" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-            </div>
-          ))
+          <DataTable
+            columns={resultColumns}
+            data={sortedResults}
+            pageable
+            pageSize={10}
+            pageSizeOptions={[5, 10, 20]}
+            canManage={canManage}
+            showActions={false}
+            minWidth={canManage ? "1160px" : "1040px"}
+            emptyMessage={
+              patientIdFilter.trim()
+                ? "No lab results found for this patient."
+                : "Search by patient ID to view lab results."
+            }
+          />
         )}
       </div>
 
@@ -586,9 +607,7 @@ export function LabResultManagement({
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
                   <p className="text-xs text-muted-foreground">Updated</p>
                   <p className="font-medium">
-                    {selectedResult.updatedAt
-                      ? new Date(selectedResult.updatedAt).toLocaleString()
-                      : "Not available"}
+                    {formatDate(selectedResult.updatedAt)}
                   </p>
                 </div>
               </div>
