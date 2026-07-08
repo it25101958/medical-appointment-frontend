@@ -4,6 +4,7 @@ import { useDeferredValue, useMemo, useState } from "react";
 
 import { SearchBar } from "@/components/ui/search-bar";
 import { PrescriptionList } from "@/features/admin";
+import { formatDate } from "@/features/shared/util/format-date";
 
 interface PrescriptionListItem {
   prescriptionId: number;
@@ -39,6 +40,7 @@ export function AdminPrescriptionsClient({ data }: Props) {
         prescription.doctorName,
         prescription.status,
         prescription.createdAt,
+        formatDate(prescription.createdAt),
       ]
         .filter(Boolean)
         .join(" ")
@@ -50,14 +52,12 @@ export function AdminPrescriptionsClient({ data }: Props) {
 
   return (
     <>
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search by patient, doctor, status, appointment, or prescription ID"
-          resultCount={filteredPrescriptions.length}
-        />
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by patient, doctor, status, appointment, or prescription ID"
+        resultCount={filteredPrescriptions.length}
+      />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         <PrescriptionList data={filteredPrescriptions} showSearch={false} />
