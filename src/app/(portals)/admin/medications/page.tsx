@@ -345,7 +345,7 @@ export default function AdminMedicationsPage() {
   );
 
   return (
-    <div className="col-start-1 col-end-14">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="Medication Inventory"
         description="Create, update, search, and remove medication records with cache-backed refreshes and fast local filtering."
@@ -366,7 +366,7 @@ export default function AdminMedicationsPage() {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-3 mb-6">
+      <div className="grid gap-4 md:grid-cols-3">
         {summaryCards.map((card) => (
           <Card
             key={card.title}
@@ -387,14 +387,12 @@ export default function AdminMedicationsPage() {
         ))}
       </div>
 
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search by name, generic name, dosage, form, manufacturer, or status"
-          resultCount={filteredMedications.length}
-        />
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by name, generic name, dosage, form, manufacturer, or status"
+        resultCount={filteredMedications.length}
+      />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         {loading ? (
