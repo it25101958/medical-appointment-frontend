@@ -3,9 +3,8 @@
 "use client";
 
 import { useState } from "react";
-import { Eye } from "lucide-react";
 
-import { Button, DataTable, type Column } from "@/components/ui";
+import { DataTable, type Column } from "@/components/ui";
 
 import { AppointmentResponse } from "../types/appointment.types";
 import { AppointmentStatusBadge } from "./appointment-status-badge";
@@ -16,12 +15,14 @@ interface Props {
   appointments: AppointmentResponse[];
   canManage?: boolean;
   onChanged?: () => void;
+  emptyMessage?: string;
 }
 
 export function AppointmentTable({
   appointments,
   canManage = false,
   onChanged,
+  emptyMessage = "No appointments found",
 }: Props) {
   const [selectedAppointment, setSelectedAppointment] =
     useState<AppointmentResponse | null>(null);
@@ -31,7 +32,13 @@ export function AppointmentTable({
       header: "Appointment",
       render: (appointment) => (
         <div className="space-y-1">
-          <p className="text-sm">{appointment.appointmentNumber}</p>
+          <button
+            type="button"
+            className="text-left text-sm font-medium hover:text-primary hover:underline"
+            onClick={() => setSelectedAppointment(appointment)}
+          >
+            {appointment.appointmentNumber}
+          </button>
         </div>
       ),
     },
@@ -56,38 +63,33 @@ export function AppointmentTable({
       ),
     },
     {
-      header: "Action",
+      header: "Manage",
+      isAction: true,
+      requiresManage: true,
       render: (appointment) => (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setSelectedAppointment(appointment)}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-
-          {canManage && (
-            <AppointmentActions
-              appointment={appointment}
-              onChanged={onChanged}
-            />
-          )}
+        <div className="flex items-center justify-center">
+          <AppointmentActions appointment={appointment} onChanged={onChanged} />
         </div>
       ),
+      className: "w-[120px] text-center",
+      align: "center",
     },
   ];
 
   return (
     <>
-      <DataTable
-        columns={columns}
-        data={appointments}
-        pageable={true}
-        pageSize={10}
-        showActions={false}
-        emptyMessage="No appointments found"
-      />
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <DataTable
+          columns={columns}
+          data={appointments}
+          pageable={true}
+          pageSize={10}
+          canManage={canManage}
+          showActions={false}
+          minWidth={canManage ? "1040px" : "920px"}
+          emptyMessage={emptyMessage}
+        />
+      </div>
 
       <AppointmentDetailsDialog
         appointment={selectedAppointment}
