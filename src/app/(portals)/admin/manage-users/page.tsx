@@ -239,7 +239,7 @@ export default function ManageUsersPage() {
   }
 
   return (
-    <div className="col-start-1 col-end-14 ">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="Manage Users"
         description="View users, activate or deactivate accounts, and update user roles."
@@ -273,7 +273,7 @@ export default function ManageUsersPage() {
         resultCount={filteredUsers.length}
       />
 
-      <div className="overflow-hidden w-auto rounded-lg border border-border bg-card mb-6">
+      <div className="overflow-hidden w-auto rounded-lg border border-border bg-card">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentPage}
