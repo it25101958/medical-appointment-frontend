@@ -46,7 +46,7 @@ import {
 } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
-import { formatDateTime } from "@/features/shared/util/format-date";
+import { formatDate } from "@/features/shared/util/format-date";
 
 import { paymentApi } from "../api/payment.api";
 import type { PaymentPayload, PaymentResponse } from "../types/payment.types";
@@ -291,8 +291,15 @@ export function PaymentManagement({
     () => [
       {
         header: "Payment ID",
-        render: (payment) =>
-          highlightText(`#${payment.paymentId}`, deferredSearchQuery),
+        render: (payment) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(payment)}
+          >
+            {highlightText(`#${payment.paymentId}`, deferredSearchQuery)}
+          </button>
+        ),
         className: "w-[130px] px-5 py-4 font-medium",
       },
       {
@@ -337,24 +344,17 @@ export function PaymentManagement({
         header: "Created",
         render: (payment) => (
           <span className="text-sm text-muted-foreground">
-            {formatDateTime(payment.createdAt)}
+            {formatDate(payment.createdAt)}
           </span>
         ),
         className: "w-[190px] px-5 py-4",
       },
       {
         header: "Actions",
+        isAction: true,
+        requiresManage: true,
         render: (payment) => (
           <div className="flex items-center justify-center gap-2">
-            <Button
-              size="icon-sm"
-              variant="outline"
-              onClick={() => openDetailsDialog(payment)}
-              aria-label="View payment"
-              title="View"
-            >
-              <Eye className="size-4" />
-            </Button>
             {canManage && (
               <Button
                 size="icon-sm"
@@ -430,6 +430,7 @@ export function PaymentManagement({
             data={filteredPayments}
             pageable
             pageSize={10}
+            canManage={canManage || canDelete}
             showActions={false}
             emptyMessage="No payment records found."
             minWidth="1320px"
@@ -486,7 +487,7 @@ export function PaymentManagement({
                   Payment #{selectedPayment.paymentId}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {formatCurrency(selectedPayment.amount)} ·{" "}
+                  {formatCurrency(selectedPayment.amount)} |{" "}
                   {getStatusLabel(selectedPayment.paymentStatus)}
                 </p>
               </div>
@@ -730,11 +731,11 @@ function PaymentDetailsDialog({
             />
             <InfoPanel
               label="Created"
-              value={formatDateTime(payment.createdAt)}
+              value={formatDate(payment.createdAt)}
             />
             <InfoPanel
               label="Updated"
-              value={formatDateTime(payment.updatedAt)}
+              value={formatDate(payment.updatedAt)}
             />
           </div>
         )}
