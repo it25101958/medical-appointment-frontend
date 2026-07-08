@@ -1,6 +1,12 @@
 "use client";
 
-import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { SearchBar } from "@/components/ui/search-bar";
@@ -57,6 +63,7 @@ export default function AdminRoomsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -129,6 +136,11 @@ export default function AdminRoomsPage() {
     setDialogOpen(true);
   }
 
+  function openDetailsDialog(room: Room) {
+    setSelectedRoom(room);
+    setDetailsOpen(true);
+  }
+
   function openDeleteDialog(room: Room) {
     setSelectedRoom(room);
     setDeleteOpen(true);
@@ -185,36 +197,38 @@ export default function AdminRoomsPage() {
     () => [
       {
         header: "Room ID",
-        headerClassName: "w-[120px]",
         className: "w-[120px] font-medium text-muted-foreground",
         render: (room) => room.roomId,
       },
       {
         header: "Number",
-        headerClassName: "w-[140px]",
-        className: "w-[140px]",
-        render: (room) =>
-          highlightText(
-            (room.roomNumber as string) || "-",
-            deferredSearchQuery,
-          ),
+        className: "w-[140px] font-medium text-foreground",
+        render: (room) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(room)}
+          >
+            {highlightText(
+              (room.roomNumber as string) || "-",
+              deferredSearchQuery,
+            )}
+          </button>
+        ),
       },
       {
         header: "Type",
-        headerClassName: "w-[170px]",
         className: "w-[170px] text-muted-foreground",
         render: (room) =>
           highlightText((room.roomType as string) || "-", deferredSearchQuery),
       },
       {
         header: "Capacity",
-        headerClassName: "w-[120px]",
         className: "w-[120px]",
         render: (room) => (room.capacity as number) || "-",
       },
       {
         header: "Equipment",
-        headerClassName: "w-[220px]",
         className: "w-[220px] text-muted-foreground",
         render: (room) =>
           highlightText(
@@ -224,7 +238,6 @@ export default function AdminRoomsPage() {
       },
       {
         header: "Status",
-        headerClassName: "w-[140px]",
         className: "w-[140px] text-muted-foreground",
         render: (room) => (
           <StatusBadge status={(room.status as string) || "AVAILABLE"} />
@@ -232,7 +245,7 @@ export default function AdminRoomsPage() {
       },
       {
         header: "Actions",
-        headerClassName: "w-[150px] text-center",
+        isAction: true,
         className: "w-[150px] text-center",
         render: (room) => (
           <div className="flex items-center justify-center gap-2">
@@ -247,7 +260,8 @@ export default function AdminRoomsPage() {
             </Button>
             <Button
               size="icon-sm"
-              variant="destructive"
+              variant="outline"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => openDeleteDialog(room)}
               aria-label="Delete room"
               title="Delete"
@@ -262,7 +276,7 @@ export default function AdminRoomsPage() {
   );
 
   return (
-    <div className="col-start-1 col-end-14">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="Manage Rooms"
         description="Create, update, delete, and view all available room records."
@@ -278,14 +292,12 @@ export default function AdminRoomsPage() {
         }
       />
 
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search by room number, type, equipment, or status"
-          resultCount={filteredRooms.length}
-        />
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by room number, type, equipment, or status"
+        resultCount={filteredRooms.length}
+      />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
         {isLoading ? (
@@ -297,12 +309,70 @@ export default function AdminRoomsPage() {
             columns={roomColumns}
             data={filteredRooms}
             pageable={true}
+            pageSize={10}
             showActions={false}
-            minWidth="950px"
+            minWidth="1000px"
             emptyMessage="No rooms found."
           />
         )}
       </div>
+
+      <Dialog
+        open={detailsOpen}
+        onOpenChange={(open) => {
+          setDetailsOpen(open);
+          if (!open) setSelectedRoom(null);
+        }}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto border-border/60 bg-card p-0 shadow-xl sm:max-w-[620px]">
+          <DialogHeader>
+            <div className="border-b border-border/60 px-6 pb-5 pt-6">
+              <div className="flex items-center gap-3">
+                <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <DoorOpen className="size-5" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl font-semibold tracking-tight">
+                    Room Details
+                  </DialogTitle>
+                  <DialogDescription>
+                    Review room capacity, equipment, and availability.
+                  </DialogDescription>
+                </div>
+              </div>
+            </div>
+          </DialogHeader>
+
+          {selectedRoom && (
+            <div className="grid gap-4 px-6 pb-6 sm:grid-cols-2">
+              <div className="rounded-lg border border-border/60 bg-muted/30 p-4 sm:col-span-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Room {selectedRoom.roomNumber || selectedRoom.roomId}
+                  </h3>
+                  <StatusBadge
+                    status={(selectedRoom.status as string) || "AVAILABLE"}
+                  />
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  {selectedRoom.roomType || "Room type not specified"}
+                </p>
+              </div>
+
+              <RoomInfo label="Room ID" value={`#${selectedRoom.roomId}`} />
+              <RoomInfo label="Capacity" value={selectedRoom.capacity || "-"} />
+              <RoomInfo
+                label="Equipment"
+                value={selectedRoom.equipmentAvailable || "-"}
+              />
+              <RoomInfo
+                label="Status"
+                value={selectedRoom.status || "AVAILABLE"}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[90vh] overflow-y-auto border-border/60 bg-card p-0 shadow-xl sm:max-w-[640px]">
@@ -506,6 +576,23 @@ export default function AdminRoomsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function RoomInfo({
+  label,
+  value,
+}: {
+  label: string;
+  value: ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
+      <p className="text-xs uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-medium text-foreground">{value}</p>
     </div>
   );
 }
