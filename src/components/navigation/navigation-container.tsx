@@ -120,6 +120,7 @@ const NavigationContainer = () => {
   const isAuthenticated = userRole !== null;
   const dashboardHref = getDashboardHref(userRole);
   const shouldShowDashboardLink = isAuthenticated && pathname === "/";
+  const portal = pathname === "/portal";
 
   React.useEffect(() => {
     setUserRole(getUserRole());
@@ -237,14 +238,18 @@ const NavigationContainer = () => {
                 {isLoggingOut ? "Logging out..." : "Logout"}
               </Button>
             ) : (
-              <Link href="/patient/login" passHref>
-                <Button
-                  variant="outline"
-                  className="hidden sm:inline-flex px-4 py-2 font-medium"
-                >
-                  Sign In
-                </Button>
-              </Link>
+              <>
+                {!portal && (
+                  <Link href="/patient/login" passHref>
+                    <Button
+                      variant="outline"
+                      className="hidden sm:inline-flex px-4 py-2 font-medium"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
+              </>
             ))}
           <ThemeToggle />
           {/* <Link href="/payment/online-payment" passHref>
