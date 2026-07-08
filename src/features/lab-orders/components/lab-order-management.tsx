@@ -2,9 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  ClipboardList,
   Edit3,
-  Eye,
   Plus,
   RefreshCcw,
   Search,
@@ -20,6 +18,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  DataTable,
   Dialog,
   DialogContent,
   DialogFooter,
@@ -32,10 +31,14 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  PageHeader,
+  StatusBadge,
+  type Column,
 } from "@/components/ui";
 import { DeleteConfirmDialog } from "@/features/shared";
 import { getLaboratories, type Laboratory } from "@/features/laboratory";
 import { getActiveLabTests, type LabTest } from "@/features/labtest";
+import { formatDate } from "@/features/shared/util/format-date";
 import { getErrorMessage } from "@/lib/utils";
 import { labOrderApi } from "../api/lab-order.api";
 import {
@@ -94,6 +97,26 @@ function orderTotal(order: LabOrderResponse) {
   );
 }
 
+function getOrderStatus(order: LabOrderResponse) {
+  const statuses = order.items
+    .map((item) => item.status?.toUpperCase())
+    .filter(Boolean);
+
+  if (statuses.length === 0) {
+    return "PENDING";
+  }
+
+  if (statuses.every((status) => status === "COMPLETED")) {
+    return "COMPLETED";
+  }
+
+  if (statuses.some((status) => status === "IN_PROGRESS")) {
+    return "IN_PROGRESS";
+  }
+
+  return statuses[0] || "PENDING";
+}
+
 function allRequiredFieldsSet(formValues: LabOrderValues) {
   return (
     Number(formValues.appointmentId) > 0 &&
@@ -105,7 +128,17 @@ function allRequiredFieldsSet(formValues: LabOrderValues) {
   );
 }
 
-export function LabOrderManagement() {
+interface LabOrderManagementProps {
+  title?: string;
+  description?: string;
+  canManage?: boolean;
+}
+
+export function LabOrderManagement({
+  title = "Lab Orders",
+  description = "Create laboratory orders for appointments and manage ordered test items before processing begins.",
+  canManage = true,
+}: LabOrderManagementProps) {
   const [orders, setOrders] = useState<LabOrderResponse[]>([]);
   const [laboratories, setLaboratories] = useState<Laboratory[]>([]);
   const [labTests, setLabTests] = useState<LabTest[]>([]);
@@ -273,32 +306,114 @@ export function LabOrderManagement() {
     }
   }
 
-  return (
-    <div className="col-start-1 col-end-14 space-y-6">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <div className="mb-2 inline-flex items-center gap-2 rounded-md border border-border/70 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-            <ClipboardList className="h-3.5 w-3.5" />
-            Laboratory orders
-          </div>
-          <h1 className="text-2xl font-semibold">Lab Orders</h1>
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            Create laboratory orders for appointments and manage ordered test
-            items before processing begins.
+  const orderColumns: Column<LabOrderResponse>[] = [
+    {
+      header: "Order",
+      render: (order) => (
+        <div className="space-y-1">
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(order)}
+          >
+            Lab Order #{order.labOrderId}
+          </button>
+          <p className="text-xs text-muted-foreground">
+            {order.items.length} {order.items.length === 1 ? "item" : "items"}
           </p>
         </div>
-
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={fetchInitialData}>
-            <RefreshCcw className="mr-2 h-4 w-4" />
-            Refresh
+      ),
+      className: "min-w-[180px] px-5 py-4",
+    },
+    {
+      header: "Appointment",
+      render: (order) => `#${order.appointmentId}`,
+      className: "w-[150px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Patient",
+      render: (order) => order.patientName || "-",
+      className: "min-w-[190px] px-5 py-4",
+    },
+    {
+      header: "Doctor",
+      render: (order) => order.doctorName || "-",
+      className: "min-w-[190px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Laboratory",
+      render: (order) => order.laboratoryName || "-",
+      className: "min-w-[200px] px-5 py-4 text-muted-foreground",
+    },
+    {
+      header: "Total",
+      render: (order) => (
+        <span className="font-medium">{formatMoney(orderTotal(order))}</span>
+      ),
+      className: "w-[150px] px-5 py-4",
+    },
+    {
+      header: "Status",
+      render: (order) => <StatusBadge status={getOrderStatus(order)} />,
+      className: "w-[140px] px-5 py-4",
+    },
+    {
+      header: "Manage",
+      isAction: true,
+      requiresManage: true,
+      render: (order) => (
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            size="icon-sm"
+            variant="outline"
+            onClick={() => openEditDialog(order)}
+            aria-label="Edit lab order"
+            title="Edit"
+          >
+            <Edit3 className="h-4 w-4" />
           </Button>
-          <Button size="sm" onClick={openCreateDialog}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Lab Order
+          <Button
+            size="icon-sm"
+            variant="outline"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={() => openDeleteDialog(order)}
+            aria-label="Delete lab order"
+            title="Delete"
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
-      </div>
+      ),
+      className: "w-[140px] px-5 py-4 text-center",
+      align: "center",
+    },
+  ];
+
+  return (
+    <div className="col-start-1 col-end-14 space-y-6">
+      <PageHeader
+        title={title}
+        description={description}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchInitialData}
+              aria-label="Refresh lab orders"
+              title="Refresh"
+            >
+              <RefreshCcw className="h-4 w-4" />
+            </Button>
+            {canManage && (
+              <Button size="sm" onClick={openCreateDialog}>
+                <Plus className="h-4 w-4" />
+                New Lab Order
+              </Button>
+            )}
+          </>
+        }
+      />
 
       <Card className="border-border/60 bg-card/80">
         <CardHeader className="pb-3">
@@ -357,105 +472,23 @@ export function LabOrderManagement() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         {loading ? (
-          <Card className="border-border/60 bg-card/80">
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              Loading lab orders...
-            </CardContent>
-          </Card>
-        ) : orders.length === 0 ? (
-          <Card className="border-border/60 bg-card/80">
-            <CardContent className="p-6 text-sm text-muted-foreground">
-              No lab orders found.
-            </CardContent>
-          </Card>
+          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
+            Loading lab orders...
+          </div>
         ) : (
-          orders.map((order) => (
-            <Card
-              key={order.labOrderId}
-              className="border-border/60 bg-card/80"
-            >
-              <CardContent className="p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-lg font-semibold">
-                        Lab Order #{order.labOrderId}
-                      </h2>
-                      <Badge variant="outline">
-                        Appointment #{order.appointmentId}
-                      </Badge>
-                    </div>
-                    <div className="grid gap-1 text-sm text-muted-foreground sm:grid-cols-2 lg:grid-cols-3">
-                      <span>Patient: {order.patientName}</span>
-                      <span>Doctor: {order.doctorName}</span>
-                      <span>Laboratory: {order.laboratoryName}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2">
-                    <div className="rounded-md border border-border/60 px-3 py-2 text-sm font-medium">
-                      {formatMoney(orderTotal(order))}
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openDetailsDialog(order)}
-                    >
-                      <Eye className="mr-2 h-4 w-4" />
-                      View
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openEditDialog(order)}
-                    >
-                      <Edit3 className="mr-2 h-4 w-4" />
-                      Edit
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => openDeleteDialog(order)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mt-4 overflow-hidden rounded-md border border-border/60">
-                  <div className="grid grid-cols-[minmax(0,1fr)_90px_130px_130px_120px] gap-3 bg-muted/40 px-4 py-2 text-xs font-medium uppercase text-muted-foreground">
-                    <span>Test</span>
-                    <span>Qty</span>
-                    <span>Unit</span>
-                    <span>Total</span>
-                    <span>Status</span>
-                  </div>
-                  {order.items.map((item) => (
-                    <div
-                      key={item.labOrderItemId}
-                      className="grid grid-cols-[minmax(0,1fr)_90px_130px_130px_120px] gap-3 border-t border-border/60 px-4 py-3 text-sm"
-                    >
-                      <span className="font-medium">{item.testName}</span>
-                      <span>{item.quantity}</span>
-                      <span>{formatMoney(item.unitPrice)}</span>
-                      <span>{formatMoney(item.totalPrice)}</span>
-                      <span>
-                        <Badge
-                          variant="outline"
-                          className={getStatusClasses(item.status)}
-                        >
-                          {item.status}
-                        </Badge>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))
+          <DataTable
+            columns={orderColumns}
+            data={orders}
+            pageable
+            pageSize={10}
+            pageSizeOptions={[5, 10, 20]}
+            canManage={canManage}
+            showActions={false}
+            minWidth={canManage ? "1180px" : "1040px"}
+            emptyMessage="No lab orders found."
+          />
         )}
       </div>
 
@@ -676,9 +709,7 @@ export function LabOrderManagement() {
                       <span>Unit: {formatMoney(item.unitPrice)}</span>
                       <span>Total: {formatMoney(item.totalPrice)}</span>
                       <span>
-                        {item.createdAt
-                          ? new Date(item.createdAt).toLocaleDateString()
-                          : ""}
+                        {formatDate(item.createdAt)}
                       </span>
                     </div>
                   </div>
