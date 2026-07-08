@@ -19,7 +19,6 @@ import {
   Badge,
   Button,
   DataTable,
-  PaginationControls,
   type Column,
   PageHeader,
   SearchBar,
@@ -44,9 +43,9 @@ import {
   type Laboratory,
   type LaboratoryPayload,
 } from "@/features/laboratory";
+import { formatDate } from "@/features/shared/util/format-date";
 import { getErrorMessage } from "@/lib/utils";
 import { CrudActionButton } from "@/features/shared";
-import { usePagination } from "@/lib/use-pagination";
 
 function createEmptyForm(): LaboratoryPayload {
   return {
@@ -228,8 +227,15 @@ export function LaboratoryManagement({
       },
       {
         header: "Name",
-        render: (laboratory) =>
-          highlightText(laboratory.name || "", deferredSearchQuery),
+        render: (laboratory) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(laboratory)}
+          >
+            {highlightText(laboratory.name || "", deferredSearchQuery)}
+          </button>
+        ),
         className: "w-[220px] px-5 py-4 font-medium text-foreground",
       },
       {
@@ -264,43 +270,35 @@ export function LaboratoryManagement({
         render: (laboratory) => (
           <span className="text-sm text-muted-foreground">
             {laboratory.updatedAt
-              ? new Date(laboratory.updatedAt).toLocaleDateString()
+              ? formatDate(laboratory.updatedAt)
               : laboratory.createdAt
-                ? new Date(laboratory.createdAt).toLocaleDateString()
-                : "—"}
+                ? formatDate(laboratory.createdAt)
+                : "-"}
           </span>
         ),
         className: "w-[140px] px-5 py-4",
       },
       {
         header: "Actions",
+        isAction: true,
+        requiresManage: true,
         render: (laboratory) => (
           <div className="flex items-center justify-center gap-2">
             <CrudActionButton
-              label="View laboratory"
-              icon={<Eye className="size-4" />}
-              onClick={() => openDetailsDialog(laboratory)}
+              label="Edit laboratory"
+              icon={<Edit3 className="size-4" />}
+              onClick={() => openEditDialog(laboratory)}
             />
 
-            {canManage && (
-              <>
-                <CrudActionButton
-                  label="Edit laboratory"
-                  icon={<Edit3 className="size-4" />}
-                  onClick={() => openEditDialog(laboratory)}
-                />
-
-                <CrudActionButton
-                  label="Delete laboratory"
-                  icon={<Trash2 className="size-4" />}
-                  destructive
-                  onClick={() => openDeleteDialog(laboratory)}
-                />
-              </>
-            )}
+            <CrudActionButton
+              label="Delete laboratory"
+              icon={<Trash2 className="size-4" />}
+              destructive
+              onClick={() => openDeleteDialog(laboratory)}
+            />
           </div>
         ),
-        className: "w-[180px] px-5 py-4 text-center",
+        className: "w-[130px] px-5 py-4 text-center",
       },
     ],
     [canManage, deferredSearchQuery],
@@ -332,7 +330,7 @@ export function LaboratoryManagement({
         }
       />
 
-      <div className="mb-6">
+      <div>
         <SearchBar
           value={searchQuery}
           onChange={setSearchQuery}
@@ -356,6 +354,7 @@ export function LaboratoryManagement({
             data={filteredLaboratories}
             pageable={true}
             pageSize={10}
+            canManage={canManage}
             showActions={false}
             emptyMessage="No laboratories found."
           />
@@ -585,8 +584,8 @@ export function LaboratoryManagement({
                 </p>
                 <p className="text-sm font-medium text-foreground">
                   {selectedLaboratory.createdAt
-                    ? new Date(selectedLaboratory.createdAt).toLocaleString()
-                    : "—"}
+                    ? formatDate(selectedLaboratory.createdAt)
+                    : "-"}
                 </p>
               </div>
 
@@ -596,8 +595,8 @@ export function LaboratoryManagement({
                 </p>
                 <p className="text-sm font-medium text-foreground">
                   {selectedLaboratory.updatedAt
-                    ? new Date(selectedLaboratory.updatedAt).toLocaleString()
-                    : "—"}
+                    ? formatDate(selectedLaboratory.updatedAt)
+                    : "-"}
                 </p>
               </div>
             </div>
@@ -630,7 +629,7 @@ export function LaboratoryManagement({
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
                 <p className="text-sm font-medium">{selectedLaboratory.name}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {selectedLaboratory.phone} · {selectedLaboratory.email}
+                  {selectedLaboratory.phone} | {selectedLaboratory.email}
                 </p>
               </div>
             </div>
