@@ -2,6 +2,7 @@ import { apiRequest } from "@/lib/api-client";
 
 export interface Room {
   roomId: number;
+  roomNumber?: string;
   roomType?: string;
   capacity?: number;
   equipmentAvailable?: string;
