@@ -44,6 +44,7 @@ import {
   type LabTest,
   type LabTestPayload,
 } from "@/features/labtest";
+import { formatDate } from "@/features/shared/util/format-date";
 import { getErrorMessage } from "@/lib/utils";
 import { CrudActionButton } from "@/features/shared";
 
@@ -234,8 +235,15 @@ export function LabTestManagement({
       },
       {
         header: "Test Name",
-        render: (labTest) =>
-          highlightText(labTest.testName || "", deferredSearchQuery),
+        render: (labTest) => (
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => openDetailsDialog(labTest)}
+          >
+            {highlightText(labTest.testName || "", deferredSearchQuery)}
+          </button>
+        ),
         className: "w-[220px] px-5 py-4 font-medium text-foreground",
       },
       {
@@ -274,43 +282,35 @@ export function LabTestManagement({
         render: (labTest) => (
           <span className="text-sm text-muted-foreground">
             {labTest.updatedAt
-              ? new Date(labTest.updatedAt).toLocaleDateString()
+              ? formatDate(labTest.updatedAt)
               : labTest.createdAt
-                ? new Date(labTest.createdAt).toLocaleDateString()
-                : "—"}
+                ? formatDate(labTest.createdAt)
+                : "-"}
           </span>
         ),
         className: "w-[140px] px-5 py-4",
       },
       {
         header: "Actions",
+        isAction: true,
+        requiresManage: true,
         render: (labTest) => (
           <div className="flex items-center justify-center gap-2">
             <CrudActionButton
-              label="View lab test"
-              icon={<Eye className="size-4" />}
-              onClick={() => openDetailsDialog(labTest)}
+              label="Edit lab test"
+              icon={<Edit3 className="size-4" />}
+              onClick={() => openEditDialog(labTest)}
             />
 
-            {canManage && (
-              <>
-                <CrudActionButton
-                  label="Edit lab test"
-                  icon={<Edit3 className="size-4" />}
-                  onClick={() => openEditDialog(labTest)}
-                />
-
-                <CrudActionButton
-                  label="Delete lab test"
-                  icon={<Trash2 className="size-4" />}
-                  destructive
-                  onClick={() => openDeleteDialog(labTest)}
-                />
-              </>
-            )}
+            <CrudActionButton
+              label="Delete lab test"
+              icon={<Trash2 className="size-4" />}
+              destructive
+              onClick={() => openDeleteDialog(labTest)}
+            />
           </div>
         ),
-        className: "w-[180px] px-5 py-4 text-center",
+        className: "w-[130px] px-5 py-4 text-center",
       },
     ],
     [canManage, deferredSearchQuery],
@@ -383,6 +383,7 @@ export function LabTestManagement({
             data={filteredLabTests}
             pageable={true}
             pageSize={10}
+            canManage={canManage}
             showActions={false}
             emptyMessage="No lab tests found."
           />
@@ -636,8 +637,8 @@ export function LabTestManagement({
                 </p>
                 <p className="text-sm font-medium text-foreground">
                   {selectedLabTest.createdAt
-                    ? new Date(selectedLabTest.createdAt).toLocaleString()
-                    : "—"}
+                    ? formatDate(selectedLabTest.createdAt)
+                    : "-"}
                 </p>
               </div>
 
@@ -647,8 +648,8 @@ export function LabTestManagement({
                 </p>
                 <p className="text-sm font-medium text-foreground">
                   {selectedLabTest.updatedAt
-                    ? new Date(selectedLabTest.updatedAt).toLocaleString()
-                    : "—"}
+                    ? formatDate(selectedLabTest.updatedAt)
+                    : "-"}
                 </p>
               </div>
             </div>
@@ -683,7 +684,7 @@ export function LabTestManagement({
                   {selectedLabTest.testName}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {selectedLabTest.category} · LKR{" "}
+                  {selectedLabTest.category} | LKR{" "}
                   {Number(selectedLabTest.standardPrice).toLocaleString()}
                 </p>
               </div>
