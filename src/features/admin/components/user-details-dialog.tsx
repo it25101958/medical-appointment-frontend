@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "@tanstack/react-form";
 import { apiRequest } from "@/lib/api-client";
 import { getUser, updateUser } from "@/features/admin/api/admin.api";
+import { formatDate } from "@/features/shared/util/format-date";
 import { formatValidationErrors, getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -299,7 +300,7 @@ export function UserDetailsDialog({
                     Created At
                   </span>
                   <p className="mt-1 text-foreground">
-                    {new Date(user.createdAt).toLocaleString()}
+                    {formatDate(user.createdAt)}
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
@@ -307,7 +308,7 @@ export function UserDetailsDialog({
                     Updated At
                   </span>
                   <p className="mt-1 text-foreground">
-                    {new Date(user.updatedAt).toLocaleString()}
+                    {formatDate(user.updatedAt)}
                   </p>
                 </div>
               </div>
