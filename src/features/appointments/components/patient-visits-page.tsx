@@ -13,13 +13,11 @@ import {
   Star,
   Trash2,
   CalendarDays,
-  Eye,
   RefreshCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  Badge,
   Button,
   DataTable,
   Dialog,
@@ -298,7 +296,13 @@ export default function PatientVisitsPage() {
     {
       header: "Appointment",
       render: (appointment) => (
-        <div className="space-y-1">{appointment.appointmentNumber}</div>
+        <button
+          type="button"
+          className="text-left font-medium hover:text-primary hover:underline"
+          onClick={() => setSelectedAppointment(appointment)}
+        >
+          {appointment.appointmentNumber}
+        </button>
       ),
       className: "",
     },
@@ -349,16 +353,6 @@ export default function PatientVisitsPage() {
 
         return (
           <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              size="icon-sm"
-              onClick={() => setSelectedAppointment(appointment)}
-              aria-label="View visit details"
-              title="View details"
-            >
-              <Eye className="h-4 w-4" />
-            </Button>
-
             {existingFeedback ? (
               <Button
                 variant="outline"
