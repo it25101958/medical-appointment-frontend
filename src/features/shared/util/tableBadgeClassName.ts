@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 export function tableBadgeClassName(
   type: "primary" | "success" | "danger" | "warning" | "muted",
 ) {
