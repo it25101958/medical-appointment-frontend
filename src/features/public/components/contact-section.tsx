@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Phone, MapPin, Send, Loader2 } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { contactSchema } from "@/lib/validations/contact";
 
 import {
@@ -27,7 +27,7 @@ export default function ContactSection() {
     validators: {
       onSubmit: contactSchema,
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async () => {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       toast.success("Success", {
         description: "Your message has been received.",
@@ -37,8 +37,8 @@ export default function ContactSection() {
   });
 
   return (
-    <section className="col-span-12 grid grid-cols-12">
-      <div className="col-span-12 lg:col-span-8 flex flex-col justify-start space-y-12">
+    <section className="col-span-12 grid grid-cols-12 gap-y-12 lg:gap-x-12">
+      <div className="col-span-12 lg:col-span-5 flex flex-col justify-start space-y-12">
         <div className="space-y-4">
           <h2 className="main-title">Get in touch</h2>
           <p className="body-text">
@@ -70,7 +70,7 @@ export default function ContactSection() {
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="col-span-12 lg:col-span-4"
+        className="col-span-12 lg:col-span-7"
       >
         <div className="rounded-xl lg:border lg:border-border lg:bg-card text-card-foreground xs:mt-10 lg:mt-0">
           <div className="lg:p-6">
@@ -204,7 +204,7 @@ export default function ContactSection() {
                     <Button
                       type="submit"
                       disabled={!canSubmit}
-                      className="col-span-1 md:col-span-2 w-full font-semibold"
+                      className="col-span-1 md:col-span-2 w-full md:w-auto md:justify-self-end font-semibold"
                     >
                       {isSubmitting ? "Sending..." : "Submit Inquiry"}
                       {isSubmitting && (
