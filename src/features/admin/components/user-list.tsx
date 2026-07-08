@@ -59,7 +59,7 @@ export function UserTable({
       className: "",
       render: (user) => (
         <span
-          className=" font-medium text-muted-foreground hover:text-primary hover:underline cursor-pointer"
+          className="hover:text-primary hover:underline cursor-pointer"
           onClick={() => onViewUserDetails?.(user.userId)}
         >
           {highlightText(`${user.firstName} ${user.lastName}`, searchQuery)}
@@ -138,6 +138,7 @@ export function UserTable({
       pageSizeOptions={pageSizeOptions}
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
+      canManage
       showActions={false}
       minWidth="1000px"
       emptyMessage="No users found."
