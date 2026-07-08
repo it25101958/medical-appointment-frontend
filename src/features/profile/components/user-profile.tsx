@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 
 import { Badge, Button, PageHeader } from "@/components/ui";
+import { formatDate } from "@/features/shared/util/format-date";
 import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -39,11 +40,6 @@ function formatValue(value?: string | number | boolean | null) {
   if (value === null || value === undefined || value === "") return "-";
   if (typeof value === "boolean") return value ? "Active" : "Inactive";
   return String(value);
-}
-
-function formatDate(value?: string) {
-  if (!value) return "-";
-  return new Date(value).toLocaleString();
 }
 
 export function UserProfile() {
