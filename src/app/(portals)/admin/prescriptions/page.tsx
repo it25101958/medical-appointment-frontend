@@ -25,15 +25,13 @@ export default async function AdminPrescriptionsPage() {
   );
 
   return (
-    <div className="col-start-1 col-end-14">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="Prescriptions"
         description="View and manage patient prescription records"
       />
 
-      <AdminPrescriptionsClient
-        data={data.content}
-      />
+      <AdminPrescriptionsClient data={data.content} />
     </div>
   );
 }
