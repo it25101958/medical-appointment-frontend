@@ -7,7 +7,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Eye, MessageSquare, RefreshCcw, Star } from "lucide-react";
+import { MessageSquare, RefreshCcw, Star } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -29,7 +29,7 @@ import {
   feedbackApi,
   type FeedbackResponse,
 } from "@/features/feedback";
-import { formatDateTime } from "@/features/shared/util/format-date";
+import { formatDate } from "@/features/shared/util/format-date";
 import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
@@ -121,9 +121,13 @@ export default function PatientFeedbackPage() {
       header: "Feedback",
       render: (item) => (
         <div className="space-y-1">
-          <p className="font-medium">
+          <button
+            type="button"
+            className="text-left font-medium hover:text-primary hover:underline"
+            onClick={() => setSelectedFeedback(item)}
+          >
             {highlightText(`#${item.feedbackId}`, deferredSearchQuery)}
-          </p>
+          </button>
           <p className="text-xs text-muted-foreground">
             Appointment #{item.appointmentId}
           </p>
@@ -156,27 +160,10 @@ export default function PatientFeedbackPage() {
       header: "Created",
       render: (item) => (
         <span className="text-sm text-muted-foreground">
-          {formatDateTime(item.createdAt)}
+          {formatDate(item.createdAt)}
         </span>
       ),
       className: "w-[190px] px-5 py-4",
-    },
-    {
-      header: "Actions",
-      render: (item) => (
-        <div className="flex items-center justify-center">
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onClick={() => setSelectedFeedback(item)}
-            aria-label="View feedback"
-            title="View"
-          >
-            <Eye className="size-4" />
-          </Button>
-        </div>
-      ),
-      className: "w-[110px] px-5 py-4 text-center",
     },
   ];
 
@@ -284,7 +271,7 @@ export default function PatientFeedbackPage() {
                 />
                 <InfoPanel
                   label="Created"
-                  value={formatDateTime(selectedFeedback.createdAt)}
+                  value={formatDate(selectedFeedback.createdAt)}
                 />
               </div>
 
