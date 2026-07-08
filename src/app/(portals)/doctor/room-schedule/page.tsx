@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button, ScrollArea, type Column } from "@/components/ui";
-import { RefreshCcw } from "lucide-react";
+import { type Column } from "@/components/ui";
 import { toast } from "sonner";
 import {
+  formatDayOfWeek,
   roomScheduleApi,
   type RoomScheduleResponse,
 } from "@/features/room-schedule";
 import RoomScheduleList from "@/features/room-schedule/components/room-schedule-list";
+import { formatDate } from "@/features/shared/util/format-date";
 import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -64,14 +65,17 @@ export default function DoctorRoomSchedulePage() {
   const columns: Column<RoomScheduleResponse>[] = [
     { header: "Schedule ID", accessor: "roomScheduleId" },
     { header: "Room", render: (schedule) => `Room ${schedule.roomNumber}` },
-    { header: "Day", accessor: "dayOfWeek" },
+    {
+      header: "Day",
+      render: (schedule) => formatDayOfWeek(schedule.dayOfWeek),
+    },
     {
       header: "Time Slot",
       render: (schedule) => `${schedule.startTime} - ${schedule.endTime}`,
     },
     {
       header: "Created At",
-      render: (schedule) => new Date(schedule.createdAt).toLocaleDateString(),
+      render: (schedule) => formatDate(schedule.createdAt),
     },
   ];
 
