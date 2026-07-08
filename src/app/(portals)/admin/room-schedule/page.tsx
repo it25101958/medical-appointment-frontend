@@ -30,7 +30,6 @@ import {
   DialogTitle,
 } from "@/components/ui";
 import type { Column } from "@/components/ui";
-import { PaginationControls } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
 import {
   Calendar,
@@ -45,6 +44,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import {
+  formatDayOfWeek,
   roomScheduleApi,
   type RoomScheduleResponse,
   type RoomScheduleRequest,
@@ -97,8 +97,6 @@ export default function AdminRoomSchedulePage() {
   const [schedules, setSchedules] = useState<RoomScheduleResponse[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
   const [doctors, setDoctors] = useState<UserOption[]>([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -116,9 +114,7 @@ export default function AdminRoomSchedulePage() {
       );
 
       const matchedDoctor = doctors.find(
-        (doctor) =>
-          normalizeDoctorName(getDoctorDisplayName(doctor)) ===
-          normalizeDoctorName(schedule.doctorName),
+        (doctor) => isDoctorNameMatch(doctor, schedule.doctorName),
       );
 
       setSelectedSchedule(schedule);
@@ -155,7 +151,9 @@ export default function AdminRoomSchedulePage() {
         schedule.roomScheduleId?.toString(),
         schedule.roomNumber?.toString(),
         schedule.doctorName,
+        getScheduleDoctorDisplayName(schedule),
         schedule.dayOfWeek,
+        formatDayOfWeek(schedule.dayOfWeek),
         schedule.startTime,
         schedule.endTime,
       ]
@@ -164,24 +162,13 @@ export default function AdminRoomSchedulePage() {
         .toLowerCase();
       return haystack.includes(query);
     });
-  }, [deferredSearchQuery, schedules]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredSchedules.length / pageSize),
-  );
-
-  const paginatedSchedules = useMemo(() => {
-    const start = currentPage * pageSize;
-    return filteredSchedules.slice(start, start + pageSize);
-  }, [currentPage, filteredSchedules, pageSize]);
+  }, [deferredSearchQuery, doctors, schedules]);
 
   const columns = useMemo<Column<RoomScheduleResponse>[]>(
     () => [
       {
         header: "Schedule ID",
-        className:
-          "w-[80px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
+        className: "w-[120px] font-medium text-muted-foreground",
         render: (schedule) =>
           highlightText(
             schedule.roomScheduleId?.toString() || "",
@@ -190,8 +177,7 @@ export default function AdminRoomSchedulePage() {
       },
       {
         header: "Room",
-        className:
-          "w-[180px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
+        className: "w-[160px] font-medium text-foreground",
         render: (schedule) =>
           highlightText(
             `Room ${String(schedule.roomNumber ?? "")}`,
@@ -200,22 +186,25 @@ export default function AdminRoomSchedulePage() {
       },
       {
         header: "Doctor",
-        className:
-          "w-[220px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
+        className: "min-w-[220px] text-muted-foreground",
         render: (schedule) =>
-          highlightText(schedule.doctorName || "", deferredSearchQuery),
+          highlightText(
+            getScheduleDoctorDisplayName(schedule),
+            deferredSearchQuery,
+          ),
       },
       {
         header: "Day",
-        className:
-          "w-[140px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
+        className: "w-[150px] text-muted-foreground",
         render: (schedule) =>
-          highlightText(schedule.dayOfWeek || "", deferredSearchQuery),
+          highlightText(
+            formatDayOfWeek(schedule.dayOfWeek),
+            deferredSearchQuery,
+          ),
       },
       {
         header: "Time Slot",
-        className:
-          "w-[160px] px-4 py-2 text-left text-xs font-medium tracking-wide text-muted-foreground",
+        className: "w-[180px] text-muted-foreground",
         render: (schedule) =>
           highlightText(
             `${schedule.startTime} - ${schedule.endTime}`,
@@ -224,8 +213,9 @@ export default function AdminRoomSchedulePage() {
       },
       {
         header: "Actions",
-        className:
-          "w-[120px] px-4 py-2 text-center text-xs font-medium tracking-wide text-muted-foreground",
+        isAction: true,
+        align: "center",
+        className: "w-[140px] text-center",
         render: (schedule) => (
           <div className="flex items-center justify-center gap-2">
             <Button
@@ -239,7 +229,8 @@ export default function AdminRoomSchedulePage() {
             </Button>
             <Button
               size="icon-sm"
-              variant="destructive"
+              variant="outline"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
               onClick={() => openDeleteDialog(schedule)}
               aria-label="Delete room schedule"
               title="Delete"
@@ -250,7 +241,7 @@ export default function AdminRoomSchedulePage() {
         ),
       },
     ],
-    [deferredSearchQuery, openDeleteDialog, openEditDialog],
+    [deferredSearchQuery, doctors, openDeleteDialog, openEditDialog],
   );
 
   const [formValues, setFormValues] = useState<FormValues>({
@@ -270,7 +261,37 @@ export default function AdminRoomSchedulePage() {
   }
 
   function getDoctorDisplayName(doctor: UserOption): string {
-    return `Dr. ${doctor.lastName}`;
+    const fullName = [doctor.firstName, doctor.lastName]
+      .map((part) => part.trim())
+      .filter(Boolean)
+      .join(" ");
+
+    return fullName ? `Dr. ${fullName}` : `Doctor #${doctor.userId}`;
+  }
+
+  function getScheduleDoctorDisplayName(schedule: RoomScheduleResponse) {
+    const matchedDoctor = doctors.find((doctor) =>
+      isDoctorNameMatch(doctor, schedule.doctorName),
+    );
+
+    return matchedDoctor
+      ? getDoctorDisplayName(matchedDoctor)
+      : schedule.doctorName || "-";
+  }
+
+  function isDoctorNameMatch(doctor: UserOption, name?: string | null) {
+    const scheduleName = normalizeDoctorName(name || "");
+    const fullName = normalizeDoctorName(getDoctorDisplayName(doctor));
+    const firstName = normalizeDoctorName(doctor.firstName);
+    const lastName = normalizeDoctorName(doctor.lastName);
+
+    return (
+      scheduleName === fullName ||
+      scheduleName === firstName ||
+      scheduleName === lastName ||
+      (Boolean(scheduleName) && fullName.includes(scheduleName)) ||
+      (Boolean(fullName) && scheduleName.includes(fullName))
+    );
   }
 
   const fetchData = useCallback(async () => {
@@ -282,7 +303,6 @@ export default function AdminRoomSchedulePage() {
       const allSchedules = await roomScheduleApi.getAll().catch(() => []);
 
       setSchedules(allSchedules || []);
-      setCurrentPage(0);
       setRooms(roomsData || []);
       setDoctors(
         (doctorsData || []).map((d) => ({
@@ -379,7 +399,7 @@ export default function AdminRoomSchedulePage() {
   }
 
   return (
-    <div className="col-start-1 col-end-14">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="Manage Room Schedules"
         description="Assign doctors to rooms for specific time slots across the week."
@@ -395,34 +415,23 @@ export default function AdminRoomSchedulePage() {
         }
       />
 
-      <div className="mb-6">
-        <SearchBar
-          value={searchQuery}
-          onChange={setSearchQuery}
-          placeholder="Search by room, doctor, day, or time"
-          resultCount={filteredSchedules.length}
-        />
-      </div>
+      <SearchBar
+        value={searchQuery}
+        onChange={setSearchQuery}
+        placeholder="Search by room, doctor, day, or time"
+        resultCount={filteredSchedules.length}
+      />
 
       <div className="overflow-hidden w-auto rounded-lg border border-border bg-card">
         <DataTable
           columns={columns}
-          data={paginatedSchedules}
-          pageable={false}
-          showActions={false}
-          emptyMessage="No schedules found"
-        />
-
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          pageSize={pageSize}
+          data={filteredSchedules}
+          pageable
+          pageSize={10}
           pageSizeOptions={[5, 10, 20, 50]}
-          onPageChange={(p) => setCurrentPage(p)}
-          onPageSizeChange={(size) => {
-            setPageSize(size);
-            setCurrentPage(0);
-          }}
+          showActions={false}
+          minWidth="980px"
+          emptyMessage="No schedules found"
         />
       </div>
 
@@ -632,11 +641,13 @@ export default function AdminRoomSchedulePage() {
             <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-sm">
               <p className="font-medium">
                 Room {selectedSchedule?.roomNumber} -{" "}
-                {selectedSchedule?.doctorName}
+                {selectedSchedule
+                  ? getScheduleDoctorDisplayName(selectedSchedule)
+                  : "-"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {selectedSchedule?.dayOfWeek} | {selectedSchedule?.startTime} -{" "}
-                {selectedSchedule?.endTime}
+                {formatDayOfWeek(selectedSchedule?.dayOfWeek)} |{" "}
+                {selectedSchedule?.startTime} - {selectedSchedule?.endTime}
               </p>
             </div>
           </div>
