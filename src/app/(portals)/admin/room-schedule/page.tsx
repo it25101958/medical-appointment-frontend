@@ -266,7 +266,7 @@ export default function AdminRoomSchedulePage() {
       .filter(Boolean)
       .join(" ");
 
-    return fullName ? `Dr. ${fullName}` : `Doctor #${doctor.userId}`;
+    return fullName ? `Dr. ${fullName}` : `Doctor ${doctor.userId}`;
   }
 
   function getScheduleDoctorDisplayName(schedule: RoomScheduleResponse) {
@@ -428,7 +428,7 @@ export default function AdminRoomSchedulePage() {
           data={filteredSchedules}
           pageable
           pageSize={10}
-          pageSizeOptions={[5, 10, 20, 50]}
+          pageSizeOptions={[5, 10, 50]}
           showActions={false}
           minWidth="980px"
           emptyMessage="No schedules found"

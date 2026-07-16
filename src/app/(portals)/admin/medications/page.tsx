@@ -28,7 +28,6 @@ import { PageHeader } from "@/components/ui/page-header";
 import { SearchBar } from "@/components/ui/search-bar";
 import { RefreshCcw } from "lucide-react";
 import { DeleteConfirmDialog } from "@/features/shared";
-import { PaginationControls } from "@/components/ui";
 import {
   deleteMedication,
   getMedications,
@@ -76,7 +75,7 @@ export default function AdminMedicationsPage() {
     useState<Medication | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize, setPageSize] = useState(8);
+  const [pageSize, setPageSize] = useState(10);
   const [formValues, setFormValues] =
     useState<MedicationPayload>(createEmptyForm());
 
@@ -218,26 +217,6 @@ export default function AdminMedicationsPage() {
       return haystack.includes(query);
     });
   }, [deferredSearchQuery, medications]);
-
-  const totalPages = Math.max(
-    1,
-    Math.ceil(filteredMedications.length / pageSize),
-  );
-
-  const paginatedMedications = useMemo(() => {
-    const startIndex = currentPage * pageSize;
-    return filteredMedications.slice(startIndex, startIndex + pageSize);
-  }, [currentPage, filteredMedications, pageSize]);
-
-  useEffect(() => {
-    setCurrentPage(0);
-  }, [deferredSearchQuery, pageSize]);
-
-  useEffect(() => {
-    if (currentPage > totalPages - 1) {
-      setCurrentPage(totalPages - 1);
-    }
-  }, [currentPage, totalPages]);
 
   const summaryCards = useMemo(
     () => [
@@ -389,44 +368,32 @@ export default function AdminMedicationsPage() {
 
       <SearchBar
         value={searchQuery}
-        onChange={setSearchQuery}
+        onChange={(value) => {
+          setSearchQuery(value);
+          setCurrentPage(0);
+        }}
         placeholder="Search by name, generic name, dosage, form, manufacturer, or status"
         resultCount={filteredMedications.length}
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading medications...
-          </div>
-        ) : filteredMedications.length === 0 ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            No medications match your search.
-          </div>
-        ) : (
-          <>
-            <DataTable
-              columns={medicationColumns}
-              data={paginatedMedications}
-              pageable={false}
-              showActions={false}
-              minWidth="1180px"
-              emptyMessage="No medications match your search."
-            />
-
-            <PaginationControls
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 8, 10, 20]}
-              onPageChange={setCurrentPage}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setCurrentPage(0);
-              }}
-            />
-          </>
-        )}
+        <DataTable
+          columns={medicationColumns}
+          data={filteredMedications}
+          pageable
+          currentPage={currentPage}
+          pageSize={pageSize}
+          pageSizeOptions={[5, 10, 50]}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(0);
+          }}
+          isLoading={loading}
+          showActions={false}
+          minWidth="1180px"
+          emptyMessage="No medications match your search."
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

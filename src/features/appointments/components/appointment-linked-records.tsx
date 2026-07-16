@@ -7,23 +7,22 @@ import { FlaskConical, ReceiptText, ScrollText } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 import { labOrderApi } from "@/features/lab-orders";
 import { LabOrderDetailsDialog } from "@/features/lab-orders";
 import type { LabOrderResponse } from "@/features/lab-orders";
 import { PrescriptionDetailsDialog } from "@/features/admin";
-import type { PrescriptionResponse } from "@/features/prescriptions";
+import {
+  getMyPrescriptions,
+  getPrescription,
+  type PrescriptionResponse,
+} from "@/features/prescriptions";
 import { billingApi, type BillingResponse } from "@/features/billing";
 import { paymentApi, type PaymentResponse } from "@/features/payment";
 
 interface Props {
   appointmentId: number;
   refreshKey?: number;
-}
-
-interface PrescriptionsPage {
-  content: PrescriptionResponse[];
 }
 
 export function AppointmentLinkedRecords({
@@ -48,20 +47,22 @@ export function AppointmentLinkedRecords({
       try {
         const [prescriptionsPage, orders, billingRecords, paymentRecords] =
           await Promise.all([
-            apiRequest<PrescriptionsPage>("/prescription/my?page=0&size=100", {
-              method: "GET",
-              cache: "no-store",
-            }).catch(() => ({ content: [] })),
+            getMyPrescriptions(0, 100).catch(() => ({ content: [] })),
             labOrderApi.search().catch(() => []),
             billingApi.getByAppointment(appointmentId).catch(() => []),
             paymentApi.getByAppointment(appointmentId).catch(() => []),
           ]);
 
-        setPrescription(
-          (prescriptionsPage.content || []).find(
-            (item) => Number(item.appointmentId) === Number(appointmentId),
-          ) || null,
+        const prescriptionListItem = (prescriptionsPage.content || []).find(
+          (item) => Number(item.appointmentId) === Number(appointmentId),
         );
+        const prescriptionDetails = prescriptionListItem
+          ? await getPrescription(prescriptionListItem.prescriptionId).catch(
+              () => null,
+            )
+          : null;
+
+        setPrescription(prescriptionDetails);
         setLabOrders(
           (orders || []).filter(
             (order) => Number(order.appointmentId) === Number(appointmentId),

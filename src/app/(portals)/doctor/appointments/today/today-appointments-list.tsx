@@ -44,6 +44,7 @@ import { getLaboratories, type Laboratory } from "@/features/laboratory";
 import { getActiveLabTests, type LabTest } from "@/features/labtest";
 import { labOrderApi } from "@/features/lab-orders";
 import type { LabOrderRequest, LabOrderResponse } from "@/features/lab-orders";
+import { createPrescription } from "@/features/prescriptions";
 
 interface Props {
   appointments: AppointmentResponse[];
@@ -225,7 +226,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
 
       if (existingOrder) {
         toast.error("Lab order already exists", {
-          description: `Appointment #${appointment.appointmentId} already has lab order #${existingOrder.labOrderId}.`,
+          description: `Appointment ${appointment.appointmentId} already has lab order ${existingOrder.labOrderId}.`,
         });
         setSelectedAppointment(appointment);
         setLinkedRecordsRefreshKey((current) => current + 1);
@@ -283,19 +284,16 @@ export function TodayAppointmentsList({ appointments }: Props) {
 
     setSavingPrescription(true);
     try {
-      await apiRequest("/prescription", {
-        method: "POST",
-        body: JSON.stringify({
-          appointmentId: clinicalAppointment.appointmentId,
-          status: prescriptionStatus,
-          notes: prescriptionNotes.trim() || undefined,
-          items: prescriptionItems.map((item) => ({
-            medicationId: item.medicationId,
-            dosage: item.dosage.trim(),
-            quantity: item.quantity,
-            specialInstructions: item.specialInstructions.trim() || undefined,
-          })),
-        }),
+      await createPrescription({
+        appointmentId: clinicalAppointment.appointmentId,
+        status: prescriptionStatus,
+        notes: prescriptionNotes.trim() || undefined,
+        items: prescriptionItems.map((item) => ({
+          medicationId: item.medicationId,
+          dosage: item.dosage.trim(),
+          quantity: item.quantity,
+          specialInstructions: item.specialInstructions.trim() || undefined,
+        })),
       });
 
       toast.success("Prescription created successfully.");
@@ -383,7 +381,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
       render: (appointment) => (
         <button
           type="button"
-          className="text-left text-sm font-medium hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
+          className="cursor-pointer text-left text-sm font-medium hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
           onClick={() => loadAppointment(appointment.appointmentId)}
           disabled={loadingAppointmentId === appointment.appointmentId}
         >
@@ -541,7 +539,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
                 <div>
                   <p className="text-sm font-medium leading-none">
                     {clinicalAppointment
-                      ? `Appointment #${clinicalAppointment.appointmentId}`
+                      ? `Appointment ${clinicalAppointment.appointmentId}`
                       : "Appointment"}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -758,7 +756,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
             <DialogTitle>
               Create Lab Order
               {clinicalAppointment
-                ? ` - Appointment #${clinicalAppointment.appointmentId}`
+                ? ` - Appointment ${clinicalAppointment.appointmentId}`
                 : ""}
             </DialogTitle>
           </DialogHeader>
@@ -770,7 +768,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
             </div>
 
             <div className="grid gap-2">
-              <Label>Laboratory</Label>
+              <Label className="form-label mb-0">Laboratory</Label>
               <Select
                 value={laboratoryId ? String(laboratoryId) : ""}
                 onValueChange={(value) => setLaboratoryId(Number(value))}
@@ -781,7 +779,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
                     placeholder={
                       loadingClinicalData
                         ? "Loading laboratories..."
-                        : "Select laboratory"
+                        : "e.g. Central Laboratory"
                     }
                   />
                 </SelectTrigger>
@@ -800,7 +798,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <Label>Lab Tests</Label>
+                <Label className="form-label mb-0">Lab Tests</Label>
                 <Button
                   type="button"
                   size="sm"
@@ -823,7 +821,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
                   className="grid gap-3 rounded-md border p-3 md:grid-cols-[minmax(0,1fr)_120px_40px] md:items-end"
                 >
                   <div className="grid gap-2">
-                    <Label>Lab test</Label>
+                    <Label className="form-label mb-0">Lab Test</Label>
                     <Select
                       value={item.labTestId ? String(item.labTestId) : ""}
                       onValueChange={(value) =>
@@ -836,7 +834,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
                       <SelectTrigger>
                         <SelectValue
                           placeholder={
-                            loadingClinicalData ? "Loading..." : "Select test"
+                            loadingClinicalData ? "Loading..." : "e.g. Blood Count"
                           }
                         />
                       </SelectTrigger>
@@ -851,7 +849,7 @@ export function TodayAppointmentsList({ appointments }: Props) {
                   </div>
 
                   <div className="grid gap-2">
-                    <Label>Quantity</Label>
+                    <Label className="form-label mb-0">Quantity</Label>
                     <Input
                       type="number"
                       min={1}

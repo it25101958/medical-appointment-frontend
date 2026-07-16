@@ -123,13 +123,13 @@ export default function PatientFeedbackPage() {
         <div className="space-y-1">
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => setSelectedFeedback(item)}
           >
-            {highlightText(`#${item.feedbackId}`, deferredSearchQuery)}
+            {highlightText(String(item.feedbackId), deferredSearchQuery)}
           </button>
           <p className="text-xs text-muted-foreground">
-            Appointment #{item.appointmentId}
+            Appointment {item.appointmentId}
           </p>
         </div>
       ),
@@ -205,24 +205,17 @@ export default function PatientFeedbackPage() {
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {isLoading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading feedback...
-          </div>
-        ) : (
-          <>
-            <DataTable
-              columns={feedbackColumns}
-              data={filteredFeedback}
-              pageable
-              pageSize={8}
-              pageSizeOptions={[5, 8, 10, 20]}
-              showActions={false}
-              minWidth="980px"
-              emptyMessage="No feedback submitted yet."
-            />
-          </>
-        )}
+        <DataTable
+          columns={feedbackColumns}
+          data={filteredFeedback}
+          pageable
+          pageSize={10}
+          pageSizeOptions={[5, 10, 50]}
+          isLoading={isLoading}
+          showActions={false}
+          minWidth="980px"
+          emptyMessage="No feedback submitted yet."
+        />
       </div>
 
       <Dialog
@@ -253,7 +246,7 @@ export default function PatientFeedbackPage() {
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-lg font-semibold">
-                    Appointment #{selectedFeedback.appointmentId}
+                    Appointment {selectedFeedback.appointmentId}
                   </h3>
                   <Badge variant="outline" className="rounded-full px-3 py-0.5">
                     {selectedFeedback.status}

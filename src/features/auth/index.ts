@@ -4,6 +4,7 @@
 export {
   loginAction,
   logoutAction,
+  forgotPasswordAction,
   registerAction,
   verifyAccountAction,
   resendVerificationAction,

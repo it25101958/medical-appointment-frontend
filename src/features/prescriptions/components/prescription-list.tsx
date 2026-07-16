@@ -8,11 +8,13 @@ import {
   SearchBar,
 } from "@/components/ui";
 import { highlightText } from "@/lib/highlight-search";
-import { apiRequest } from "@/lib/api-client";
 import { getErrorMessage } from "@/lib/utils";
 import { toast } from "sonner";
 import { PrescriptionDetailsDialog } from "./prescription-details-dialog";
-import type { PrescriptionResponse } from "@/features/prescriptions";
+import {
+  getPrescription,
+  type PrescriptionResponse,
+} from "@/features/prescriptions";
 import { formatDate } from "@/features/shared/util/format-date";
 
 interface PrescriptionListItem {
@@ -68,13 +70,7 @@ export function PrescriptionList({
     async (prescription: PrescriptionListItem) => {
       setLoadingPrescriptionId(prescription.prescriptionId);
       try {
-        const details = await apiRequest<PrescriptionResponse>(
-          `/prescription/${prescription.prescriptionId}`,
-          {
-            method: "GET",
-            cache: "no-store",
-          },
-        );
+        const details = await getPrescription(prescription.prescriptionId);
 
         setSelectedPrescription(details);
       } catch (error) {
@@ -93,7 +89,7 @@ export function PrescriptionList({
         render: (p) => (
           <button
             type="button"
-            className="text-left font-semibold hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
+            className="cursor-pointer text-left font-semibold hover:text-primary hover:underline disabled:cursor-wait disabled:no-underline"
             onClick={() => viewPrescription(p)}
             disabled={loadingPrescriptionId === p.prescriptionId}
           >
@@ -145,17 +141,22 @@ export function PrescriptionList({
         />
       )}
 
-      <div className={showSearch ? "mt-6" : ""}>
+      <div
+        className={`overflow-hidden rounded-lg border border-border bg-card ${
+          showSearch ? "mt-6" : ""
+        }`}
+      >
         <DataTable
           columns={columns}
           data={filteredPrescriptions}
           pageable={true}
           pageSize={10}
+          pageSizeOptions={[5, 10, 50]}
           showActions={false}
           minWidth="980px"
           emptyMessage={
             loadingPrescriptionId
-              ? `Loading prescription #${loadingPrescriptionId}...`
+              ? `Loading prescription ${loadingPrescriptionId}...`
               : "No prescriptions found."
           }
         />

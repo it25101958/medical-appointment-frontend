@@ -76,7 +76,7 @@ export function UserProfile() {
   }, [profile]);
 
   return (
-    <div className="col-start-1 col-end-14">
+    <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
         title="My Profile"
         description="Review the account details connected to your signed-in user."

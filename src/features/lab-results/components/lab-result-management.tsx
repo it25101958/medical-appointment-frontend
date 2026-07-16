@@ -116,25 +116,25 @@ export function LabResultManagement({
         <div className="space-y-1">
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(result)}
           >
             {result.testName}
           </button>
-          <p className="text-xs text-muted-foreground">#{result.id}</p>
+          <p className="text-xs text-muted-foreground">{result.id}</p>
         </div>
       ),
       className: "min-w-[220px] px-5 py-4",
     },
     {
       header: "Appointment",
-      render: (result) => `#${result.appointmentId}`,
+      render: (result) => String(result.appointmentId),
       className: "w-[150px] px-5 py-4 text-muted-foreground",
     },
     {
       header: "Patient",
       render: (result) =>
-        result.patientName?.trim() || `#${result.patientId}`,
+        result.patientName?.trim() || String(result.patientId),
       className: "min-w-[160px] px-5 py-4 text-muted-foreground",
     },
     {
@@ -325,27 +325,22 @@ export function LabResultManagement({
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading lab results...
-          </div>
-        ) : (
-          <DataTable
-            columns={resultColumns}
-            data={sortedResults}
-            pageable
-            pageSize={10}
-            pageSizeOptions={[5, 10, 20]}
-            canManage={canManage}
-            showActions={false}
-            minWidth={canManage ? "1160px" : "1040px"}
-            emptyMessage={
-              patientIdFilter.trim()
-                ? "No lab results found for this patient."
-                : "Search by patient ID to view lab results."
-            }
-          />
-        )}
+        <DataTable
+          columns={resultColumns}
+          data={sortedResults}
+          pageable
+          pageSize={10}
+          pageSizeOptions={[5, 10, 50]}
+          canManage={canManage}
+          isLoading={loading}
+          showActions={false}
+          minWidth={canManage ? "1160px" : "1040px"}
+          emptyMessage={
+            patientIdFilter.trim()
+              ? "No lab results found for this patient."
+              : "Search by patient ID to view lab results."
+          }
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -597,12 +592,12 @@ export function LabResultManagement({
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
                   <p className="text-xs text-muted-foreground">Appointment</p>
                   <p className="font-medium">
-                    #{selectedResult.appointmentId}
+                    {selectedResult.appointmentId}
                   </p>
                 </div>
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
                   <p className="text-xs text-muted-foreground">Patient</p>
-                  <p className="font-medium">#{selectedResult.patientId}</p>
+                  <p className="font-medium">{selectedResult.patientId}</p>
                 </div>
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-3">
                   <p className="text-xs text-muted-foreground">Updated</p>

@@ -1,19 +1,9 @@
-import { apiRequest } from "@/lib/api-client";
-import { PrescriptionList } from "@/features/admin";
 import { PageHeader } from "@/components/ui";
-
-interface PrescriptionListItem {
-  prescriptionId: number;
-  appointmentId: number;
-  patientName: string;
-  doctorName: string;
-  status: string;
-  createdAt: string;
-}
-
-interface PrescriptionsResponse {
-  content: PrescriptionListItem[];
-}
+import {
+  getMyPrescriptions,
+  PrescriptionList,
+  type PrescriptionsResponse,
+} from "@/features/prescriptions";
 
 export default async function PatientPrescriptionsPage() {
   let data: PrescriptionsResponse = {
@@ -22,13 +12,7 @@ export default async function PatientPrescriptionsPage() {
   let errorMessage = "";
 
   try {
-    data = await apiRequest<PrescriptionsResponse>(
-      "/prescription/my?page=0&size=100",
-      {
-        method: "GET",
-        cache: "no-store",
-      },
-    );
+    data = await getMyPrescriptions(0, 100);
   } catch (error) {
     errorMessage =
       error instanceof Error ? error.message : "Could not load prescriptions";

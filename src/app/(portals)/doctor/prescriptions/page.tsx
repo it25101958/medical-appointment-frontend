@@ -1,30 +1,10 @@
-import { apiRequest } from "@/lib/api-client";
-import { PrescriptionList } from "@/features/admin";
-
-interface PrescriptionListItem {
-  prescriptionId: number;
-  appointmentId: number;
-  patientName: string;
-  doctorName: string;
-  status: string;
-  createdAt: string;
-}
-
-interface PrescriptionsResponse {
-  content: PrescriptionListItem[];
-}
+import { getMyPrescriptions, PrescriptionList } from "@/features/prescriptions";
 
 export default async function DoctorPrescriptionsPage() {
-  const data = await apiRequest<PrescriptionsResponse>(
-    "/prescription/my?page=0&size=100",
-    {
-      method: "GET",
-      cache: "no-store",
-    },
-  );
+  const data = await getMyPrescriptions(0, 100);
 
   return (
-    <div className="space-y-6 col-span-1 col-span-13">
+    <div className="col-start-1 col-end-14 space-y-6">
       <div className="flex flex-col space-y-1">
         <h1 className="text-3xl font-bold tracking-tight">My Prescriptions</h1>
         <p className="text-muted-foreground">Prescriptions issued by you</p>

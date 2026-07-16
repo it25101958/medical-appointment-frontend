@@ -24,6 +24,7 @@ export interface DashboardShellProps {
   primaryButton: { text: string; onClick: () => void };
   secondaryButton: { text: string; onClick: () => void };
   bentoItems: BentoItem[];
+  topContent?: React.ReactNode;
 }
 
 const Bento: React.FC<BentoItem> = ({
@@ -54,9 +55,12 @@ export default function DashboardShell({
   primaryButton,
   secondaryButton,
   bentoItems,
+  topContent,
 }: DashboardShellProps) {
   return (
-    <section className="col-span-12 grid grid-cols-1 lg:grid-cols-12 lg:pt-20 lg:pb-20 items-center py-3">
+    <section className="col-span-12 grid grid-cols-1 lg:grid-cols-12  items-center gap-y-6 py-3">
+      {topContent}
+
       <div className="lg:col-span-5 z-10 xs:order-1 xs:pb-10">
         <motion.div
           className="space-y-2"

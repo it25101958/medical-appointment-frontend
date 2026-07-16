@@ -14,6 +14,7 @@ export interface PaginationControlsProps {
   totalPages: number;
   pageSize?: number;
   pageSizeOptions?: number[];
+  disabled?: boolean;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
 }
@@ -22,7 +23,8 @@ export function PaginationControls({
   currentPage,
   totalPages,
   pageSize = 5,
-  pageSizeOptions = [5, 10],
+  pageSizeOptions = [5, 10, 50],
+  disabled = false,
   onPageChange = () => {},
   onPageSizeChange = () => {},
 }: PaginationControlsProps) {
@@ -37,7 +39,7 @@ export function PaginationControls({
             size="sm"
             variant="outline"
             onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage === 0}
+            disabled={disabled || currentPage === 0}
           >
             Previous
           </Button>
@@ -46,7 +48,7 @@ export function PaginationControls({
             size="sm"
             variant="outline"
             onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages - 1}
+            disabled={disabled || currentPage >= totalPages - 1}
           >
             Next
           </Button>
@@ -57,6 +59,7 @@ export function PaginationControls({
           <Select
             value={pageSize.toString()}
             onValueChange={(val) => onPageSizeChange(Number(val))}
+            disabled={disabled}
           >
             <SelectTrigger className="w-32">
               <SelectValue placeholder="Page Size" />

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodValidator } from "@/lib/validations/zod-validator";
-import { forgotPasswordSchema } from "@/features/auth";
+import { forgotPasswordAction, forgotPasswordSchema } from "@/features/auth";
 
 function getFieldErrorMessage(error: unknown) {
   if (typeof error === "string") {
@@ -27,9 +27,20 @@ export function ForgotPasswordForm() {
     validators: { onSubmit: forgotPasswordSchema },
     onSubmit: async ({ value }) => {
       const email = value.email.trim();
-      toast.success("If an account exists, a reset code will be sent.", {
-        description: email,
-      });
+      const result = await forgotPasswordAction({ email });
+
+      if (result.success) {
+        toast.success(
+          result.message || "If an account exists, a reset code will be sent.",
+          {
+            description: email,
+          },
+        );
+      } else {
+        toast.error("Could not send reset code", {
+          description: result.error || "Please try again later.",
+        });
+      }
     },
   });
 

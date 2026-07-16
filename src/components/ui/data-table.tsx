@@ -56,6 +56,8 @@ interface DataTableProps<T> {
   totalPages?: number;
   onPageChange?: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+  isLoading?: boolean;
+  skeletonRowCount?: number;
   showActions?: boolean;
   canManage?: boolean;
   minWidth?: string;
@@ -76,11 +78,13 @@ export function DataTable<T extends object>({
   className,
   pageable = true,
   pageSize = 5,
-  pageSizeOptions = [5, 10],
+  pageSizeOptions = [5, 10, 50],
   currentPage,
   totalPages: totalPagesProp,
   onPageChange,
   onPageSizeChange,
+  isLoading = false,
+  skeletonRowCount,
   showActions = false,
   minWidth = "1000px",
   bordered = true,
@@ -112,6 +116,12 @@ export function DataTable<T extends object>({
   const startIdx = resolvedCurrentPage * resolvedPageSize;
   const endIdx = startIdx + resolvedPageSize;
   const paginatedData = isServerPaginated ? data : data.slice(startIdx, endIdx);
+  const resolvedSkeletonRowCount =
+    skeletonRowCount ?? Math.max(3, Math.min(resolvedPageSize, 10));
+  const skeletonRows = React.useMemo(
+    () => Array.from({ length: resolvedSkeletonRowCount }),
+    [resolvedSkeletonRowCount],
+  );
 
   const setPage = React.useCallback(
     (nextPage: number) => {
@@ -208,7 +218,63 @@ export function DataTable<T extends object>({
           </TableHeader>
 
           <TableBody>
-            {paginatedData.length === 0 ? (
+            {isLoading ? (
+              skeletonRows.map((_, rIdx) => (
+                <TableRow key={`skeleton-${rIdx}`} aria-hidden="true">
+                  {visibleColumns.map((col, cIdx) => {
+                    const isActionColumn =
+                      col.isAction ||
+                      col.header.toLowerCase().includes("action") ||
+                      col.header.toLowerCase().includes("manage");
+
+                    return (
+                      <TableCell
+                        key={cIdx}
+                        className={cn(
+                          "px-4 py-3 align-middle",
+                          columnSeparatorClass,
+                          rowSeparatorClass(rIdx),
+                          textAlignClasses[
+                            col.cellAlign ??
+                              col.align ??
+                              (isActionColumn ? actionAlign : defaultCellAlign)
+                          ],
+                          col.className,
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "h-4 animate-pulse rounded bg-muted",
+                            isActionColumn
+                              ? "mx-auto w-16"
+                              : cIdx % 3 === 0
+                                ? "w-24"
+                                : cIdx % 3 === 1
+                                  ? "w-32"
+                                  : "w-20",
+                          )}
+                        />
+                      </TableCell>
+                    );
+                  })}
+
+                  {hasBuiltInActions && (
+                    <TableCell
+                      className={cn(
+                        "px-4 py-3",
+                        columnSeparatorClass,
+                        rowSeparatorClass(rIdx),
+                        textAlignClasses[actionAlign],
+                      )}
+                    >
+                      <div className="flex justify-end">
+                        <div className="h-8 w-20 animate-pulse rounded-md bg-muted" />
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={Math.max(
@@ -303,6 +369,7 @@ export function DataTable<T extends object>({
             pageSizeOptions={pageSizeOptions}
             onPageChange={(page) => setPage(page)}
             onPageSizeChange={handlePageSizeChange}
+            disabled={isLoading}
           />
         </div>
       )}

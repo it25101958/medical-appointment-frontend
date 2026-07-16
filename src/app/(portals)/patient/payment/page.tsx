@@ -41,7 +41,7 @@ export default function PatientPaymentPage() {
       <div className="col-start-1 col-end-14 space-y-6">
         <PageHeader
           title="My Payments"
-          description="Review and create payments connected to your appointments."
+          description="Review payments connected to your appointments."
         />
         <div className="rounded-lg border border-border bg-card px-6 py-10 text-center text-sm text-muted-foreground">
           Loading payment records...
@@ -53,8 +53,8 @@ export default function PatientPaymentPage() {
   return (
     <PaymentManagement
       title="My Payments"
-      description="Review and create payments connected to your appointments."
-      canManage
+      description="Review payments connected to your appointments."
+      canManage={false}
       canDelete={false}
       patientId={patient?.userId}
     />

@@ -32,19 +32,14 @@ export default function RoomScheduleList<T extends object>({
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {isLoading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading room schedules...
-          </div>
-        ) : (
-          <DataTable<T>
-            columns={columns}
-            data={data}
-            pageable
-            pageSize={10}
-            showActions={false}
-          />
-        )}
+        <DataTable<T>
+          columns={columns}
+          data={data}
+          pageable
+          pageSize={10}
+          isLoading={Boolean(isLoading)}
+          showActions={false}
+        />
       </div>
     </div>
   );

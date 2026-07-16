@@ -140,7 +140,7 @@ export function AppointmentActions({ appointment, onChanged }: Props) {
           <div className="px-6">
             <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
               <p className="text-sm font-medium">
-                Appointment #{appointment.appointmentNumber}
+                Appointment {appointment.appointmentNumber}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {appointment.appointmentDate} at {appointment.appointmentTime}

@@ -294,10 +294,10 @@ export function PaymentManagement({
         render: (payment) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(payment)}
           >
-            {highlightText(`#${payment.paymentId}`, deferredSearchQuery)}
+            {highlightText(String(payment.paymentId), deferredSearchQuery)}
           </button>
         ),
         className: "w-[130px] px-5 py-4 font-medium",
@@ -305,13 +305,13 @@ export function PaymentManagement({
       {
         header: "Patient",
         render: (payment) =>
-          highlightText(`#${payment.patientId}`, deferredSearchQuery),
+          highlightText(String(payment.patientId), deferredSearchQuery),
         className: "w-[120px] px-5 py-4 text-muted-foreground",
       },
       {
         header: "Appointment",
         render: (payment) =>
-          highlightText(`#${payment.appointmentId}`, deferredSearchQuery),
+          highlightText(String(payment.appointmentId), deferredSearchQuery),
         className: "w-[140px] px-5 py-4 text-muted-foreground",
       },
       {
@@ -420,22 +420,17 @@ export function PaymentManagement({
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading payments...
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredPayments}
-            pageable
-            pageSize={10}
-            canManage={canManage || canDelete}
-            showActions={false}
-            emptyMessage="No payment records found."
-            minWidth="1320px"
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredPayments}
+          pageable
+          pageSize={10}
+          canManage={canManage || canDelete}
+          isLoading={loading}
+          showActions={false}
+          emptyMessage="No payment records found."
+          minWidth="1320px"
+        />
       </div>
 
       <PaymentFormDialog
@@ -484,7 +479,7 @@ export function PaymentManagement({
             <div className="px-6">
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
                 <p className="text-sm font-medium">
-                  Payment #{selectedPayment.paymentId}
+                  Payment {selectedPayment.paymentId}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {formatCurrency(selectedPayment.amount)} |{" "}
@@ -706,7 +701,7 @@ function PaymentDetailsDialog({
             <div className="rounded-lg border border-border/60 bg-muted/30 p-4 sm:col-span-2">
               <div className="flex flex-wrap items-center gap-2">
                 <h3 className="text-lg font-semibold">
-                  Payment #{payment.paymentId}
+                  Payment {payment.paymentId}
                 </h3>
                 <Badge
                   variant="outline"
@@ -724,10 +719,10 @@ function PaymentDetailsDialog({
 
             <InfoPanel label="Amount" value={formatCurrency(payment.amount)} />
             <InfoPanel label="Method" value={payment.paymentMethod || "-"} />
-            <InfoPanel label="Patient" value={`#${payment.patientId}`} />
+            <InfoPanel label="Patient" value={String(payment.patientId)} />
             <InfoPanel
               label="Appointment"
-              value={`#${payment.appointmentId}`}
+              value={String(payment.appointmentId)}
             />
             <InfoPanel
               label="Created"

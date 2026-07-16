@@ -101,7 +101,7 @@ export function PrescriptionDetailsDialog({ prescription, onClose }: Props) {
               <p className="text-sm text-muted-foreground">
                 Prescription Reference
               </p>
-              <p className="text-lg">#{prescription.prescriptionId}</p>
+              <p className="text-lg">{prescription.prescriptionId}</p>
             </div>
 
             <Badge
@@ -116,7 +116,7 @@ export function PrescriptionDetailsDialog({ prescription, onClose }: Props) {
             <InfoItem
               icon={<Hash className="h-4 w-4" />}
               label="Appointment"
-              value={`#${prescription.appointmentId}`}
+              value={String(prescription.appointmentId)}
             />
 
             <InfoItem
@@ -155,7 +155,7 @@ export function PrescriptionDetailsDialog({ prescription, onClose }: Props) {
             <InfoItem
               icon={<Pill className="h-4 w-4" />}
               label="Prescription ID"
-              value={`#${prescription.prescriptionId}`}
+              value={String(prescription.prescriptionId)}
             />
           </div>
 

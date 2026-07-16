@@ -1,4 +1,14 @@
+"use server";
+
+import { revalidateTag } from "next/cache";
+
 import { apiRequest } from "@/lib/api-client";
+import {
+  CACHE_REVALIDATE_SECONDS,
+  CACHE_TAGS,
+  createCachedReadOptions,
+  createScopedCacheTag,
+} from "@/lib/cache";
 import type {
   AdminUserDetails,
   LoadCurrent,
@@ -7,6 +17,18 @@ import type {
 import type { User } from "@/features/admin";
 
 const USERS_BASE = "/users";
+
+function getUsersByRoleReadOptions(roleType: number) {
+  return createCachedReadOptions(
+    [CACHE_TAGS.users, createScopedCacheTag(CACHE_TAGS.users, `role:${roleType}`)],
+    CACHE_REVALIDATE_SECONDS.medium,
+  );
+}
+
+function invalidateUserOptionCache() {
+  revalidateTag(CACHE_TAGS.users, "max");
+  revalidateTag(CACHE_TAGS.doctors, "max");
+}
 
 export async function loadCurrent(): Promise<LoadCurrent> {
   return apiRequest<LoadCurrent>(`${USERS_BASE}/me`, {
@@ -21,34 +43,50 @@ export async function fetchUsers(
 ): Promise<PageableResponse<User>> {
   return apiRequest<PageableResponse<User>>(
     `${USERS_BASE}?page=${page}&size=${size}&sort=userId,asc`,
+    {
+      method: "GET",
+      cache: "no-store",
+    },
   );
 }
 
 export async function toggleActive(userId: number, active: boolean) {
-  return apiRequest(
+  const result = await apiRequest(
     `${USERS_BASE}/${active ? "activate" : "deactivate"}/${userId}`,
     {
       method: "PATCH",
     },
   );
+
+  invalidateUserOptionCache();
+  return result;
 }
 
 export async function changeRole(userId: number, newRoleType: number) {
-  return apiRequest(`${USERS_BASE}/role/${userId}?newRoleType=${newRoleType}`, {
+  const result = await apiRequest(`${USERS_BASE}/role/${userId}?newRoleType=${newRoleType}`, {
     method: "PATCH",
   });
+
+  invalidateUserOptionCache();
+  return result;
 }
 
 export async function getUser(userId: number): Promise<AdminUserDetails> {
-  return apiRequest<AdminUserDetails>(`${USERS_BASE}/${userId}`);
+  return apiRequest<AdminUserDetails>(`${USERS_BASE}/${userId}`, {
+    method: "GET",
+    cache: "no-store",
+  });
 }
 
 export async function updateUser(userId: number, payload: unknown) {
-  return apiRequest(`${USERS_BASE}/${userId}`, {
+  const result = await apiRequest(`${USERS_BASE}/${userId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
+
+  invalidateUserOptionCache();
+  return result;
 }
 
 export interface UserOption {
@@ -58,8 +96,8 @@ export interface UserOption {
 }
 
 export async function getUsersByRole(roleType: number): Promise<UserOption[]> {
-  return apiRequest<UserOption[]>(`${USERS_BASE}/role/${roleType}`, {
-    method: "GET",
-    cache: "no-store",
-  });
+  return apiRequest<UserOption[]>(
+    `${USERS_BASE}/role/${roleType}`,
+    getUsersByRoleReadOptions(roleType),
+  );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { DashboardShell } from "@/features/dashboard";
 import { AppointmentForm } from "@/features/appointments";
+import { UpcomingAppointmentHighlight } from "@/features/patient";
 import {
   Dialog,
   DialogContent,
@@ -17,8 +18,6 @@ import {
   Pill,
   ClipboardList,
   CreditCard,
-  History,
-  MessageSquare,
   UserRound,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -38,6 +37,7 @@ export default function PatientDashboard() {
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [patient, setPatient] = useState<CurrentUser | null>(null);
   const [isPatientLoading, setIsPatientLoading] = useState(true);
+  const [appointmentsRefreshKey, setAppointmentsRefreshKey] = useState(0);
 
   useEffect(() => {
     async function loadPatient() {
@@ -93,14 +93,8 @@ export default function PatientDashboard() {
     {
       icon: CreditCard,
       title: "Billing",
-      buttonText: "Pay Invoices",
-      action: () => router.push("/patient/payment"),
-    },
-    {
-      icon: History,
-      title: "History",
-      buttonText: "View Records",
-      action: () => router.push("/patient/visits"),
+      buttonText: "View Billing",
+      action: () => router.push("/patient/billing"),
     },
   ];
 
@@ -124,6 +118,15 @@ export default function PatientDashboard() {
           onClick: () => router.push("/patient/visits"),
         }}
         bentoItems={patientItems}
+        topContent={
+          <UpcomingAppointmentHighlight
+            patientId={patient?.userId}
+            isPatientLoading={isPatientLoading}
+            refreshKey={appointmentsRefreshKey}
+            onBookAppointment={openAppointmentForm}
+            onViewVisits={() => router.push("/patient/visits")}
+          />
+        }
       />
 
       <Dialog
@@ -157,7 +160,10 @@ export default function PatientDashboard() {
             <AppointmentForm
               patientId={patient.userId}
               onCancel={() => setAppointmentDialogOpen(false)}
-              onCreated={() => setAppointmentDialogOpen(false)}
+              onCreated={() => {
+                setAppointmentDialogOpen(false);
+                setAppointmentsRefreshKey((current) => current + 1);
+              }}
             />
           ) : (
             <p className="px-6 pb-6 text-sm text-muted-foreground">

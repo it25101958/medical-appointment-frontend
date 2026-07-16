@@ -32,6 +32,18 @@ export {
 // Form Elements
 export { Input } from "./input";
 export { Label } from "./label";
+export {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldContent,
+  FieldTitle,
+} from "./field";
 export { Button } from "./button";
 export { Textarea } from "./textarea";
 export { SearchBar } from "./search-bar";

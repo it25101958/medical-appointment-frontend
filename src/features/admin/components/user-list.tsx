@@ -27,6 +27,7 @@ export interface UserTableProps {
   totalPages: number;
   pageSize: number;
   pageSizeOptions?: number[];
+  isLoading?: boolean;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
 }
@@ -43,6 +44,7 @@ export function UserTable({
   totalPages,
   pageSize,
   pageSizeOptions,
+  isLoading = false,
   onPageChange,
   onPageSizeChange,
 }: UserTableProps) {
@@ -136,6 +138,7 @@ export function UserTable({
       totalPages={totalPages}
       pageSize={pageSize}
       pageSizeOptions={pageSizeOptions}
+      isLoading={isLoading}
       onPageChange={onPageChange}
       onPageSizeChange={onPageSizeChange}
       canManage

@@ -14,6 +14,7 @@ import { AppointmentActions } from "./appointment-actions";
 interface Props {
   appointments: AppointmentResponse[];
   canManage?: boolean;
+  isLoading?: boolean;
   onChanged?: () => void;
   emptyMessage?: string;
 }
@@ -21,6 +22,7 @@ interface Props {
 export function AppointmentTable({
   appointments,
   canManage = false,
+  isLoading = false,
   onChanged,
   emptyMessage = "No appointments found",
 }: Props) {
@@ -34,7 +36,7 @@ export function AppointmentTable({
         <div className="space-y-1">
           <button
             type="button"
-            className="text-left text-sm font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left text-sm font-medium hover:text-primary hover:underline"
             onClick={() => setSelectedAppointment(appointment)}
           >
             {appointment.appointmentNumber}
@@ -85,6 +87,7 @@ export function AppointmentTable({
           pageable={true}
           pageSize={10}
           canManage={canManage}
+          isLoading={isLoading}
           showActions={false}
           minWidth={canManage ? "1040px" : "920px"}
           emptyMessage={emptyMessage}

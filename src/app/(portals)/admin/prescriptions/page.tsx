@@ -1,28 +1,9 @@
-import { apiRequest } from "@/lib/api-client";
 import { PageHeader } from "@/components/ui/page-header";
 import { AdminPrescriptionsClient } from "./admin-prescriptions-client";
-
-interface PrescriptionListItem {
-  prescriptionId: number;
-  appointmentId: number;
-  patientName: string;
-  doctorName: string;
-  status: string;
-  createdAt: string;
-}
-
-interface PrescriptionsResponse {
-  content: PrescriptionListItem[];
-}
+import { getPrescriptions } from "@/features/prescriptions";
 
 export default async function AdminPrescriptionsPage() {
-  const data = await apiRequest<PrescriptionsResponse>(
-    "/prescription?page=0&size=100",
-    {
-      method: "GET",
-      cache: "no-store",
-    },
-  );
+  const data = await getPrescriptions(0, 100);
 
   return (
     <div className="col-start-1 col-end-14 space-y-6">

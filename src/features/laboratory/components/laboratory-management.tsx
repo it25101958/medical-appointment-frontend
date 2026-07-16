@@ -230,7 +230,7 @@ export function LaboratoryManagement({
         render: (laboratory) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(laboratory)}
           >
             {highlightText(laboratory.name || "", deferredSearchQuery)}
@@ -340,25 +340,16 @@ export function LaboratoryManagement({
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading laboratories...
-          </div>
-        ) : laboratories.length === 0 ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            No laboratories found.
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredLaboratories}
-            pageable={true}
-            pageSize={10}
-            canManage={canManage}
-            showActions={false}
-            emptyMessage="No laboratories found."
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredLaboratories}
+          pageable={true}
+          pageSize={10}
+          canManage={canManage}
+          isLoading={loading}
+          showActions={false}
+          emptyMessage="No laboratories found."
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -543,7 +534,7 @@ export function LaboratoryManagement({
                     {selectedLaboratory.name}
                   </h3>
                   <Badge variant="outline" className="rounded-full px-3 py-0.5">
-                    ID #{selectedLaboratory.laboratoryId}
+                    ID {selectedLaboratory.laboratoryId}
                   </Badge>
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">

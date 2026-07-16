@@ -238,7 +238,7 @@ export function LabTestManagement({
         render: (labTest) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(labTest)}
           >
             {highlightText(labTest.testName || "", deferredSearchQuery)}
@@ -369,25 +369,16 @@ export function LabTestManagement({
       </div>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading lab tests...
-          </div>
-        ) : labTests.length === 0 ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            No lab tests found.
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredLabTests}
-            pageable={true}
-            pageSize={10}
-            canManage={canManage}
-            showActions={false}
-            emptyMessage="No lab tests found."
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredLabTests}
+          pageable={true}
+          pageSize={10}
+          canManage={canManage}
+          isLoading={loading}
+          showActions={false}
+          emptyMessage="No lab tests found."
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -602,7 +593,7 @@ export function LabTestManagement({
                     {selectedLabTest.testName}
                   </h3>
                   <Badge variant="outline" className="rounded-full px-3 py-0.5">
-                    #{selectedLabTest.id}
+                    {selectedLabTest.id}
                   </Badge>
                   <StatusBadge
                     status={selectedLabTest.isActive ? "ACTIVE" : "INACTIVE"}

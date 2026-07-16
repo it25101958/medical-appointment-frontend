@@ -313,10 +313,10 @@ export function LabOrderManagement({
         <div className="space-y-1">
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(order)}
           >
-            Lab Order #{order.labOrderId}
+            Lab Order {order.labOrderId}
           </button>
           <p className="text-xs text-muted-foreground">
             {order.items.length} {order.items.length === 1 ? "item" : "items"}
@@ -327,7 +327,7 @@ export function LabOrderManagement({
     },
     {
       header: "Appointment",
-      render: (order) => `#${order.appointmentId}`,
+      render: (order) => String(order.appointmentId),
       className: "w-[150px] px-5 py-4 text-muted-foreground",
     },
     {
@@ -423,19 +423,21 @@ export function LabOrderManagement({
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-[160px_180px_180px_auto] md:items-end">
           <div className="grid gap-2">
-            <Label htmlFor="patient-filter">Patient ID</Label>
+            <Label className="form-label mb-0" htmlFor="patient-filter">
+              Patient ID
+            </Label>
             <Input
               id="patient-filter"
               type="number"
               min={1}
               value={patientIdFilter}
               onChange={(event) => setPatientIdFilter(event.target.value)}
-              placeholder="Optional"
+              placeholder="e.g. 1024"
             />
           </div>
 
           <div className="grid gap-2">
-            <Label>Status</Label>
+            <Label className="form-label mb-0">Status</Label>
             <Select
               value={statusFilter}
               onValueChange={(value) =>
@@ -443,7 +445,7 @@ export function LabOrderManagement({
               }
             >
               <SelectTrigger>
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder="e.g. Pending" />
               </SelectTrigger>
               <SelectContent>
                 {statusFilters.map((status) => (
@@ -456,7 +458,9 @@ export function LabOrderManagement({
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="date-filter">Date</Label>
+            <Label className="form-label mb-0" htmlFor="date-filter">
+              Date
+            </Label>
             <Input
               id="date-filter"
               type="date"
@@ -473,23 +477,18 @@ export function LabOrderManagement({
       </Card>
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading lab orders...
-          </div>
-        ) : (
-          <DataTable
-            columns={orderColumns}
-            data={orders}
-            pageable
-            pageSize={10}
-            pageSizeOptions={[5, 10, 20]}
-            canManage={canManage}
-            showActions={false}
-            minWidth={canManage ? "1180px" : "1040px"}
-            emptyMessage="No lab orders found."
-          />
-        )}
+        <DataTable
+          columns={orderColumns}
+          data={orders}
+          pageable
+          pageSize={10}
+          pageSizeOptions={[5, 10, 50]}
+          canManage={canManage}
+          isLoading={loading}
+          showActions={false}
+          minWidth={canManage ? "1180px" : "1040px"}
+          emptyMessage="No lab orders found."
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -503,7 +502,9 @@ export function LabOrderManagement({
           <div className="grid gap-5 py-2">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="grid gap-2">
-                <Label htmlFor="appointment-id">Appointment ID *</Label>
+                <Label className="form-label mb-0" htmlFor="appointment-id">
+                  Appointment ID *
+                </Label>
                 <Input
                   id="appointment-id"
                   type="number"
@@ -515,12 +516,12 @@ export function LabOrderManagement({
                       appointmentId: Number(event.target.value),
                     }))
                   }
-                  placeholder="Enter appointment ID"
+                  placeholder="e.g. 1208"
                 />
               </div>
 
               <div className="grid gap-2">
-                <Label>Laboratory *</Label>
+                <Label className="form-label mb-0">Laboratory *</Label>
                 <Select
                   value={
                     formValues.laboratoryId
@@ -535,7 +536,7 @@ export function LabOrderManagement({
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a laboratory" />
+                    <SelectValue placeholder="e.g. Central Laboratory" />
                   </SelectTrigger>
                   <SelectContent>
                     {laboratories.map((laboratory) => (
@@ -553,7 +554,7 @@ export function LabOrderManagement({
 
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <Label>Lab order items *</Label>
+                <Label className="form-label mb-0">Lab Order Items *</Label>
                 <Button
                   type="button"
                   size="sm"
@@ -576,7 +577,7 @@ export function LabOrderManagement({
                     className="grid gap-3 rounded-md border border-border/60 p-3 md:grid-cols-[minmax(0,1fr)_120px_140px_40px] md:items-end"
                   >
                     <div className="grid gap-2">
-                      <Label>Lab test</Label>
+                      <Label className="form-label mb-0">Lab Test</Label>
                       <Select
                         value={item.labTestId ? String(item.labTestId) : ""}
                         onValueChange={(value) =>
@@ -584,7 +585,7 @@ export function LabOrderManagement({
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a test" />
+                          <SelectValue placeholder="e.g. Blood Count" />
                         </SelectTrigger>
                         <SelectContent>
                           {labTests.map((test) => (
@@ -597,7 +598,7 @@ export function LabOrderManagement({
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Quantity</Label>
+                      <Label className="form-label mb-0">Quantity</Label>
                       <Input
                         type="number"
                         min={1}
@@ -611,7 +612,7 @@ export function LabOrderManagement({
                     </div>
 
                     <div className="grid gap-2">
-                      <Label>Line total</Label>
+                      <Label className="form-label mb-0">Line Total</Label>
                       <div className="rounded-md border border-border/60 px-3 py-2 text-sm font-medium">
                         {formatMoney(lineTotal)}
                       </div>
@@ -668,11 +669,11 @@ export function LabOrderManagement({
               <div className="grid gap-3 rounded-md border border-border/60 bg-muted/30 p-4 md:grid-cols-2">
                 <div>
                   <p className="text-xs text-muted-foreground">Lab Order</p>
-                  <p className="font-medium">#{selectedOrder.labOrderId}</p>
+                  <p className="font-medium">{selectedOrder.labOrderId}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Appointment</p>
-                  <p className="font-medium">#{selectedOrder.appointmentId}</p>
+                  <p className="font-medium">{selectedOrder.appointmentId}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Patient</p>
@@ -694,7 +695,7 @@ export function LabOrderManagement({
                       <div>
                         <p className="font-medium">{item.testName}</p>
                         <p className="text-xs text-muted-foreground">
-                          Item #{item.labOrderItemId} | Test #{item.labTestId}
+                          Item {item.labOrderItemId} | Test {item.labTestId}
                         </p>
                       </div>
                       <Badge

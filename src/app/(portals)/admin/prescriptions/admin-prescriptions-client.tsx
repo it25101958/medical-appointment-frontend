@@ -3,7 +3,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 
 import { SearchBar } from "@/components/ui/search-bar";
-import { PrescriptionList } from "@/features/admin";
+import { PrescriptionList } from "@/features/prescriptions";
 import { formatDate } from "@/features/shared/util/format-date";
 
 interface PrescriptionListItem {

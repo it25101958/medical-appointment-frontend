@@ -278,10 +278,10 @@ export function BillingManagement({
         render: (billing) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(billing)}
           >
-            {highlightText(`#${billing.billingId}`, deferredSearchQuery)}
+            {highlightText(String(billing.billingId), deferredSearchQuery)}
           </button>
         ),
         className: "w-[130px] px-5 py-4 font-medium",
@@ -290,7 +290,7 @@ export function BillingManagement({
         header: "Appointment",
         render: (billing) =>
           highlightText(
-            billing.appointmentId ? `#${billing.appointmentId}` : "Not linked",
+            billing.appointmentId ? String(billing.appointmentId) : "Not linked",
             deferredSearchQuery,
           ),
         className: "w-[150px] px-5 py-4 text-muted-foreground",
@@ -394,21 +394,16 @@ export function BillingManagement({
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading billing records...
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredBillings}
-            pageable
-            pageSize={10}
-            canManage={canManage}
-            showActions={false}
-            emptyMessage="No billing records found."
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredBillings}
+          pageable
+          pageSize={10}
+          canManage={canManage}
+          isLoading={loading}
+          showActions={false}
+          emptyMessage="No billing records found."
+        />
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -593,7 +588,7 @@ export function BillingManagement({
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4 sm:col-span-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-lg font-semibold">
-                    Billing #{selectedBilling.billingId}
+                    Billing {selectedBilling.billingId}
                   </h3>
                   <Badge
                     variant="outline"
@@ -607,7 +602,7 @@ export function BillingManagement({
                 <p className="mt-2 text-sm text-muted-foreground">
                   Appointment{" "}
                   {selectedBilling.appointmentId
-                    ? `#${selectedBilling.appointmentId}`
+                    ? selectedBilling.appointmentId
                     : "not linked"}
                 </p>
               </div>
@@ -654,7 +649,7 @@ export function BillingManagement({
             <div className="px-6">
               <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
                 <p className="text-sm font-medium">
-                  Billing #{selectedBilling.billingId}
+                  Billing {selectedBilling.billingId}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {formatCurrency(selectedBilling.finalAmount)} ·{" "}

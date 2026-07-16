@@ -206,7 +206,7 @@ export default function AdminRoomsPage() {
         render: (room) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => openDetailsDialog(room)}
           >
             {highlightText(
@@ -300,21 +300,16 @@ export default function AdminRoomsPage() {
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {isLoading ? (
-          <div className="px-4 py-10 text-center text-sm text-muted-foreground">
-            Loading rooms...
-          </div>
-        ) : (
-          <DataTable
-            columns={roomColumns}
-            data={filteredRooms}
-            pageable={true}
-            pageSize={10}
-            showActions={false}
-            minWidth="1000px"
-            emptyMessage="No rooms found."
-          />
-        )}
+        <DataTable
+          columns={roomColumns}
+          data={filteredRooms}
+          pageable={true}
+          pageSize={10}
+          isLoading={isLoading}
+          showActions={false}
+          minWidth="1000px"
+          emptyMessage="No rooms found."
+        />
       </div>
 
       <Dialog
@@ -359,7 +354,7 @@ export default function AdminRoomsPage() {
                 </p>
               </div>
 
-              <RoomInfo label="Room ID" value={`#${selectedRoom.roomId}`} />
+              <RoomInfo label="Room ID" value={String(selectedRoom.roomId)} />
               <RoomInfo label="Capacity" value={selectedRoom.capacity || "-"} />
               <RoomInfo
                 label="Equipment"

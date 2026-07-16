@@ -97,7 +97,7 @@ export function LabOrderDetailsDialog({
               <p className="text-sm text-muted-foreground">
                 Lab Order Reference
               </p>
-              <p className="text-lg">#{labOrder.labOrderId}</p>
+              <p className="text-lg">{labOrder.labOrderId}</p>
             </div>
 
             <Badge
@@ -112,7 +112,7 @@ export function LabOrderDetailsDialog({
             <InfoItem
               icon={<Hash className="h-4 w-4" />}
               label="Appointment"
-              value={`#${labOrder.appointmentId}`}
+              value={String(labOrder.appointmentId)}
             />
 
             <InfoItem
@@ -142,7 +142,7 @@ export function LabOrderDetailsDialog({
             <InfoItem
               icon={<Beaker className="h-4 w-4" />}
               label="Lab Order ID"
-              value={`#${labOrder.labOrderId}`}
+              value={String(labOrder.labOrderId)}
             />
           </div>
 
@@ -225,7 +225,7 @@ export function LabOrderDetailsDialog({
                     }
                     onClick={() => onSelectLabOrder(order)}
                   >
-                    #{order.labOrderId}
+                    {order.labOrderId}
                   </Button>
                 ))}
               </div>

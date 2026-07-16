@@ -3,8 +3,11 @@
 import { revalidateTag } from "next/cache";
 
 import { apiRequest } from "@/lib/api-client";
-
-const MEDICATION_CACHE_TAG = "medications";
+import {
+  CACHE_REVALIDATE_SECONDS,
+  CACHE_TAGS,
+  createCachedReadOptions,
+} from "@/lib/cache";
 
 export interface Medication {
   medicationId: number;
@@ -28,16 +31,14 @@ export interface MedicationPayload {
 }
 
 const medicationReadOptions = {
-  method: "GET",
-  cache: "force-cache" as const,
-  next: {
-    revalidate: 60,
-    tags: [MEDICATION_CACHE_TAG],
-  },
+  ...createCachedReadOptions(
+    [CACHE_TAGS.medications],
+    CACHE_REVALIDATE_SECONDS.medium,
+  ),
 };
 
 function invalidateMedicationCache() {
-  revalidateTag(MEDICATION_CACHE_TAG, {});
+  revalidateTag(CACHE_TAGS.medications, "max");
 }
 
 export async function getMedications(): Promise<Medication[]> {

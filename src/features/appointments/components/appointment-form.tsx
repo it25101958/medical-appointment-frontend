@@ -2,20 +2,15 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "@tanstack/react-form";
-import {
-  CalendarClock,
-  CalendarDays,
-  Loader2,
-  Send,
-  Stethoscope,
-  UserRound,
-} from "lucide-react";
+import { Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
 import {
   Button,
+  Field,
+  FieldError,
+  FieldLabel,
   Input,
-  Label,
   Select,
   SelectContent,
   SelectItem,
@@ -75,6 +70,10 @@ function normalizeDoctor(doctor: DoctorResponse): NormalizedDoctor {
   };
 }
 
+function fieldErrors(errors: unknown[]) {
+  return errors.length > 0 ? formatValidationErrors(errors) : undefined;
+}
+
 interface AvailableSlotsSectionProps {
   doctorId: number;
   appointmentDate: string;
@@ -130,7 +129,7 @@ function AvailableSlotsSection({
 
   return (
     <div className="rounded-lg border border-border/60 bg-muted/20 p-4">
-      <Label className="form-label mb-0">Available Time slots *</Label>
+      <FieldLabel>Available Time Slots *</FieldLabel>
       <div className="mb-3 flex items-center gap-2"></div>
 
       {isLoadingSlots ? (
@@ -156,7 +155,7 @@ function AvailableSlotsSection({
         <div className="rounded-md border border-border/60 bg-background px-3 py-2 text-sm text-muted-foreground">
           {doctorId > 0 && appointmentDate
             ? "No available slots for this date."
-            : "Select doctor and date to view available slots."}
+            : "Select doctor and date to view available slots. e.g. 09:30"}
         </div>
       )}
     </div>
@@ -275,8 +274,8 @@ export function AppointmentForm({
 
       <div className="space-y-5 px-6">
         <div className="grid gap-4 sm:grid-cols-2">
-          <div className="grid gap-2">
-            <Label className="form-label mb-0">Specialization *</Label>
+          <Field>
+            <FieldLabel>Specialization *</FieldLabel>
 
             <Select
               value={selectedSpecialization}
@@ -288,12 +287,11 @@ export function AppointmentForm({
               disabled={isLoadingDoctors}
             >
               <SelectTrigger className="h-10 w-full bg-background">
-                <Stethoscope className="h-4 w-4 text-muted-foreground" />
                 <SelectValue
                   placeholder={
                     isLoadingDoctors
                       ? "Loading specializations..."
-                      : "Select specialization"
+                      : "e.g. CARDIOLOGY"
                   }
                 />
               </SelectTrigger>
@@ -310,15 +308,15 @@ export function AppointmentForm({
                 ))}
               </SelectContent>
             </Select>
-          </div>
+          </Field>
 
           <form.Field
             name="doctorId"
-            validators={{ onChange: appointmentCreateSchema.shape.doctorId }}
+            validators={{ onBlur: appointmentCreateSchema.shape.doctorId }}
           >
             {(field) => (
-              <div className="grid gap-2">
-                <Label className="form-label mb-0">Doctor *</Label>
+              <Field>
+                <FieldLabel>Doctor *</FieldLabel>
 
                 <Select
                   value={field.state.value ? String(field.state.value) : ""}
@@ -326,16 +324,20 @@ export function AppointmentForm({
                     field.handleChange(Number(value));
                     form.setFieldValue("appointmentTime", "");
                   }}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      field.handleBlur();
+                    }
+                  }}
                   disabled={
                     !selectedSpecialization || filteredDoctors.length === 0
                   }
                 >
                   <SelectTrigger className="h-10 w-full bg-background">
-                    <UserRound className="h-4 w-4 text-muted-foreground" />
                     <SelectValue
                       placeholder={
                         selectedSpecialization
-                          ? "Select doctor"
+                          ? "e.g. Dr. Smith Jaqore"
                           : "Select specialization first"
                       }
                     />
@@ -357,12 +359,12 @@ export function AppointmentForm({
                   </SelectContent>
                 </Select>
 
-                {field.state.meta.errors.length > 0 && (
-                  <p className="form-error">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
+                {field.state.meta.isTouched && !field.state.meta.isValid && (
+                  <FieldError>
+                    {fieldErrors(field.state.meta.errors)}
+                  </FieldError>
                 )}
-              </div>
+              </Field>
             )}
           </form.Field>
         </div>
@@ -375,32 +377,24 @@ export function AppointmentForm({
             }}
           >
             {(field) => (
-              <div className="grid gap-2">
-                <Label className="form-label mb-0" htmlFor={field.name}>
-                  Date *
-                </Label>
+              <Field>
+                <FieldLabel htmlFor={field.name}>Date *</FieldLabel>
 
-                <div className="relative">
-                  <CalendarDays className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id={field.name}
-                    type="date"
-                    className="h-10 bg-background pl-8"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(event) => {
-                      field.handleChange(event.target.value);
-                      form.setFieldValue("appointmentTime", "");
-                    }}
-                  />
-                </div>
+                <Input
+                  id={field.name}
+                  type="date"
+                  className="h-10 bg-background"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(event) => {
+                    field.handleChange(event.target.value);
+                    form.setFieldValue("appointmentTime", "");
+                  }}
+                  aria-label="Appointment date. e.g. 2026-07-20"
+                />
 
-                {field.state.meta.errors.length > 0 && (
-                  <p className="form-error">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
+                <FieldError>{fieldErrors(field.state.meta.errors)}</FieldError>
+              </Field>
             )}
           </form.Field>
 
@@ -411,16 +405,15 @@ export function AppointmentForm({
             }}
           >
             {(field) => (
-              <div className="grid gap-2">
-                <Label className="form-label mb-0">Appointment Type *</Label>
+              <Field>
+                <FieldLabel>Appointment Type *</FieldLabel>
 
                 <Select
                   value={field.state.value}
                   onValueChange={field.handleChange}
                 >
                   <SelectTrigger className="h-10 w-full bg-background">
-                    <CalendarClock className="h-4 w-4 text-muted-foreground" />
-                    <SelectValue placeholder="Select appointment type" />
+                    <SelectValue placeholder="e.g. Consultation" />
                   </SelectTrigger>
 
                   <SelectContent
@@ -436,12 +429,8 @@ export function AppointmentForm({
                   </SelectContent>
                 </Select>
 
-                {field.state.meta.errors.length > 0 && (
-                  <p className="form-error">
-                    {formatValidationErrors(field.state.meta.errors)}
-                  </p>
-                )}
-              </div>
+                <FieldError>{fieldErrors(field.state.meta.errors)}</FieldError>
+              </Field>
             )}
           </form.Field>
         </div>
@@ -470,10 +459,8 @@ export function AppointmentForm({
           validators={{ onChange: appointmentCreateSchema.shape.notes }}
         >
           {(field) => (
-            <div className="grid gap-2">
-              <Label className="form-label mb-0" htmlFor={field.name}>
-                Notes
-              </Label>
+            <Field>
+              <FieldLabel htmlFor={field.name}>Notes</FieldLabel>
 
               <Textarea
                 id={field.name}
@@ -483,7 +470,7 @@ export function AppointmentForm({
                 value={field.state.value || ""}
                 onBlur={field.handleBlur}
                 onChange={(event) => field.handleChange(event.target.value)}
-                placeholder="Add symptoms or anything the doctor should know"
+                placeholder="e.g. Fever and headache since Monday"
               />
 
               <div className="flex justify-between gap-3 text-xs text-muted-foreground">
@@ -494,7 +481,7 @@ export function AppointmentForm({
                 </span>
                 <span>{field.state.value?.length || 0}/255</span>
               </div>
-            </div>
+            </Field>
           )}
         </form.Field>
       </div>

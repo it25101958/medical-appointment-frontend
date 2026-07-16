@@ -148,7 +148,7 @@ export function UserDetailsDialog({
                       {user.firstName} {user.lastName}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      User ID #{user.userId}
+                      User ID {user.userId}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">

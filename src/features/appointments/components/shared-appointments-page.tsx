@@ -108,22 +108,17 @@ export default function SharedAppointmentsPage({ role }: { role?: string }) {
         ))}
       </div>
 
-      {isLoading ? (
-        <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
-          Loading appointments...
-        </div>
-      ) : (
-        <AppointmentTable
-          appointments={filteredAppointments}
-          canManage={canManage}
-          onChanged={refetch}
-          emptyMessage={
-            activeFilter === "today"
-              ? "No appointments scheduled for today."
-              : "No appointments found."
-          }
-        />
-      )}
+      <AppointmentTable
+        appointments={filteredAppointments}
+        canManage={canManage}
+        isLoading={isLoading}
+        onChanged={refetch}
+        emptyMessage={
+          activeFilter === "today"
+            ? "No appointments scheduled for today."
+            : "No appointments found."
+        }
+      />
     </div>
   );
 }

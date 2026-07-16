@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { SearchBar } from "@/components/ui/search-bar";
 import { PageHeader } from "@/components/ui/page-header";
-import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, RefreshCcw, Plus, ShieldCheck } from "lucide-react";
 import {
   Select,
@@ -230,14 +229,6 @@ export default function ManageUsersPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="col-start-1 col-end-14 p-4 text-muted-foreground">
-        Loading users...
-      </div>
-    );
-  }
-
   return (
     <div className="col-start-1 col-end-14 space-y-6">
       <PageHeader
@@ -274,37 +265,28 @@ export default function ManageUsersPage() {
       />
 
       <div className="overflow-hidden w-auto rounded-lg border border-border bg-card">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-          >
-            <UserTable
-              users={filteredUsers}
-              searchQuery={deferredSearchQuery}
-              onToggleActive={handleToggleActiveRequest}
-              onEditRole={openRoleDialog}
-              onViewUserDetails={handleViewUserDetails}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              pageSize={pageSize}
-              pageSizeOptions={[5, 10, 20]}
-              onPageChange={(page) => setCurrentPage(page)}
-              onPageSizeChange={(size) => {
-                setPageSize(size);
-                setCurrentPage(0);
-              }}
-            />
-            <UserDetailsDialog
-              userId={viewUserId}
-              open={viewOpen}
-              onOpenChange={setViewOpen}
-            />
-          </motion.div>
-        </AnimatePresence>
+        <UserTable
+          users={filteredUsers}
+          searchQuery={deferredSearchQuery}
+          onToggleActive={handleToggleActiveRequest}
+          onEditRole={openRoleDialog}
+          onViewUserDetails={handleViewUserDetails}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          pageSizeOptions={[5, 10, 50]}
+          isLoading={loading}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(0);
+          }}
+        />
+        <UserDetailsDialog
+          userId={viewUserId}
+          open={viewOpen}
+          onOpenChange={setViewOpen}
+        />
       </div>
 
       <DialogBox

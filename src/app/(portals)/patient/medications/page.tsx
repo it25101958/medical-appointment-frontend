@@ -18,28 +18,16 @@ import {
   type Column,
   StatusBadge,
 } from "@/components/ui";
-import { apiRequest } from "@/lib/api-client";
 import { highlightText } from "@/lib/highlight-search";
 import { getErrorMessage } from "@/lib/utils";
 import { formatDateOnly } from "@/features/shared/util/format-date";
-import type {
+import {
+  getMyPrescriptions,
+  getPrescription,
+  type PrescriptionsResponse,
   PrescriptionItemResponse,
   PrescriptionResponse,
 } from "@/features/prescriptions";
-
-interface PrescriptionListItem {
-  prescriptionId: number;
-  appointmentId: number;
-  patientName: string;
-  doctorName: string;
-  status: string;
-  createdAt: string;
-}
-
-interface PrescriptionsResponse {
-  content: PrescriptionListItem[];
-  totalPages: number;
-}
 
 interface PatientMedicationRow extends PrescriptionItemResponse {
   prescriptionId: number;
@@ -65,23 +53,11 @@ export default function PatientMedicationsPage() {
   async function loadMedications() {
     setLoading(true);
     try {
-      const prescriptions = await apiRequest<PrescriptionsResponse>(
-        "/prescription/my?page=0&size=50",
-        {
-          method: "GET",
-          cache: "no-store",
-        },
-      );
+      const prescriptions: PrescriptionsResponse = await getMyPrescriptions(0, 50);
 
       const details = await Promise.all(
         (prescriptions.content || []).map((prescription) =>
-          apiRequest<PrescriptionResponse>(
-            `/prescription/${prescription.prescriptionId}`,
-            {
-              method: "GET",
-              cache: "no-store",
-            },
-          ).catch(() => null),
+          getPrescription(prescription.prescriptionId).catch(() => null),
         ),
       );
 
@@ -144,7 +120,7 @@ export default function PatientMedicationsPage() {
           <div className="space-y-0.5">
             <button
               type="button"
-              className="text-left font-medium hover:text-primary hover:underline"
+              className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
               onClick={() => setSelectedMedication(medication)}
             >
               {highlightText(medication.medicationName, deferredSearchQuery)}
@@ -173,7 +149,7 @@ export default function PatientMedicationsPage() {
       {
         header: "Prescription",
         render: (medication) =>
-          highlightText(`#${medication.prescriptionId}`, deferredSearchQuery),
+          highlightText(String(medication.prescriptionId), deferredSearchQuery),
         className: "w-[150px] px-5 py-4 text-muted-foreground",
       },
       {
@@ -227,21 +203,16 @@ export default function PatientMedicationsPage() {
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading medications...
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredMedications}
-            pageable
-            pageSize={10}
-            showActions={false}
-            minWidth="1010px"
-            emptyMessage="No medications found."
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredMedications}
+          pageable
+          pageSize={10}
+          isLoading={loading}
+          showActions={false}
+          minWidth="1010px"
+          emptyMessage="No medications found."
+        />
       </div>
 
       <Dialog
@@ -286,11 +257,11 @@ export default function PatientMedicationsPage() {
                 />
                 <InfoPanel
                   label="Prescription"
-                  value={`#${selectedMedication.prescriptionId}`}
+                  value={String(selectedMedication.prescriptionId)}
                 />
                 <InfoPanel
                   label="Appointment"
-                  value={`#${selectedMedication.appointmentId}`}
+                  value={String(selectedMedication.appointmentId)}
                 />
                 <InfoPanel
                   label="Doctor"

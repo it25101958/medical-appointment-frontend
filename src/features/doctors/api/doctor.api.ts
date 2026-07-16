@@ -1,4 +1,14 @@
 import { apiRequest } from "@/lib/api-client";
+import {
+  CACHE_REVALIDATE_SECONDS,
+  CACHE_TAGS,
+  createCachedReadOptions,
+} from "@/lib/cache";
+
+const doctorOptionsReadOptions = createCachedReadOptions(
+  [CACHE_TAGS.doctors],
+  CACHE_REVALIDATE_SECONDS.long,
+);
 
 export interface DoctorResponse {
   userId: number;
@@ -46,8 +56,6 @@ export function getDoctorOptionLabel(doctor: DoctorResponse) {
 
 export const doctorApi = {
   getOptions: async () => {
-    return apiRequest<DoctorResponse[]>("/doctor/options", {
-      method: "GET",
-    });
+    return apiRequest<DoctorResponse[]>("/doctor/options", doctorOptionsReadOptions);
   },
 };

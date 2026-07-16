@@ -118,13 +118,13 @@ export function PatientLabResults() {
     () => [
       {
         header: "Result ID",
-        render: (result) => highlightText(`#${result.id}`, deferredSearchQuery),
+        render: (result) => highlightText(String(result.id), deferredSearchQuery),
         className: "w-[130px] px-5 py-4 font-medium",
       },
       {
         header: "Appointment",
         render: (result) =>
-          highlightText(`#${result.appointmentId}`, deferredSearchQuery),
+          highlightText(String(result.appointmentId), deferredSearchQuery),
         className: "w-[150px] px-5 py-4 text-muted-foreground",
       },
       {
@@ -132,7 +132,7 @@ export function PatientLabResults() {
         render: (result) => (
           <button
             type="button"
-            className="text-left font-medium hover:text-primary hover:underline"
+            className="cursor-pointer text-left font-medium hover:text-primary hover:underline"
             onClick={() => setSelectedResult(result)}
           >
             {highlightText(result.testName || "-", deferredSearchQuery)}
@@ -197,21 +197,16 @@ export function PatientLabResults() {
       />
 
       <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {loading ? (
-          <div className="px-6 py-10 text-center text-sm text-muted-foreground">
-            Loading lab results...
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredResults}
-            pageable
-            pageSize={10}
-            showActions={false}
-            minWidth="1130px"
-            emptyMessage="No lab results found."
-          />
-        )}
+        <DataTable
+          columns={columns}
+          data={filteredResults}
+          pageable
+          pageSize={10}
+          isLoading={loading}
+          showActions={false}
+          minWidth="1130px"
+          emptyMessage="No lab results found."
+        />
       </div>
 
       <Dialog
@@ -247,7 +242,7 @@ export function PatientLabResults() {
                   <StatusBadge status={selectedResult.status} />
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Appointment #{selectedResult.appointmentId}
+                  Appointment {selectedResult.appointmentId}
                 </p>
               </div>
 
@@ -261,7 +256,7 @@ export function PatientLabResults() {
                   label="Updated"
                   value={formatDate(selectedResult.updatedAt)}
                 />
-                <InfoPanel label="Result ID" value={`#${selectedResult.id}`} />
+                <InfoPanel label="Result ID" value={String(selectedResult.id)} />
               </div>
 
               {selectedResult.remarks && (
