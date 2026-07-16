@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
-  HeartPulse,
   Menu,
   Pill,
   Calendar,
@@ -142,12 +141,9 @@ const NavigationContainer = () => {
 
   return (
     <header className="col-span-full flex items-center justify-between w-full">
-      <Link href="/" className="flex items-center gap-2 group">
-        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-          <HeartPulse className="size-5" />
-        </div>
+      <Link href="/">
         <span className="text-xl font-bold tracking-tight text-foreground">
-          Med<span className="text-primary">Care</span>
+          MedCare
         </span>
       </Link>
 
@@ -272,9 +268,7 @@ const NavigationContainer = () => {
           </SheetTrigger>
           <SheetContent side="right">
             <SheetHeader className="text-left mb-6">
-              <SheetTitle className="flex items-center gap-2">
-                <HeartPulse className="size-5 text-primary" /> MedCare
-              </SheetTitle>
+              <SheetTitle>MedCare</SheetTitle>
             </SheetHeader>
             <div className="px-6 flex flex-col gap-6">
               <nav className="flex flex-col gap-2">

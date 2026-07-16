@@ -6,7 +6,6 @@ import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import {
-  Stethoscope,
   Send,
   Loader2,
   Twitter,
@@ -43,12 +42,9 @@ export default function Footer() {
         <div className="col-span-12 lg:col-span-4 space-y-6">
           <Link
             href="/"
-            className="flex items-center gap-2 font-bold text-xl tracking-tight text-foreground"
+            className="font-bold text-xl tracking-tight text-foreground"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Stethoscope className="h-5 w-5" />
-            </div>
-            HealthFlow
+            MedCare
           </Link>
           <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
             Revolutionizing healthcare scheduling with modern, reliable
@@ -169,7 +165,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="flex flex-col md:flex-row justify-between py-8 gap-4 text-xs text-muted-foreground/60">
-        <p>© 2026 HealthFlow Inc. Built with care for patients.</p>
+        <p>© 2026 MedCare Inc. Built with care for patients.</p>
         <div className="flex gap-6">
           <Link href="#" className="hover:text-foreground transition-colors">
             Status
