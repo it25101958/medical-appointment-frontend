@@ -1,70 +1,100 @@
-# Medical Appointment System
+# Medical Appointment System Frontend
 
-A full-stack **Medical Appointment System** built with **Next.js, Springboot** to streamline hospital and clinic operations. This project is designed to manage users, patients, doctors, appointments, prescriptions, laboratory services, room scheduling, billing, payments, and feedback in one centralized platform. It aims to improve efficiency, reduce manual work, and provide a better experience for both patients and medical staff.
-
-## Project Introduction
-
-The Medical Appointment System is a healthcare management solution developed to support the daily activities of a medical center. The system allows patients to register, log in, book appointments, view prescriptions, and manage their medical interactions digitally. Doctors can manage their availability, appointments, and prescriptions, while administrators can oversee users, medications, and other operational tasks.
-
-In addition to appointment handling, the system also includes **laboratory management, room scheduling, billing, payments, and patient feedback**, making it a complete and practical solution for modern healthcare environments.
-
-## Group Members
-
-- **IT25101952** – Lekamwasam N. L. P. M.
-- **IT25101953** – Nanayakkara Y. S.
-- **IT25101955** – Wijesekara M. G. N. L.
-- **IT25101958** – Chamila A. L. G.
-- **IT25101973** – Patabendi M. K. K.
-- **IT25101986** – Thashmina P. G. D.
-
-## Main Modules
-
-This system includes the following main modules:
-
-- User Management
-- Patient Management
-- Doctor Management
-- Doctor Availability
-- Appointment Scheduling
-- Prescription Management
-- Medication Management
-- Laboratory and Lab Test Management
-- Lab Orders and Results
-- Room and Room Schedule Management
-- Billing and Billing Items
-- Payment Management
-- Feedback Management
-- Admin Management
+A responsive web application for managing the daily operations of a clinic or hospital. It provides dedicated portals for patients, doctors, staff, and administrators and connects to the Medical Appointment System backend to bring appointments, clinical records, laboratory work, room allocation, billing, payments, and feedback into one centralized interface.
 
 ## Features
 
-- Secure user registration and login
-- Role-based access for patients, doctors, and admins
-- Appointment booking and status tracking
-- Doctor availability management
-- Prescription creation and medication handling
-- Laboratory test ordering and result management
-- Room scheduling to avoid conflicts
+- Public clinic website with service, review, and contact sections
+- Patient registration, email verification, login, and password recovery
+- Secure JWT-based authentication and role-based portal access
+- Separate dashboards for patients, doctors, staff, and administrators
+- User profile viewing and management
+- Doctor directory and appointment availability
+- Appointment booking, rescheduling, status tracking, and cancellation
+- Prescription and medication viewing and management
+- Laboratory test, order, and result management
+- Room allocation and schedule management
 - Billing and payment tracking
-- Feedback submission and review
-- Responsive and modern frontend with Next.js
+- Patient feedback submission
+- Responsive layouts, dark mode support, form validation, notifications, search, tables, and pagination
 
-## Technologies Used
+## Technology Stack
 
-- **Frontend:** Next.js
-- **Backend:** Springboot
-- **Database:** Relational database design for healthcare management (MySQL)
-- **Authentication:** Login, registration, MFA verification, password reset
+| Area            | Technology                        |
+| --------------- | --------------------------------- |
+| Language        | TypeScript                        |
+| Framework       | Next.js 16 (App Router)           |
+| UI              | React 19, Tailwind CSS 4          |
+| Dates           | date-fns, React DayPicker         |
+| Notifications   | Sonner                            |
+| Authentication  | JWT stored in an HTTP-only cookie |
+| Code Quality    | ESLint, TypeScript                |
+| Package Manager | npm                               |
 
-## Getting Started
+## Prerequisites
 
-First, run the development server:
+- Node.js 20.9 or later
+- npm
+- The Medical Appointment System backend running locally or on an accessible server
+
+## Running Locally
+
+Clone the repository and enter the project directory.
+
+```bash
+git clone https://github.com/it25101958/medical-appointment-frontend.git
+cd medical-appointment-frontend
+```
+
+Install the dependencies.
+
+```bash
+npm install
+```
+
+Create a `.env.local` file in the project root and configure the backend API URL.
+
+```env
+INTERNAL_BACKEND_URL=http://localhost:8080/api/v1
+```
+
+Ensure that the backend application is running, then start the frontend development server.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Build and Code Quality
+
+Run ESLint:
+
+```bash
+npm run lint
+```
+
+Create an optimized production build:
+
+```bash
+npm run build
+```
+
+Start the production server after building:
+
+```bash
+npm run start
+```
+
+## Group Members
+
+- IT25101952 – Lekamwasam N. L. P. M.
+- IT25101953 – Nanayakkara Y. S.
+- IT25101955 – Wijesekara M. G. N. L.
+- IT25101958 – Chamila A. L. G.
+- IT25101973 – Patabendi M. K. K.
+- IT25101986 – Thashmina P. G. D.
+
+## License
+
+This project is available under the [MIT License](LICENSE).
